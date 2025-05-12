@@ -1,13 +1,14 @@
 ---
-title: Hello World
-description: Welcome to Hugo Theme Stack
+title: Comet Engine
+description: Welcome to Comet Engine
 slug: hello-world
-date: 2022-03-06 00:00:00+0000
+date: 2022-03-06 00:00:00+0000 #TODO: canviar aixo quan acabi
 image: cover.jpg
 categories:
-    - Example Category
+    - Documentation
 tags:
-    - Example Tag
+    - Editor
+    
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
 
