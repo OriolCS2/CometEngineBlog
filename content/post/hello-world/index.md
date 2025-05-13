@@ -1,21 +1,34 @@
 ---
 title: Comet Engine
 description: Welcome to Comet Engine
-slug: hello-world
-date: 2022-03-06 00:00:00+0000 #TODO: canviar aixo quan acabi
-image: cover.jpg
+date: 2025-05-13 00:00:00+0000
+image: cover.png
 categories:
     - Documentation
 tags:
     - Editor
     
-weight: 1       # You can add weight to some posts to override the default sorting (date descending)
+weight: 1
 ---
 
-Welcome to Hugo theme Stack. This is your first post. Edit or delete it, then start writing!
+Welcome everyone to my blog about Comet Engine. In this blog I'm going to talk about the development and current features of my custom game engine, Comet Engine. 
 
-For more information about this theme, check the documentation: https://stack.jimmycai.com/
+First of all, what is Comet Engine? It is a custom game engine made from scratch with C++, SDL3 and OpenGL. It's been 4 years since I started developing it and now it looks like this:
+![Image 1](editor.png)
 
-Want a site like this? Check out [hugo-theme-stack-stater](https://github.com/CaiJimmy/hugo-theme-stack-starter)
+At this point the main features are:
+* 2D Rendering
+* Sprite atlas subsystem
+* Physics
+* 2D Lighting
+* 2D and 3D Audio
+* Custom Shaders
+* Bunch of in editor customizations
+* Exporting for Windows and Linux
 
-> Photo by [Pawel Czerwinski](https://unsplash.com/@pawel_czerwinski) on [Unsplash](https://unsplash.com/)
+It is also possible to create game scripts using the C# system integrated in Comet, but now I'm working on a new system because it's been quite difficult to export the C# system to web or android. So expect a new Comet Engine major version (2.0) breaking the compatibility with C# is comming this year! This topic will have a custom post soon.
+
+I attach a presentation trailer that I made 3 years ago in order to start understanding what is Comet and how it works!
+{{< youtube zLf-vsr-gkk >}}
+
+Feel free to share comments or questions ;)
