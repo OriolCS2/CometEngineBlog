@@ -4,7 +4,7 @@ links:
   - title: CometEngine GitHub Repository
     description: Repository of all the CometEngine releases.
     website: https://github.com/OriolCS2/CometEngine
-    image: "img/Comet.png"
+    image: "Comet.png"
   - title: Personal GitHub
     description: My GitHub profile.
     website: https://github.com/OriolCS2
@@ -12,7 +12,7 @@ links:
   - title: My LinkedIn
     description: My LinkedIn profile.
     website: https://www.linkedin.com/in/oriol-capdevila/
-    image: "img/linkedin.png"
+    image: "linkedin.png"
 menu:
     main: 
         weight: 4
