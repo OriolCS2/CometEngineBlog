@@ -1,7 +1,7 @@
 ---
 title: Scripting System Rework
 description: Removing C# for another language
-date: 2026-05-21 10:19:32+0000
+date: 2025-05-27 21:48:32+0000
 image: cover.png
 categories:
     - Scripting
@@ -30,6 +30,6 @@ A few days ago I started adapting all the Comet Engine C# classes to Angelscript
 
 Here it is a comparasion between the same script in C# and in AngelScript:
 
-![AngelScript](angel.png) ![C#](angel.png)
+![AngelScript](angelcomp.png) ![C#](csharp.png)
 
 Once I will have all the AngelScript scripting integrated, I will take a look to export to Web and Android again. Let's see if AngelScript has been a good choice.
