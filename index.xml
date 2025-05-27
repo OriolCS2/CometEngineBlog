@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/</link><description>Recent content on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 27 May 2025 21:48:32 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/index.xml" rel="self" type="application/rss+xml"/><item><title>Scripting System Rework</title><link>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</link><pubDate>Tue, 27 May 2025 21:48:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/cover.png" alt="Featured image of post Scripting System Rework" />&lt;p>Comet Engine is currently using C# for the scripting system. C# is a really powerful programming language but I have found trouble when trying to export for Web and Android. That is why some weeks ago I started looking for a new scripting language more cross-platform friendly.&lt;/p>
+&lt;p>After some research I gave a try to this three languages:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.lua.org/about.html" target="_blank" rel="noopener"
+>Lua&lt;/a>: It is one of the most known scripting languages and it is really easy to embed to a C++ application using &lt;a class="link" href="https://github.com/ThePhD/sol2" target="_blank" rel="noopener"
+>Sol3&lt;/a>. After making a try to integrate this language I decided to look for another because Lua is not an object oriented language and I would like to find one that it is.
+This is how lua looks like:&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua.png"
+width="513"
+height="471"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_cb475ed85ca4c278.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_2519dedf01b63f9a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="108"
+data-flex-basis="261px"
+>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="http://chaiscript.com/index.html" target="_blank" rel="noopener"
+>Chaiscript&lt;/a>: It is a javascript-like scripting language created to be embeded to C++ applications. I did also some testing using it and I was feeling really comfortable working with it, but after reading more about it I felt that it was not prepared to be exported to Web or Android even if some post said that it was possible. As the main purpose is to change to a cross-platform language I had to give up implementing this one. Chaiscript looks like this:&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai.png"
+width="538"
+height="587"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_f15add2e8aa314a6.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_30fb790aeaed6235.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="91"
+data-flex-basis="219px"
+>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.angelcode.com/angelscript/" target="_blank" rel="noopener"
+>AngelScript&lt;/a>: It is a scripting language really similar to C# and also it could be compared to C++ as well. It is mainly used to be integrated to C/C++ applications. It is a object oriented language and it is compiled in byte code, so this makes this language to be type safety. Also the C++ library used to embed this language works almost the same way I used with C# with mono. This is the most important point because this will allow me to keep everything from my current scripting system and I just have to adapt some new things.&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel.png"
+width="540"
+height="504"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_c3270d8b3be1e467.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_6006d07ca4e207c.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="107"
+data-flex-basis="257px"
+>&lt;/p>
+&lt;p>A few days ago I started adapting all the Comet Engine C# classes to Angelscript and even if the syntaxis is quite the same I think it will take me about 6 months to adapt the 300 C# script files to AngelScript. So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p>
+&lt;p>Here it is a comparasion between the same script in C# and in AngelScript:&lt;/p>
+&lt;p>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp.png"
+width="999"
+height="600"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_a22938ac5864c432.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_b6e6bae3b8364e1f.png 1024w"
+loading="lazy"
+alt="AngelScript"
+class="gallery-image"
+data-flex-grow="166"
+data-flex-basis="399px"
+> &lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp.png"
+width="964"
+height="681"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_969d7f2fadb459f1.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_c973857c1f24e194.png 1024w"
+loading="lazy"
+alt="C#"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+>&lt;/p>
+&lt;p>Once I will have all the AngelScript scripting integrated, I will take a look to export to Web and Android again. Let&amp;rsquo;s see if AngelScript has been a good choice.&lt;/p></description></item><item><title>Comet Engine</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</link><pubDate>Tue, 13 May 2025 18:49:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/cover.png" alt="Featured image of post Comet Engine" />&lt;p>Welcome everyone to my blog about Comet Engine. In this blog I&amp;rsquo;m going to talk about the development and current features of my custom game engine, Comet Engine.&lt;/p>
+&lt;p>First of all, what is Comet Engine? It is a custom game engine made from scratch with C++, SDL3 and OpenGL. It&amp;rsquo;s been 4 years since I started developing it and now it looks like this:
+&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor.png"
+width="1919"
+height="1037"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_a081872faaec4dca.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_763989f0c28d5f54.png 1024w"
+loading="lazy"
+alt="Image 1"
+class="gallery-image"
+data-flex-grow="185"
+data-flex-basis="444px"
+>&lt;/p>
+&lt;p>At this point the main features are:&lt;/p>
+&lt;ul>
+&lt;li>2D Rendering&lt;/li>
+&lt;li>Sprite atlas subsystem&lt;/li>
+&lt;li>Physics&lt;/li>
+&lt;li>2D Lighting&lt;/li>
+&lt;li>2D and 3D Audio&lt;/li>
+&lt;li>Custom Shaders&lt;/li>
+&lt;li>Bunch of in editor customizations&lt;/li>
+&lt;li>Exporting for Windows and Linux&lt;/li>
+&lt;/ul>
+&lt;p>It is also possible to create game scripts using the C# system integrated in Comet, but now I&amp;rsquo;m working on a new system because it&amp;rsquo;s been quite difficult to export the C# system to web or android. So expect a new Comet Engine major version (2.0) breaking the compatibility with C# is comming this year! This topic will have a custom post soon.&lt;/p>
+&lt;p>I attach a presentation trailer that I made 3 years ago in order to start understanding what is Comet and how it works!
+&lt;div class="video-wrapper">
+&lt;iframe loading="lazy"
+src="https://www.youtube.com/embed/zLf-vsr-gkk"
+allowfullscreen
+title="YouTube Video"
+>
+&lt;/iframe>
+&lt;/div>
+&lt;/p>
+&lt;p>Feel free to share comments or questions ;)&lt;/p></description></item><item><title>Archives</title><link>https://OriolCS2.github.io/CometEngineBlog/archives/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/archives/</guid><description/></item><item><title>Links</title><link>https://OriolCS2.github.io/CometEngineBlog/links/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/links/</guid><description>&lt;p>Here there is a collection of the most important links.&lt;/p></description></item><item><title>Search</title><link>https://OriolCS2.github.io/CometEngineBlog/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/search/</guid><description/></item></channel></rss>
