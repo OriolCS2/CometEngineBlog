@@ -1,69 +1,82 @@
-<img align="right" width="150" alt="logo" src="https://user-images.githubusercontent.com/5889006/190859553-5b229b4f-c476-4cbd-928f-890f5265ca4c.png">
+<div align="center">
 
-# Hugo Theme Stack Starter Template
+<img src="assets/img/avatar.png" alt="Comet Engine logo" width="130">
 
-This is a quick start template for [Hugo theme Stack](https://github.com/CaiJimmy/hugo-theme-stack). It uses [Hugo modules](https://gohugo.io/hugo-modules/) feature to load the theme.
+# Comet Engine — Devlog
 
-It comes with a basic theme structure and configuration. GitHub action has been set up to deploy the theme to a public GitHub page automatically. Also, there's a cron job to update the theme automatically everyday.
+**Tracking the development, evolution, and documentation of [Comet Engine](https://www.cometengine.org): a free 2D game engine built from scratch with C++, SDL3, OpenGL and AngelScript.**
 
-## Get started
+<br>
 
-1. Click *Use this template*, and create your repository as `<username>.github.io` on GitHub.
-![Step 1](https://user-images.githubusercontent.com/5889006/156916624-20b2a784-f3a9-4718-aa5f-ce2a436b241f.png)
+[![Official Website](https://img.shields.io/badge/Official_Website-cometengine.org-4B0D7B?style=for-the-badge&logo=googlechrome&logoColor=white)](https://www.cometengine.org)
+[![Read the Blog](https://img.shields.io/badge/Read_the_Blog-Devlog-FF4088?style=for-the-badge&logo=hugo&logoColor=white)](https://oriolcs2.github.io/CometEngineBlog/)
 
-2. Once the repository is created, create a GitHub codespace associated with it.
-![Create codespace](https://user-images.githubusercontent.com/5889006/156916672-43b7b6e9-4ffb-4704-b4ba-d5ca40ffcae7.png)
+[![Trailer](https://img.shields.io/badge/Trailer-Watch-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=zLf-vsr-gkk)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Oriol_Capdevila-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/oriol-capdevila/)
 
-3. And voila! You're ready to go. The codespace has been configured with the latest version of Hugo extended, just run `hugo server` in the terminal and see your new site in action.
+<br>
 
-4. Check `config` folder for the configuration files. You can edit them to suit your needs. Make sure to update the `baseurl` property in `config/_default/config.toml` to your site's URL.
+[![Deploy](https://github.com/OriolCS2/CometEngineBlog/actions/workflows/deploy.yml/badge.svg)](https://github.com/OriolCS2/CometEngineBlog/actions/workflows/deploy.yml)
+[![Update theme](https://github.com/OriolCS2/CometEngineBlog/actions/workflows/update-theme.yml/badge.svg)](https://github.com/OriolCS2/CometEngineBlog/actions/workflows/update-theme.yml)
+![Hugo](https://img.shields.io/badge/Hugo-extended-FF4088?logo=hugo&logoColor=white)
+![Theme](https://img.shields.io/badge/theme-Stack_v3-2a9d8f)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-5. Open Settings -> Pages. Change the build branch from `master` to `gh-pages`.
-![Build](https://github.com/namanh11611/hugo-theme-stack-starter/assets/16586200/12c763cd-bead-4923-b610-8788f388fcb5)
-
-6. Once you're done editing the site, just commit it and push it. GitHub action will deploy the site automatically to GitHub page asociated with the repository.
-![GitHub action](https://user-images.githubusercontent.com/5889006/156916881-90b8bb9b-1925-4e60-9d7a-8026cda729bf.png)
+</div>
 
 ---
 
-In case you don't want to use GitHub codespace, you can also run this template in your local machine. **You need to install Git, Go and Hugo extended locally.**
+## 📖 About this blog
 
-## Update theme manually
+This repository holds the **source of the Comet Engine devlog** — the place where the engine's development is documented in public.
 
-Run:
+Comet Engine is a custom 2D game engine that has been in development since 2020. It's written from scratch in **C++** on top of **SDL3** and **OpenGL**/**Vulkan**, and ships with 2D rendering, a sprite atlas subsystem, physics, 2D lighting, 2D/3D audio, custom shaders, an extensible editor, and exports for Windows, Linux, Web and Android.
 
-```bash
-hugo mod get -u github.com/CaiJimmy/hugo-theme-stack/v3
-hugo mod tidy
-```
+The blog covers the *why* behind the engine, not just the *what*:
 
-> This starter template has been configured with `v3` version of theme. Due to the limitation of Go module, once the `v4` or up version of theme is released, you need to update the theme manually. (Modifying `config/module.toml` file)
+- 🚀 **Release notes and milestones** — what landed, and what it unlocks.
+- 🧩 **Deep dives** — subsystem design and the trade-offs behind each decision (for example, the migration from C# to [AngelScript](https://www.angelcode.com/angelscript/) for better Web and Android support).
+- 📚 **Documentation** — features explained from a user's point of view.
+- 🔬 **Research posts** — evaluating libraries and languages before committing to them.
 
-## Deploy to another static page hostings
+> Posts are open to comments through [giscus](https://giscus.app/) — questions and feedback are always welcome.
 
-If you want to build this site using another static page hosting, you need to make sure they have Go installed in the machine. 
+## 🔗 Useful links
 
-<details>
-  <summary>Vercel</summary>
-  
-You need to overwrite build command to install manually Go:
+<div align="center">
 
-```
-amazon-linux-extras install golang1.11 && hugo --gc --minify
-```
+| | Link | What you'll find there |
+| :---: | :--- | :--- |
+| 🌐 | [**cometengine.org**](https://www.cometengine.org) | Official site: releases, marketplace, CLI, tutorials and documentation. |
+| 📝 | [**Devlog**](https://oriolcs2.github.io/CometEngineBlog/) | This blog, live. |
+| 💾 | [**CometEngine**](https://github.com/OriolCS2/CometEngine) | Engine repository and all published releases. |
+| 🐛 | [**Issue tracker**](https://github.com/OriolCS2/CometEngine/issues) | Report a bug or request a feature. |
+| 📺 | [**Presentation trailer**](https://www.youtube.com/watch?v=zLf-vsr-gkk) | See the engine in action. |
+| 👤 | [**@OriolCS2**](https://github.com/OriolCS2) | Author's GitHub profile. |
+| 💼 | [**LinkedIn**](https://www.linkedin.com/in/oriol-capdevila/) | Get in touch. |
 
-![](https://user-images.githubusercontent.com/5889006/156917172-01e4d418-3469-4ffb-97e4-a905d28b8424.png)
+</div>
 
-If you are using Node.js 20, you need to overwrite the install command to install manually Go:
+## 🛠️ Built with
 
-```
-dnf install -y golang
-```
+<div align="center">
 
-![image](https://github.com/zhi-yi-huang/hugo-theme-stack-starter/assets/83860323/777c1109-dfc8-4893-9db7-1305ec027cf5)
+[![Hugo](https://img.shields.io/badge/Hugo-FF4088?style=for-the-badge&logo=hugo&logoColor=white)](https://gohugo.io/)
+[![Go](https://img.shields.io/badge/Go_Modules-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://gohugo.io/hugo-modules/)
+[![Stack](https://img.shields.io/badge/Theme_Stack-2A9D8F?style=for-the-badge&logo=bookstack&logoColor=white)](https://github.com/CaiJimmy/hugo-theme-stack)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)](https://pages.github.com/)
 
+</div>
 
-Make sure also to specify Hugo version in the environment variable `HUGO_VERSION` (Use the latest version of Hugo extended):
+## 📄 License
 
-![Environment variable](https://user-images.githubusercontent.com/5889006/156917212-afb7c70d-ab85-480f-8288-b15781a462c0.png)
-</details>
+The site scaffolding in this repository is released under the [MIT License](LICENSE), inherited from the [hugo-theme-stack-starter](https://github.com/CaiJimmy/hugo-theme-stack-starter) template.
+
+Blog articles are published under **CC BY-NC-SA 4.0**.
+
+<div align="center">
+<br>
+
+Made with 💜 by [**Oriol Capdevila**](https://github.com/OriolCS2) · [cometengine.org](https://www.cometengine.org)
+
+</div>
