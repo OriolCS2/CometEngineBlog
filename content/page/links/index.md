@@ -1,10 +1,14 @@
 ---
 title: Links
 links:
+  - title: Comet Engine Website
+    description: Official site — releases, marketplace, CLI, tutorials and documentation.
+    website: https://www.cometengine.org
+    image: "website.png"
   - title: CometEngine GitHub Repository
     description: Repository of all the CometEngine releases.
     website: https://github.com/OriolCS2/CometEngine
-    image: "Comet.png"
+    image: "comet-logo.png"
   - title: Personal GitHub
     description: My GitHub profile.
     website: https://github.com/OriolCS2
