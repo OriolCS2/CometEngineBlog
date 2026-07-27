@@ -1,0 +1,116 @@
+---
+title: A Day of Writing Comet Scripts
+description: Not the language — the loop. Fields become widgets, attributes are direction, and the scene survives a recompile
+date: 2027-01-06 18:00:00+0000
+image: cover.png
+categories:
+    - Scripting
+tags:
+    - AngelScript
+    - Editor
+---
+
+This is not a language tutorial. AngelScript looks enough like C# or Java that if you write either, you can read it already.
+
+This is about the *loop* — what it actually feels like to build gameplay in Comet, day to day.
+
+## The script that already does something
+
+Right-click in the Project panel, `Create → Script → CometBehaviour`, name it. You get this:
+
+![The script inspector](script-inspector.png)
+
+```
+using namespace CometEngine;
+
+class Patroller : CometBehaviour
+{
+    // Called before first frame
+    void Start()
+    {
+    }
+
+    // Called Every Frame
+    void Update()
+    {
+    }
+}
+```
+
+Twelve lines, and it is already a real Behaviour. It appears in the Add Behaviour menu next to Sprite Renderer and Rigid Body. Attach it to an entity and its `Start` and `Update` are called with exactly the same lifecycle guarantees the built-in behaviours get.
+
+The Inspector also shows the script's assembly information and a **Code Generation** dropdown, which decides what kind of thing this script is — a Behaviour, an editor script, a project setting. From 2.6 that field is auto-detected on import, which removed a step people forgot constantly.
+
+## Fields become widgets
+
+This is the part that makes scripting in an engine different from programming generally.
+
+![Fields](fields.png)
+
+Declare a field, and the Inspector draws it. A `float` gets a draggable number. A `Vector2` gets an X/Y pair. A `Color` gets a colour picker with an eyedropper. A `Sprite`, `Texture`, `Entity` or `Behaviour` gets a drop target you can drag things onto. An `array<T>` gets a reorderable list with add and remove.
+
+You write no inspector code. Ever. The script says what it needs and the editor works out how to present it.
+
+The details that make this pleasant rather than merely functional:
+
+**Arrays accept multi-drop.** Select six entities in the Hierarchy, drag them onto an `array<Entity>` field, and the array resizes to fit all six. Before 2.3 that was six separate drags into six separate slots.
+
+**`Dictionary<string, T>` is editable** — add entries with a type picker, rename keys by right-clicking, remove them. Value widgets are chosen by type automatically.
+
+**Variable names get formatted.** `mMoveSpeed` displays as "Move Speed", not "M Move Speed". That specific fix is in the 2.2 changelog and it is exactly the kind of thing that is invisible when right and irritating forever when wrong.
+
+## Attributes are direction, not decoration
+
+![Attributes](attributes.png)
+
+Once a script has fifteen fields, a flat list stops being usable. Attributes are how the script tells the editor how to organise itself.
+
+`[TreeNode("Movement")]` groups every field sharing that name under one collapsible fold. `[Tab("Combat")]` groups consecutive fields into tabs. `[DictionaryType("...")]` sets the default value type offered in a Dictionary field's "Add Item".
+
+And `[CustomInspector]` — on a class deriving from `EditorBehaviour` — replaces the inspector for a type entirely, so you can draw whatever you want with the `CometEditor::GUI` API. That is a February post.
+
+The philosophy: the script describes intent, the editor decides presentation. You never write drawing code just to make a field look reasonable.
+
+## The callbacks that matter
+
+`Start` and `Update` are the obvious ones. Three others earn their place.
+
+**`Awake`** runs on every behaviour in the scene before any `Start` does. That ordering is the guarantee that makes `Start` safe for finding other objects.
+
+**`OnEdited`** is editor-only and runs whenever inspector properties change — including after undo/redo, when the behaviour is loaded, and when it is pasted. It is how you keep derived state correct at edit time. Change a `radius` field and regenerate the preview immediately, rather than waiting for play mode.
+
+**`OnDrawGizmos`** draws into the scene view. Anything invisible — a patrol path, a trigger volume, a spawn point — should have one, and it takes about three lines.
+
+## The loop
+
+![The loop](loop.png)
+
+Save the file. The external file watcher notices. The whole script project recompiles, in well under a second.
+
+Errors go to the Console with the script path, function name and line number, and **double-clicking one opens that file at that line**. Error messages became navigation rather than something to read and then go hunting for.
+
+Then the important part: **your scene survives.** All those values you set by hand on twenty entities are still there after the recompile. That works because every script has a unique identifier and serialized values are matched back to it — and there was a real bug here, fixed in 2.5, where two scripts sharing an identifier would eat each other's values on recompile.
+
+And in play mode you can keep editing fields while the game runs. Tweak a jump height mid-jump. Exit play mode and everything restores to what it was before you pressed play, because [that is what play mode does]({{< ref "/post/LoadingAWorld" >}}).
+
+## What the compiler will not let you do
+
+Three things from the [migration]({{< ref "/post/GoodbyeCSharp1" >}}) that shape everyday code.
+
+**No generics of your own.** `array<T>`, `list<T>`, `stack<T>`, `queue<T>`, `set<T>` and `Dictionary` exist because the engine registered them. You cannot write your own generic container.
+
+**No reflection.** You cannot enumerate a type's fields at runtime. Anything that feels like it needs reflection is usually solved by an attribute plus editor tooling.
+
+**Reference counting, not garbage collection.** Cycles leak. In practice the engine's object model handles the common cases, but a script holding a handle to something that holds a handle back is worth a moment's thought.
+
+## The habit worth forming
+
+Use `IsValid(obj)` rather than `obj !is null`.
+
+It looks like pedantry. It is not — during teardown a plain null check genuinely returns the wrong answer, because an object can be destroyed but not yet gone. `IsValid`, `IsNull` and `Is` exist for exactly that gap, and the bugs from ignoring them are the intermittent kind that only appear when something is being destroyed on the same frame it is being used.
+
+---
+
+Next Wednesday: the thing I said I had to build because nobody else was going to. Comet has a full code editor inside it — syntax highlighting, autocomplete that understands your project, a command palette, find in project, and a markdown preview. Part one of two.
+
+*Comments and questions welcome ;)*
