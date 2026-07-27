@@ -39,8 +39,6 @@ class Patroller : CometBehaviour
 
 Twelve lines, and it is already a real Behaviour. It appears in the Add Behaviour menu next to Sprite Renderer and Rigid Body. Attach it to an entity and its `Start` and `Update` are called with exactly the same lifecycle guarantees the built-in behaviours get.
 
-The Inspector also shows the script's assembly information and a **Code Generation** dropdown, which decides what kind of thing this script is — a Behaviour, an editor script, a project setting. From 2.6 that field is auto-detected on import, which removed a step people forgot constantly.
-
 ## Fields become widgets
 
 This is the part that makes scripting in an engine different from programming generally.
@@ -89,8 +87,6 @@ Save the file. The external file watcher notices. The whole script project recom
 
 Errors go to the Console with the script path, function name and line number, and **double-clicking one opens that file at that line**. Error messages became navigation rather than something to read and then go hunting for.
 
-Then the important part: **your scene survives.** All those values you set by hand on twenty entities are still there after the recompile. That works because every script has a unique identifier and serialized values are matched back to it — and there was a real bug here, fixed in 2.5, where two scripts sharing an identifier would eat each other's values on recompile.
-
 And in play mode you can keep editing fields while the game runs. Tweak a jump height mid-jump. Exit play mode and everything restores to what it was before you pressed play, because [that is what play mode does]({{< ref "/post/LoadingAWorld" >}}).
 
 ## What the compiler will not let you do
@@ -100,8 +96,6 @@ Three things from the [migration]({{< ref "/post/GoodbyeCSharp1" >}}) that shape
 **No generics of your own.** `array<T>`, `list<T>`, `stack<T>`, `queue<T>`, `set<T>` and `Dictionary` exist because the engine registered them. You cannot write your own generic container.
 
 **No reflection.** You cannot enumerate a type's fields at runtime. Anything that feels like it needs reflection is usually solved by an attribute plus editor tooling.
-
-**Reference counting, not garbage collection.** Cycles leak. In practice the engine's object model handles the common cases, but a script holding a handle to something that holds a handle back is worth a moment's thought.
 
 ## The habit worth forming
 

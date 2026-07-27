@@ -37,11 +37,9 @@ The effect on how I work is disproportionate. **Bad names survive because renami
 
 ![The debugger](debugger.png)
 
-2.7 added breakpoints and debugging for AngelScript in the native editor. Before that, debugging a Comet script was print statements, and I want to be clear about how bad that was: it is not just slow, it changes what you investigate. With print debugging you only ever check things you already suspected. With a debugger you look at everything at once and notice the thing you were not suspecting.
+2.7 added breakpoints and debugging for AngelScript in the native editor.
 
 Click the gutter, get a breakpoint. The game halts on that line. From there: step over, step into, step out, look at the call stack, inspect locals and members, hover a variable while paused to see its value.
-
-Two related fixes worth mentioning because they are about *usability* of the debugger rather than the debugger itself. If a script crashes inside an internal engine script, the editor now focuses the last **user** call site rather than dropping you into engine internals you did not write (2.7.1). And a script crashing during an `OnDrawGizmos` call used to take the whole editor down — which was particularly cruel, since gizmo code runs constantly while you are just moving around the scene (2.7.2).
 
 ## Debugging a build
 

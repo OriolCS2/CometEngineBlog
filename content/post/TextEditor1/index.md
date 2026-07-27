@@ -24,8 +24,6 @@ But three things pushed me into building one anyway.
 
 **Nobody was going to write an AngelScript language server.** Modern editor intelligence — autocomplete, go-to-definition, find references — comes from language servers, and language servers exist for languages with large communities. AngelScript embedded in a specific engine, with that engine's specific API surface and its generated bindings, is never going to get one. The editor that understands Comet scripts has to be written by whoever wrote Comet.
 
-**External editors do not know your project.** VS Code sees `.as` files. It does not know that `Player` is an entity in the currently open scene, that this script is attached to four things, or what `Assets/Textures/Enemies/orc` resolves to. An editor inside the engine does.
-
 **Alt-tab costs more than it looks.** Not the seconds. The context. Going out to another window to change one line and coming back is a break in attention, thirty times an hour.
 
 ## What is in it
@@ -34,7 +32,7 @@ But three things pushed me into building one anyway.
 
 **Syntax highlighting** for AngelScript, HLSL, JSON, XML and Markdown — and from 2.8, Markdown files render a live preview behind a button in the top right, which is how I read the engine's own docs without leaving the editor.
 
-**Autocomplete that knows your project.** Not word completion — it knows your classes, your methods, their parameters, and the whole engine API. It knows which `using namespace` directives are in scope, which is the kind of detail that makes it feel correct or broken with nothing in between. There is a fix in 2.7.1 for exactly that: accepting a callback suggestion like `OnCollisionEnter` was inserting a `CometEngine::` prefix on the parameter even when the file already had `using namespace CometEngine`. Small, and the difference between trusting completions and checking every one.
+**Autocomplete that knows your project.** Not word completion — it knows your classes, your methods, their parameters, and the whole engine API. It knows which `using namespace` directives are in scope, which is the kind of detail that makes it feel correct or broken with nothing in between.
 
 **A command palette** for jumping to files and running actions without leaving the keyboard.
 
@@ -58,15 +56,13 @@ The editor is a panel, so it docks like any other. But writing code inside a gam
 
 So there is a **Code Workspace**: a layout that hands most of the window to the editor. Toggle in, write, toggle out.
 
-Better still, there is a preference to make the text editor **always live in its own OS window**. That is how I use it — engine on one monitor, code on the other, both fullscreen, no alt-tab because they are genuinely two windows. And a companion preference, `Close Editor When Closing Window`, added in 2.7.2, so shutting the code window shuts the engine rather than leaving an invisible process running.
+Better still, there is a preference to make the text editor **always live in its own OS window**. That is how I use it — engine on one monitor, code on the other, both fullscreen, no alt-tab because they are genuinely two windows.
 
 ## The parts that were harder than expected
 
 **Highlighting is easy; understanding is not.** Colouring keywords is a lexer and an afternoon. Knowing that `player` on line 40 is a local of type `Entity` declared on line 12 inside a method whose class is in a namespace — that is a symbol table, scope tracking and incremental re-parsing on every keystroke.
 
-The bug list tells the story better than I can. Local variables not appearing in autocomplete when the method had more than one parameter. Member variables coloured wrongly when their class was inside a namespace. Classes declared `mixin` not being recognised as classes. Autocomplete failing when calling a method on a parent class. Every one of those is a small hole in the symbol model, and each was reported as "autocomplete is broken sometimes".
-
-**Text editing is a field of its own.** Double-clicking a word inside quotes selected the quotes too. Find-in-project did not pick up the word under the cursor if that word was inside a string. Tooltips did not disappear when you started typing. Tooltips survived switching to a different file. None of these are hard; there are just far more of them than you expect, and each one is individually annoying enough to notice.
+The bug list tells the story better than I can. Local variables not appearing in autocomplete when the method had more than one parameter. Member variables coloured wrongly when their class was inside a namespace. Classes declared `mixin` not being recognised as classes. Autocomplete failing when calling a method on a parent class.
 
 **Fonts matter.** 2.7.1's entire "Changed" section is one line: the text editor font was changed to a more readable one. That was a real complaint, from me, about my own editor, after a week of using it properly.
 
@@ -74,7 +70,7 @@ The bug list tells the story better than I can. Local variables not appearing in
 
 For the engine, unambiguously yes — but not for the reason I expected.
 
-I built it for convenience. What it actually bought was **the ability to add tooling that understands Comet specifically**. Once the editor has a symbol model of your project, Find All References becomes possible. Rename Symbol becomes possible. Breakpoints become possible. None of those could ever have come from an external editor.
+I built it for convenience. What it actually bought was **the ability to add tooling that understands Comet specifically**. Once the editor has a symbol model of your project, Find All References becomes possible. Rename Symbol becomes possible. Breakpoints become possible.
 
 That is next week.
 

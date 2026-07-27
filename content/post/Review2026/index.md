@@ -91,8 +91,6 @@ Roughly, in order of confidence:
 
 **The in-editor AI assistant.** The MCP server was built with this in mind — the tool layer is deliberately independent of the protocol, so an assistant panel inside the editor drives the same tools an external client does. That is the piece I am most curious about.
 
-And this blog continues. Every Wednesday, all through 2027, ending in July with a proper look back at what will by then be seven years of this project.
-
 Thank you to everyone who has been reading. Comments on these posts have already changed things in the engine, which is more than I expected when I started writing again.
 
 See you in January.
