@@ -10,15 +10,15 @@ tags:
     - Roadmap
 ---
 
-Last Wednesday of the year. Time to be honest about it.
+Last Wednesday of the year, so it is time to be honest about it.
 
-![The year](timeline.png)
+![The year, release by release](timeline.png)
 
 ## What shipped
 
 Nine releases: 2.0 in April, then 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 and 2.8 across the following four months. That is a faster cadence than I have ever managed, and it happened for a specific reason I will come back to.
 
-![The five that mattered](biggest.png)
+![The five releases that mattered most](biggest.png)
 
 **2.0 removed C#.** Nine months of work, 300 script files, and a hard break that made every existing project incompatible. In exchange, Comet gained the two platforms it could not otherwise have had. Everything else this year sits on top of that.
 
@@ -30,9 +30,9 @@ Nine releases: 2.0 in April, then 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 and 2.8 acro
 
 **2.7 milliseconds for 100,000 particles**, eight property modules enabled, release build.
 
-Not because the number is impressive in isolation — plenty of engines do more — but because of what it replaced. The old system fell over around eight thousand particles, and for a long time I assumed that was roughly where a CPU particle system lands. It was not a CPU limit. It was a data layout mistake I had made years earlier and never questioned.
+It is not that the number is impressive on its own, plenty of engines do more. It is what it replaced. The old system fell over at around eight thousand particles, and for a long time I assumed that was roughly where a CPU particle system lands. It was not a CPU limit at all. It was a data layout mistake I had made years earlier and never questioned.
 
-That is the most useful lesson of the year: **some slow things are slow because of a decision, not because of physics.** The fix was not a clever optimisation, it was noticing the decision.
+That is the most useful thing I learned this year. Some slow things are slow because of a decision I took, not because of physics, and the fix was not a clever optimisation, it was noticing the decision.
 
 ## The worst bug
 
@@ -40,19 +40,19 @@ A joint that connected a physics body to itself.
 
 It arrived through a specific InstanciableEntity override configuration, corrupted the Box2D world, and then crashed several frames later in a completely unrelated place. Every stack trace pointed at innocent code. I spent the better part of a week convinced the physics integration was fundamentally broken.
 
-Runner-up: the InstanciableEntity save that wrote directly over the original file, so an interrupted save destroyed the asset. That one is worse in consequence and much less interesting to find, because the moment it happened to me the cause was obvious. It now writes to a temporary file and atomically replaces the original, which is a two-line change I should have made years ago.
+The runner-up is the InstanciableEntity save that wrote directly over the original file, so an interrupted save destroyed the asset. That one is worse in consequence and much less interesting to find, because the moment it happened to me the cause was obvious. It now writes to a temporary file and atomically replaces the original, which is a two-line change I should have made years ago.
 
 ## The best day
 
 The evening the AngelScript layer compiled clean for the first time.
 
-I described this back in [August]({{< ref "/post/GoodbyeCSharp1" >}}): five months of a console that was solid red, hundreds of errors, no way to run anything because nothing runs until all of it compiles. Then one evening I fixed what I assumed was another of several hundred remaining errors and the console printed nothing at all.
+I described this back in [August]({{< ref "/post/GoodbyeCSharp1" >}}): five months of a console that was solid red, hundreds of errors, and no way to run anything because nothing runs until all of it compiles. Then one evening I fixed what I assumed was another of several hundred remaining errors, and the console printed nothing at all.
 
 I genuinely thought it had crashed.
 
 ## Some numbers
 
-![The numbers](numbers.png)
+![The numbers for 2026](numbers.png)
 
 - **9** releases
 - **~7,000** commits since February 2020
@@ -69,13 +69,13 @@ I genuinely thought it had crashed.
 
 **I stopped writing.** This blog went quiet for fourteen months while I built. That felt productive and I now think it was a mistake, for a reason I did not expect.
 
-## The thing about writing
+## About writing the posts
 
-Since restarting this blog in July I have written twenty-two posts. Every single one of them found something.
+Since restarting this blog in July I have written twenty-two posts, and every one of them found something.
 
-The lighting post found that point light intensity behaves inconsistently between blend modes. The frame post made me re-examine batch breaking. Explaining the InstanciableEntity override rules out loud made me notice a case the depth comparison handles by accident rather than by design.
+The lighting post found that point light intensity behaves inconsistently between blend modes. The frame post made me re-examine batch breaking. Explaining the InstanciableEntity override rules out loud made me notice a case that the depth comparison handles by accident rather than by design.
 
-I do not think this is a coincidence, and I do not think it is about writing specifically. It is that explaining a system to someone who does not already know it forces you to state what it *should* do, and then you go and check, and sometimes it does not.
+I do not think this is a coincidence, and I do not think it is about writing in particular. Explaining a system to someone who does not already know it forces you to say what it is supposed to do, and then you go and check, and sometimes it does not do that.
 
 For a solo project with no code review, that turns out to be the most reliable review process I have.
 
@@ -89,7 +89,7 @@ Roughly, in order of confidence:
 
 **Documentation.** Genuinely the weakest part of the project. This blog helps, but a blog is not reference documentation.
 
-**The in-editor AI assistant.** The MCP server was built with this in mind — the tool layer is deliberately independent of the protocol, so an assistant panel inside the editor drives the same tools an external client does. That is the piece I am most curious about.
+**The in-editor AI assistant.** The MCP server was built with this in mind. The tool layer is deliberately independent of the protocol, so an assistant panel inside the editor drives the same tools an external client does. That is the piece I am most curious about.
 
 Thank you to everyone who has been reading. Comments on these posts have already changed things in the engine, which is more than I expected when I started writing again.
 
