@@ -1,6 +1,6 @@
----
+﻿---
 title: Physics
-description: Box2D bodies, colliders, joints and the collision matrix.
+description: "Box2D bodies, colliders, joints and the collision matrix."
 image:
 
 # Badge style

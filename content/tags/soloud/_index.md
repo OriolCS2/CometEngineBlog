@@ -1,6 +1,6 @@
----
+﻿---
 title: SoLoud
-description: The audio backend Comet uses.
+description: "The audio backend Comet uses."
 image:
 
 # Badge style

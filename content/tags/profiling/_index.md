@@ -1,6 +1,6 @@
----
+﻿---
 title: Profiling
-description: Finding out where the frame went.
+description: "Finding out where the frame went."
 image:
 
 # Badge style

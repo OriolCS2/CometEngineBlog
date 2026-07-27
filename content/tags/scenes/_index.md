@@ -1,6 +1,6 @@
----
+﻿---
 title: Scenes
-description: Scene assets, load modes and the business of putting a world back together.
+description: "Scene assets, load modes and the business of putting a world back together."
 image:
 
 # Badge style

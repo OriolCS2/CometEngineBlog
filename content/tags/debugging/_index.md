@@ -1,6 +1,6 @@
----
+﻿---
 title: Debugging
-description: Breakpoints, stepping, logs and hunting bugs that only happen in builds.
+description: "Breakpoints, stepping, logs and hunting bugs that only happen in builds."
 image:
 
 # Badge style

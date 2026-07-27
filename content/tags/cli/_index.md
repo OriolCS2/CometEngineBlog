@@ -1,6 +1,6 @@
----
+﻿---
 title: CLI
-description: Driving Comet from the command line and from CI.
+description: "Driving Comet from the command line and from CI."
 image:
 
 # Badge style

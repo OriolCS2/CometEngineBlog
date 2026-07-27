@@ -1,6 +1,6 @@
----
+﻿---
 title: Input
-description: Actions, bindings, controllers, touch and pinch.
+description: "Actions, bindings, controllers, touch and pinch."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: InstanciableEntities
-description: Comet’s reusable entity assets — nesting, variants and overrides.
+description: "Comet’s reusable entity assets — nesting, variants and overrides."
 image:
 
 # Badge style

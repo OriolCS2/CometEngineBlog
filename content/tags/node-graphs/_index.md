@@ -1,6 +1,6 @@
----
+﻿---
 title: Node Graphs
-description: The generic GraphNode framework for building your own visual tools.
+description: "The generic GraphNode framework for building your own visual tools."
 image:
 
 # Badge style

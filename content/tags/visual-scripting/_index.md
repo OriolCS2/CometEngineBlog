@@ -1,6 +1,6 @@
----
+﻿---
 title: Visual Scripting
-description: Node graphs that compile straight to AngelScript bytecode.
+description: "Node graphs that compile straight to AngelScript bytecode."
 image:
 
 # Badge style

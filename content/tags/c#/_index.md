@@ -1,6 +1,6 @@
----
+﻿---
 title: C#
-description: The scripting language Comet used before 2.0, and why it had to go.
+description: "The scripting language Comet used before 2.0, and why it had to go."
 image:
 
 # Badge style

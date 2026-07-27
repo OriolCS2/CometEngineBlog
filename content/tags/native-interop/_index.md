@@ -1,6 +1,6 @@
----
+﻿---
 title: Native Interop
-description: Calling C and C++ libraries from AngelScript.
+description: "Calling C and C++ libraries from AngelScript."
 image:
 
 # Badge style

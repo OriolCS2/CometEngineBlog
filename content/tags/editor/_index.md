@@ -1,6 +1,6 @@
----
+﻿---
 title: Editor
-description: Insights and updates about the built-in editor tools for designing, placing assets, and testing games.
+description: "Insights and updates about the built-in editor tools for designing, placing assets, and testing games."
 image:
 
 # Badge style

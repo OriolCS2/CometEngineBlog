@@ -1,6 +1,6 @@
----
+﻿---
 title: Architecture
-description: How the engine is put together, and why it is put together that way.
+description: "How the engine is put together, and why it is put together that way."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Platforms
-description: Shipping Comet games to the web, to Android and to desktop, and the build system behind it.
+description: "Shipping Comet games to the web, to Android and to desktop, and the build system behind it."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: C++
-description: Posts related to C++ code, performance techniques, and how CometEngine is built using it.
+description: "Posts related to C++ code, performance techniques, and how CometEngine is built using it."
 image:
 
 # Badge style

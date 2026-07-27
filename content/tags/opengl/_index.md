@@ -1,6 +1,6 @@
----
+﻿---
 title: OpenGL
-description: Covers rendering topics, shaders, and how CometEngine uses OpenGL.
+description: "Covers rendering topics, shaders, and how CometEngine uses OpenGL."
 image:
 
 # Badge style

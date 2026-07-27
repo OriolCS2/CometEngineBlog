@@ -1,6 +1,6 @@
----
+﻿---
 title: Build System
-description: SCons, modules and how the engine assembles itself.
+description: "SCons, modules and how the engine assembles itself."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: SpriteAtlas
-description: Packing sprites onto shared pages so they can batch into one draw call.
+description: "Packing sprites onto shared pages so they can batch into one draw call."
 image:
 
 # Badge style

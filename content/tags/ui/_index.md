@@ -1,6 +1,6 @@
----
+﻿---
 title: UI
-description: Canvases, rect transforms, widgets and everything the player clicks.
+description: "Canvases, rect transforms, widgets and everything the player clicks."
 image:
 
 # Badge style

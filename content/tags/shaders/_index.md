@@ -1,6 +1,6 @@
----
+﻿---
 title: Shaders
-description: Writing shaders for Comet, in HLSL and in graphs.
+description: "Writing shaders for Comet, in HLSL and in graphs."
 image:
 
 # Badge style

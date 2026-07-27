@@ -1,6 +1,6 @@
----
+﻿---
 title: Content
-description: Content groups, addressable assets and the memory budget.
+description: "Content groups, addressable assets and the memory budget."
 image:
 
 # Badge style

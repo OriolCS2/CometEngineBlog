@@ -1,6 +1,6 @@
----
+﻿---
 title: Marketplace
-description: Publishing and installing packages from the Comet registry.
+description: "Publishing and installing packages from the Comet registry."
 image:
 
 # Badge style
