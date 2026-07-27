@@ -15,6 +15,10 @@ tags:
 
 The thing that makes it worth a post is what happens when you press play.
 
+![A visual script graph](graph.png)
+
+That is a whole behaviour: spin this entity by `spinSpeed` degrees a second, and log a line when the player presses E. The `spinSpeed` variable on the left is marked **Exposed**, so it shows up in the Inspector like a field on a written script — because that is exactly what it becomes.
+
 ## The claim
 
 ![The claim](claim.png)
@@ -22,6 +26,10 @@ The thing that makes it worth a post is what happens when you press play.
 Most visual scripting systems work like this: the graph is data, and a runtime walks that data at execution time, interpreting nodes one at a time. It works, and it is slower than written code — usually by enough that "use visual scripting for prototyping, then rewrite it properly" becomes standard advice.
 
 Comet's graphs are not data. **They are source.** A visual script compiles into AngelScript bytecode — the same bytecode a hand-written `.as` file produces — and the running game cannot tell the difference, because there is no difference.
+
+![The generated AngelScript](generated.png)
+
+That is the file the graph above produced — readable, ordinary AngelScript, `[Serialize]` attribute and all. The header is not a joke: the file is regenerated on every save, so the graph is the source of truth and the text is a build artefact you can read.
 
 There is no graph runtime. Nothing walks nodes. At play time, the graph does not exist; only the bytecode does.
 

@@ -27,6 +27,10 @@ The common mistake is making level geometry dynamic "just in case". A static bod
 
 Shapes attach to bodies. Box and circle are fastest and cover most things. **Capsule** is the character shape — a box catches on tile corners in a way a capsule does not, and that alone fixes a class of platformer bug. Edge and polygon are for arbitrary outlines and cost more. And a [Tilemap Collider]({{< ref "/post/Tilemaps1" >}}) turns a whole painted layer into merged runs.
 
+![Colliders drawn over a level](colliders.png)
+
+That is a Tilemap Collider on the buildings layer, with **Draw All Colliders** on so the scene view shows every collider rather than only the selected entity's. The blue outline is one merged shape per building — not one box per painted cell.
+
 2.2 fixed capsule editing, where dragging one handle moved all of them — the sort of thing that makes an editor feel broken even when the runtime is fine.
 
 ## The collision matrix

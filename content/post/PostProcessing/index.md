@@ -27,6 +27,10 @@ In Shader Graph, this is exposed as two nodes: **Scene Color**, which is that te
 
 Post-processing in Comet is configured through a **Post-Process Profile** asset — an ordered list of passes.
 
+![A profile in the inspector](profile.png)
+
+Every effect is a checkbox and a fold. Nothing is on until you turn it on, and **Custom Passes** at the bottom is where a shader you wrote yourself joins the same stack as the built-in ones.
+
 ![The stack](stack.png)
 
 Order matters more than people expect. A vignette applied before colour grading gets graded along with everything else, so your carefully warmed shadows now include an artificial dark ring you did not intend to warm. Applied after, it sits cleanly on top. Neither is wrong; they produce visibly different images, and you have to decide.

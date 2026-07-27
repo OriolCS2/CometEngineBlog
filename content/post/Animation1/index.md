@@ -24,6 +24,10 @@ That turns the animation system into a general-purpose "change these values over
 
 ## Recording
 
+![A sprite animation in the timeline](timeline-real.png)
+
+That is a seven-frame run cycle. One property row — `Entity.Sprite Renderer.Sprite` — with a keyframe every ten frames, and the track draws the actual sprite at each key so you can read the cycle without playing it.
+
 ![The timeline](timeline.png)
 
 Arm **Record** and every change you make writes a keyframe at the current frame. Move the entity, get a position key. Change a colour, get a colour key.

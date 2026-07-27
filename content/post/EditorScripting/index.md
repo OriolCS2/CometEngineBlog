@@ -19,7 +19,13 @@ Comet's answer is that the editor is scriptable in **the same language as your g
 
 ## A window in about thirty lines
 
+![An editor window script](window-code.png)
+
 Inherit from `EditorWindow`, implement its draw callback, and use the `CometEditor::GUI` API — buttons, fields, trees, tables, tab bars, the lot. Add `[MainMenuItemWindow]` and it appears in the menu bar. It docks like any built-in panel, because as far as the editor is concerned it *is* one.
+
+![The same script open in the editor](window-script.png)
+
+That is the Code workspace, and it is worth pointing at the attribute on the class: `[MainMenuItemWindow]` is the whole registration. There is no manifest, no install step and no restart — save the file, and the entry is in the menu bar.
 
 The `GUI` namespace has grown a lot in the last few releases: `Selectable` with a custom size, tooltips with flags, `SeparatorText`, clipboard access, `CalcTextSize`, `SetNextItemFullWidth`, and a `ListClipper` for when your window lists ten thousand things and you would rather it did not draw all of them.
 

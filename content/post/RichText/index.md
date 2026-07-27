@@ -39,6 +39,10 @@ So there is **BBCode**, enabled per behaviour with the `BBCode Enabled` property
 
 ![The tags](tags.png)
 
+![BBCode running in the engine](bbcode-live.png)
+
+That is one `Text` behaviour per line with `BBCode Enabled` ticked, running in the editor. The wave and shake are moving in the engine; a screenshot can only catch them mid-stride.
+
 The static tags are what you expect: `[b]`, `[i]`, `[u]`, `[s]`, `[color=#ff0000]` (hex or named colours), `[size=50]`, `[mult_size=2]`.
 
 `[size_expand]` and `[mult_size_expand]` do the same as their counterparts but also grow the line height to fit, which is the difference between a big word sitting comfortably and a big word overlapping the line above it.

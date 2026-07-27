@@ -22,6 +22,10 @@ Tiles that think do that for you.
 
 The general case. A **RuleTile** holds a list of rules; each rule says "if the neighbours look like *this*, use *that* sprite". Rules are evaluated top to bottom and **first match wins**, which makes the ordering meaningful: put your specific cases above your general ones.
 
+![A RuleTile's rules in the inspector](ruletile.png)
+
+Each rule is that little 3×3 grid. Green means "must be the same tile", red means "must not be", grey means "do not care", and the sprite underneath is what you get when the pattern holds. This one has forty-seven of them.
+
 You paint one tile type. The tile works out which sprite to show from what is around it, and it re-evaluates when the neighbourhood changes — so drawing a hill just produces a correct hill.
 
 2.5 added **RuleOverrideTile**, which takes an existing RuleTile's rules and swaps only the sprites.
@@ -42,13 +46,23 @@ Look at a cell's eight neighbours. Each one either is or is not the same tile. E
 
 But most of those are visually identical. Whether a diagonal neighbour exists only matters if *both* of its adjacent orthogonal neighbours also exist — otherwise that corner is already an edge and the diagonal changes nothing. Collapse all the duplicates and 256 possibilities become **47 distinct cases**.
 
+![An AutoTile and its sheet](autotile.png)
+
 Hence the 47-tile layout. Draw 47 sprites and every possible terrain shape resolves itself. Comet also supports the simpler **2x2 / 16-tile** layout, which only considers four neighbours — fewer sprites to draw, blockier results, and completely fine for a lot of art styles.
+
+An AutoTile is one asset pointing at one sheet. You pick the mask type, drop the texture in, and the yellow grid above is the slicing it derived — no per-rule authoring at all.
 
 ## Random that stays put
 
 ![Seeded random](seeded.png)
 
 **RandomTile** picks a random sprite from a set. **WeightedTile** does the same with per-sprite probabilities, so your rare cracked-stone variant shows up one time in twenty instead of one in five.
+
+![RandomTile and WeightedRandomTile](random.png)
+
+![Weights per sprite](weighted.png)
+
+The only difference between the two is that `Weight` field. Everything else — including the part below that matters — is shared.
 
 The important design decision is in how the randomness works. A naive implementation calls a random number generator when the tile is drawn — and then the ground shimmers as sprites change every frame, or the level looks different every time you load it.
 
@@ -59,6 +73,10 @@ That is my favourite kind of solution: it makes the feature work correctly and m
 ## PipelineTile
 
 **PipelineTile** checks only the four orthogonal neighbours and picks the sprite that connects correctly. Pipes, fences, wires, rope bridges, roads — anything where diagonals are meaningless and you need exactly the sixteen connection cases.
+
+![A PipelineTile's five cases](pipeline.png)
+
+Five slots, named for how many neighbours connect: none, one, two, three, four. That is the whole asset.
 
 Simpler than a full autotile, and the right tool when the thing you are drawing is genuinely a network rather than a surface.
 

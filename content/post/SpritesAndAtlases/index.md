@@ -22,6 +22,10 @@ Every texture in the Project panel has an arrow that expands it into the sprites
 
 ## Slicing
 
+![The Sprite Editor](sprite-editor.png)
+
+That is a 61-frame character sheet with its slices drawn over it. Every rectangle is a sprite the rest of the engine can reference by id.
+
 ![Slicing](slicing.png)
 
 Three ways in. **Grid slice** by cell size, with offset and padding for sheets that have margins. **Cell slice** by column and row count, for when you know the layout rather than the pixel size. Or drag rects **by hand** for irregular sheets.
@@ -67,6 +71,10 @@ Here is where this connects to [how a frame gets drawn]({{< ref "/post/HowCometD
 The batcher merges consecutive renderers that share a material **and a texture**. Twenty sprites from twenty separate PNGs is twenty texture binds and twenty draw calls, and nothing can be merged. Pack those twenty onto one atlas page and they all share a texture, so the batcher collapses them into one.
 
 That is the whole reason atlases exist. Not disk size — draw calls.
+
+![A packed atlas page](atlas-preview.png)
+
+**Pack Preview** runs the packer and shows you the page it produced, which is the only honest way to check that everything fit and that the max size you picked was big enough. That one is 1024×1024 holding six source textures.
 
 A `SpriteAtlas` asset takes a set of sprites or folders and packs them into pages. From 2.8 it exposes `pageCount` and `isReadable`, and sprites expose `isPacked` and `spriteAtlas`, so a script can ask where a sprite actually lives.
 

@@ -16,6 +16,8 @@ Almost all of this arrived in 2.0, which added the entire interactable and layou
 
 ![The widget set](widgets.png)
 
+![Widgets running in the game view](widgets-live.png)
+
 ## The display layer
 
 **Image** draws a sprite, with the [three render modes]({{< ref "/post/SpritesAndAtlases" >}}) — simple, sliced and tiled. 2.0 gave it a white quad by default, so a new Image is visible instead of invisible, which sounds trivial and saves a confused minute every time.
@@ -67,6 +69,10 @@ The drag and pointer interfaces (`IPointerClickAction`, `IBeginDragAction` and t
 ## Controller navigation
 
 Selectables form a navigation graph, and a **Show Navigation** toggle draws it in the scene view so you can see where focus will go. 2.0 made that toggle persist across editor restarts, because it is a thing you leave on while working on a menu.
+
+![The navigation graph in the scene view](navigation.png)
+
+Every yellow arrow is a direction a gamepad can travel. Reading that picture is much faster than pressing Down eleven times to find out where focus lands.
 
 Getting this right is most of what makes a game feel finished on a gamepad, and it is almost always left until last. The default auto-navigation is usually right; the exceptions are worth fixing explicitly rather than hoping.
 

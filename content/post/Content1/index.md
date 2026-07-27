@@ -37,6 +37,10 @@ A **content group** is a label you assign to a file or a folder, and it is indep
 
 Now "the boss fight's assets" is a group, and it can contain files from six different folders that are organised however makes sense to a human.
 
+![The Content page of Project Settings](settings-page.png)
+
+The Content page is where you see a group as a group: its delivery mode, everything addressed into it, and what each entry costs. The **Strip preview** at the bottom lists assets in no group at all, which is how you find the ones that would have silently shipped.
+
 ## Addressing
 
 Every grouped asset has an **address** — its relative path, like `Textures/Enemies/orc`.

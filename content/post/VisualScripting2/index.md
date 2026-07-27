@@ -19,6 +19,10 @@ That is the argument for *using* graphs. This post is the argument for *preferri
 
 ![Live debugging](live.png)
 
+![The graph, at rest](graph.png)
+
+That is the graph sitting still. Everything below is about what it looks like when it is not.
+
 Enter play mode with a graph open and it stops being a diagram. The nodes on the executing path light up as control flow reaches them. Not a replay, not a log — the actual path, this frame.
 
 Hover any pin and you see the value passing through it *right now*. Not what you logged three frames ago. The number that is in the wire.

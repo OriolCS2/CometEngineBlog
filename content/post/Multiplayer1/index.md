@@ -40,6 +40,12 @@ If Comet only targeted desktop, ENet alone would do and the abstraction would be
 
 This is the same pattern as the [render backends]({{< ref "/post/TwoBackends" >}}) and the [shader pipeline]({{< ref "/post/HelloHLSL" >}}). Support one awkward platform properly and it forces an abstraction that makes everything else cleaner. The web has been the most productive constraint in this engine's history.
 
+## What it looks like in a script
+
+![A networked behaviour](script.png)
+
+Nothing in that file is networking boilerplate. It is an ordinary `CometBehaviour` with attributes on three of its fields, and the layer above — [next Wednesday's post]({{< ref "/post/Multiplayer2" >}}) — is what turns those attributes into packets.
+
 ## Everything else in the box
 
 ![The rest](extras.png)

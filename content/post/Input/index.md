@@ -20,6 +20,10 @@ The naive version is `if (Input.GetKey(Key.W))`. It works. Then you add a gamepa
 
 Comet's model is **input actions**. You define an action — `Move`, `Jump`, `Attack` — in Project Settings, and give it bindings: a key, a gamepad button, an axis, a touch region. Your code asks about the *action*.
 
+![The Input page of Project Settings](settings-page.png)
+
+Actions live in **groups**, each action has a type — a button is a bool, a stick is a `Vector2` — and the bindings hang underneath. The controller dead zones at the bottom are project-wide defaults so you set them once rather than per action.
+
 Rebinding becomes changing data. Adding gamepad support becomes adding bindings. Neither touches gameplay code, because gameplay code never knew which device it was reading.
 
 Actions are grouped into **input groups**, which is how you get a scheme per context — gameplay bindings and menu bindings that can be active independently.

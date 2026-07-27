@@ -22,13 +22,27 @@ An Animator makes the transitions the *data*. What can follow what is a thing yo
 
 ![The parts](machine.png)
 
+![A finished state machine](graph.png)
+
+That is a real one: the five visual states of a UI button. `Entry` picks the starting state, `Any State` is the shortcut for "from wherever you are", and every white line is a legal transition. Nothing about that graph is hidden in a script.
+
 ## Parameters are the seam
 
 The Animator does not read your game. It reads **parameters** — floats, ints, bools and triggers — that your gameplay code sets.
 
 That indirection is the whole design. Your movement script says `animator.SetFloat("speed", velocity.magnitude)` and knows nothing about which animation exists. The Animator decides that run starts at 0.1 and sprint at 6.0, and you can retune those without touching gameplay code.
 
+![The parameter list](parameters.png)
+
+Each type has its own colour in the list, and the value next to it is the default the controller starts with.
+
 Triggers are the special case: a bool that consumes itself when a transition uses it. 1.0 added `ResetTrigger()` by name or parameter ID, because a trigger set on a frame where no transition could consume it stays armed and fires later, which produces a genuinely confusing bug — an attack animation that plays half a second after the button, once.
+
+## What a state actually holds
+
+![A state in the inspector](state.png)
+
+Very little, and that is the point. A clip, a playback speed, and the two lists of transitions in and out of it — which is the same information as the arrows in the graph, in the form you need when you are editing one specific state.
 
 ## Exit time
 

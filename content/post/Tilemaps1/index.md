@@ -14,6 +14,10 @@ A tilemap is the oldest idea in 2D games and still the best one. Instead of plac
 
 The payoff is not just authoring speed. A tilemap of two thousand tiles from one tileset [batches into a handful of draw calls]({{< ref "/post/HowCometDrawsAFrame" >}}), where two thousand separate sprite entities would not.
 
+![A tilemap in the scene view](in-engine.png)
+
+That is three tilemap layers — ground, scattered detail, buildings — under one grid. Every cell in it is two numbers and a tile index.
+
 ## The grid
 
 ![Grid types](grids.png)
@@ -26,7 +30,11 @@ That split matters more than it looks. The grid owns the coordinate system; the 
 
 The Tile Palette panel is where you build your brush set and where you paint from.
 
+![The Tile Palette panel](palette.png)
+
 You fill a palette by dragging in a texture, a set of sprites, or existing tile assets. From 2.1 all three show a **placement preview** at the mouse position, so you can see what you are about to paint before you commit — which sounds obvious and was genuinely missing.
+
+The palette is itself a tilemap. That is why it looks like a level laid out flat: you arrange your brushes spatially, in the shape they will be used in, instead of scrolling a list of thumbnails.
 
 ![The tools](tools.png)
 

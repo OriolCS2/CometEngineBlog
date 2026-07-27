@@ -38,6 +38,10 @@ A RectTransform's anchors are **two points expressed as fractions of the parent*
 
 **Mixed** is the common real answer: stretch in X, fixed in Y. A toolbar that is always full-width and always 48 pixels tall.
 
+![Anchor handles in the scene view](anchors-scene.png)
+
+The four triangles are the anchors, and the thin rectangle inside them is the element. Drag the triangles apart and the element stretches between them; drag them together and it stops resizing and starts holding a position.
+
 The reason this confuses people is that the numbers in the inspector *change meaning* depending on the anchor arrangement — the same fields are "position and size" in one mode and "edge offsets" in another. Once you know that, the panel stops lying to you.
 
 **Scale With Screen Size** on the canvas is the other half. Set a reference resolution and the whole canvas scales, so text that is readable at 1080p is readable at 4K without every element needing its own rule.

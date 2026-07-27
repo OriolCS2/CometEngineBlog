@@ -16,6 +16,10 @@ tags:
 
 ![The Rpc annotation](rpc.png)
 
+![Two RPC methods in a real script](rpc-methods.png)
+
+That is a client sending its input to the host: an unreliable RPC for the stick, a reliable one for the fire button. The `IsMultiplayerAuthority()` guard at the top of each is not optional — an RPC is a method anyone can call.
+
 Annotate a method with `[Rpc]` and calling it calls it on other peers.
 
 The annotation carries four decisions, and each one is a bug you would otherwise write by hand.
@@ -35,6 +39,14 @@ Arguments serialise automatically, and method paths are cached as **integers** r
 ![MultiplayerSynchronizer](sync.png)
 
 RPCs are events. Most of multiplayer is not events, it is *state* — where everyone is, right now.
+
+![The two behaviours on one entity](behaviours.png)
+
+Both behaviours sit on the ship: the synchronizer above, the spawner below. Neither has much of a surface, which is the point — the interesting configuration lives on the script's fields.
+
+![Replication attributes on fields](attributes.png)
+
+`[ReplicateOnSpawn]` sends a value once, in the spawn message, so every peer starts identical. `[Replicate("on_change")]` keeps it in sync afterwards and only sends it when it actually moves.
 
 `MultiplayerSynchronizer` replicates an entity's properties. Engine fields, script variables marked `[Replicate]`, and asset IDs so "which sprite" replicates as a reference rather than a texture.
 

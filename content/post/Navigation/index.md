@@ -44,7 +44,15 @@ The `NavigationServer` bakes **walkable polygons** instead, with an agent-radius
 
 Four behaviours: **NavigationRegion** defines walkable area, **NavigationAgent** follows paths and tracks a target, **NavigationLink** connects places the mesh cannot — a jump, a ladder, a teleporter — and **NavigationObstacle** carves holes with a circle, box or polygon.
 
+![Two baked regions with obstacles and a link](baked.png)
+
+Two regions, baked. The triangulation is the mesh the server actually searches; the circles punched out of it are obstacles; and the pair of green markers with a line between them is a NavigationLink bridging the gap the mesh cannot cross.
+
 Obstacles are how you handle a door that closes or a crate that gets pushed, without rebaking the whole mesh.
+
+![An agent's computed path](agent-path.png)
+
+Select an agent while the game runs and you get the path it is currently following, corner by corner. Note that it does not hug the obstacle — the agent-radius inset keeps the whole body clear of it.
 
 ## Agents that disagree
 

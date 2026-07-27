@@ -21,6 +21,14 @@ Comet builds Android through the **NDK**, targeting **API 21** as a minimum. You
 
 The export itself is the same Build panel as every other platform.
 
+![Android window settings](window-settings.png)
+
+Window settings are per platform, and Android's are a different set entirely: immersive mode, and which orientations the app is allowed to be in.
+
+![Android player settings](player-settings.png)
+
+Player settings are where the store-facing details live — package name, version code, launcher icons — and the **permissions** list, which is the Android manifest expressed as checkboxes. Ticking only what you use matters: every permission is something a user gets asked about, or silently judges you for.
+
 ## Four architectures
 
 ![Architectures](arch.png)
