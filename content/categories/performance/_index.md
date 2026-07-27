@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: "Making it fast, and knowing when it is not: profiling, budgets and the rewrites that paid off."
+description: Making it fast, and knowing when it is not: profiling, budgets and the rewrites that paid off.
 image:
 
 # Badge style
