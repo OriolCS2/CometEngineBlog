@@ -1,6 +1,6 @@
 ---
 title: Systems
-description: The engine systems you build a game out of: entities, scenes, physics, audio and the rest.
+description: "The engine systems you build a game out of: entities, scenes, physics, audio and the rest."
 image:
 
 # Badge style

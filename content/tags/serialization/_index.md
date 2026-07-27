@@ -1,6 +1,6 @@
 ---
 title: Serialization
-description: Saving and loading: JSON in the editor, binary in the build.
+description: "Saving and loading: JSON in the editor, binary in the build."
 image:
 
 # Badge style

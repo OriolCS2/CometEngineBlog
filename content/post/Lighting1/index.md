@@ -52,13 +52,13 @@ Every light has a blend mode, and this is the setting I most underestimated when
 
 ![Additive](additive.png)
 
-That is one point light at a low intensity over the night scene. Additive is physically the intuitive one — light adds light — and it is right for torches, glows and anything emissive. Its failure mode is visible above: over an already-bright surface it saturates to white quickly, and once you are at white, turning the intensity down further does surprisingly little. If your lights look like blown-out discs, this is why.
+Additive is physically the intuitive one — light adds light — and it is right for torches, glows and anything emissive. Its failure mode is the one everybody hits: over an already-bright surface it saturates to white quickly, and once you are at white, turning the intensity down further does surprisingly little. If your lights look like blown-out discs, this is why, and the fix is a dimmer *background*, not a dimmer light.
 
 **Mix** blends toward the light's colour instead of adding to it.
 
 ![Mix](mix.png)
 
-Same three lights, same positions, mode changed. Now the light *replaces*, so the intensity value maps much more directly onto what you see — and the edge of the falloff becomes a visible boundary. Mix is the right choice when you want a light to define an area rather than brighten one, and the wrong choice when you wanted a soft glow.
+Now the light *replaces*, so the intensity value maps much more directly onto what you see — and the edge of the falloff becomes a visible boundary. Mix is the right choice when you want a light to define an area rather than brighten one, and the wrong choice when you wanted a soft glow.
 
 **Subtract** removes light, and **Mask** restricts where other lights apply.
 
@@ -83,7 +83,11 @@ After building this and then using it, the workflow that works for me:
 
 ## The honest bit
 
-While preparing the images for this post I found a genuine rough edge: on the additive path, reducing a point light's intensity after it already exists has far less visual effect than it should, and past a certain brightness it stops mattering at all. Mix mode responds to intensity exactly as expected.
+While preparing the images for this post I found a genuine bug, and it is a good example of how a small thing produces a baffling symptom.
+
+If a point light's **inner radius** is set to or past its **outer radius**, every pixel inside the light takes the no-falloff branch of the shader. The result is a flat, fully saturated disc that ignores distance entirely — and because it is already at full brightness, turning the intensity down appears to do nothing. It looks exactly like "intensity is broken", and it is not: it is one bad pair of numbers.
+
+The engine now clamps the inner radius to sit strictly inside the outer one, so a light authored that way degrades into a normal light instead of a white hole.
 
 That is a real inconsistency, not a documented design choice, and I would not have noticed it if I had not been generating before-and-after images for a blog post. Which is precisely the argument I made in the first post of this series about why writing these is worth the evenings.
 
