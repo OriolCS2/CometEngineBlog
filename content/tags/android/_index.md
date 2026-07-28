@@ -1,6 +1,6 @@
----
+﻿---
 title: Android
-description: Exporting to Android with the NDK, and what changes when the screen is a finger.
+description: "Exporting to Android with the NDK, and what changes when the screen is a finger."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Content
-description: The asset pipeline: groups, addressable content, packs, patches and packages.
+description: "The asset pipeline: groups, addressable content, packs, patches and packages."
 image:
 
 # Badge style

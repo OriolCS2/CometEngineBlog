@@ -1,6 +1,6 @@
----
+﻿---
 title: Shadows
-description: Real-time 2D shadow casting and the occluders that create it.
+description: "Real-time 2D shadow casting and the occluders that create it."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Particles
-description: The particle system, on the CPU and on the GPU.
+description: "The particle system, on the CPU and on the GPU."
 image:
 
 # Badge style

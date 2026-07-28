@@ -1,6 +1,6 @@
----
+﻿---
 title: Scripting
-description: Talks about the scripting system of Comet Engine.
+description: "Talks about the scripting system of Comet Engine."
 image:
 
 # Badge style

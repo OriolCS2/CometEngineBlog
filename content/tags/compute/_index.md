@@ -1,6 +1,6 @@
----
+﻿---
 title: Compute
-description: Compute shaders and GPU-driven work in a 2D engine.
+description: "Compute shaders and GPU-driven work in a 2D engine."
 image:
 
 # Badge style

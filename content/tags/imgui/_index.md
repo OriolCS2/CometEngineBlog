@@ -1,6 +1,6 @@
----
+﻿---
 title: ImGui
-description: The immediate-mode UI library the Comet editor is built on.
+description: "The immediate-mode UI library the Comet editor is built on."
 image:
 
 # Badge style

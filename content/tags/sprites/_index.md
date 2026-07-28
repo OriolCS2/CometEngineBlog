@@ -1,6 +1,6 @@
----
+﻿---
 title: Sprites
-description: Sprites, slicing, pivots, atlases and the draw calls they save.
+description: "Sprites, slicing, pivots, atlases and the draw calls they save."
 image:
 
 # Badge style

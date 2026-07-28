@@ -1,6 +1,6 @@
----
+﻿---
 title: Modding
-description: Letting players extend a shipped game with .ori packs.
+description: "Letting players extend a shipped game with .ori packs."
 image:
 
 # Badge style

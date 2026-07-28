@@ -1,6 +1,6 @@
----
+﻿---
 title: Performance
-description: Frame budgets, measurements and the work of making things fast.
+description: "Frame budgets, measurements and the work of making things fast."
 image:
 
 # Badge style

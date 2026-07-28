@@ -1,6 +1,6 @@
----
+﻿---
 title: Packages
-description: The Packages folder, the manifest and the package manager.
+description: "The Packages folder, the manifest and the package manager."
 image:
 
 # Badge style

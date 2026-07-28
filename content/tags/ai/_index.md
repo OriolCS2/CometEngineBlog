@@ -1,6 +1,6 @@
----
+﻿---
 title: AI
-description: Using AI assistants with Comet, and what they are good at.
+description: "Using AI assistants with Comet, and what they are good at."
 image:
 
 # Badge style

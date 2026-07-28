@@ -1,6 +1,6 @@
----
+﻿---
 title: Tilemap
-description: Grids, palettes and tiles that pick their own sprite.
+description: "Grids, palettes and tiles that pick their own sprite."
 image:
 
 # Badge style

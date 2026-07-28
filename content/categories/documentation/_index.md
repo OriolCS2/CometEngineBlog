@@ -1,6 +1,6 @@
----
+﻿---
 title: Documentation
-description: Overview of CometEngine’s features, systems, and usage — everything you need to build with it.
+description: "Overview of CometEngine’s features, systems, and usage — everything you need to build with it."
 image:
 
 # Badge style

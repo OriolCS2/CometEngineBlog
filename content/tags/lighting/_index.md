@@ -1,6 +1,6 @@
----
+﻿---
 title: Lighting
-description: 2D lights, blend modes, normal mapping and lighting as art direction.
+description: "2D lights, blend modes, normal mapping and lighting as art direction."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Rendering
-description: How Comet turns a scene into pixels — lighting, shaders, backends and the frame itself.
+description: "How Comet turns a scene into pixels — lighting, shaders, backends and the frame itself."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Retrospective
-description: Looking back at what shipped, what broke and what it taught me.
+description: "Looking back at what shipped, what broke and what it taught me."
 image:
 
 # Badge style

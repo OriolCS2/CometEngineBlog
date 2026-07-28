@@ -1,6 +1,6 @@
----
+﻿---
 title: Devlog
-description: Progress reports, retrospectives and where Comet Engine is heading next.
+description: "Progress reports, retrospectives and where Comet Engine is heading next."
 image:
 
 # Badge style

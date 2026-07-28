@@ -1,6 +1,6 @@
----
+﻿---
 title: AngelScript
-description: The scripting language used by Comet Engine.
+description: "The scripting language used by Comet Engine."
 image:
 
 # Badge style

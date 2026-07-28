@@ -1,6 +1,6 @@
----
+﻿---
 title: Text
-description: Font rendering, kerning, rich text and BBCode effects.
+description: "Font rendering, kerning, rich text and BBCode effects."
 image:
 
 # Badge style

@@ -1,6 +1,6 @@
----
+﻿---
 title: Animation
-description: Timelines, keyframes, state machines and root motion.
+description: "Timelines, keyframes, state machines and root motion."
 image:
 
 # Badge style

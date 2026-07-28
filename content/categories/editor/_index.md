@@ -1,6 +1,6 @@
----
+﻿---
 title: Editor
-description: The tools you actually spend your day in — panels, workflows and the ideas behind them.
+description: "The tools you actually spend your day in — panels, workflows and the ideas behind them."
 image:
 
 # Badge style

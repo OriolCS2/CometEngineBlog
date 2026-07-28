@@ -1,6 +1,6 @@
----
+﻿---
 title: Web
-description: Exporting to the browser with Emscripten and WebAssembly.
+description: "Exporting to the browser with Emscripten and WebAssembly."
 image:
 
 # Badge style

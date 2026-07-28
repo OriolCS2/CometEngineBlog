@@ -1,6 +1,6 @@
----
+﻿---
 title: MCP
-description: The editor's built-in Model Context Protocol server.
+description: "The editor's built-in Model Context Protocol server."
 image:
 
 # Badge style

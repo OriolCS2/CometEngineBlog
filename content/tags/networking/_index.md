@@ -1,6 +1,6 @@
----
+﻿---
 title: Networking
-description: The transport layer under Comet's multiplayer.
+description: "The transport layer under Comet's multiplayer."
 image:
 
 # Badge style

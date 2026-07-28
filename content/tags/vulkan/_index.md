@@ -1,6 +1,6 @@
----
+﻿---
 title: Vulkan
-description: The Vulkan render backend, how it is loaded and when Comet chooses it.
+description: "The Vulkan render backend, how it is loaded and when Comet chooses it."
 image:
 
 # Badge style
