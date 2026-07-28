@@ -1,7 +1,7 @@
 ---
 title: Comet Engine Is Back, And It Grew Up
 description: Fourteen months of silence, nine releases, and a promise about every Wednesday from now on
-date: 2026-07-29 18:00:00+0000
+date: 2026-07-29 03:00:00+0000
 image: cover.png
 categories:
     - Devlog
