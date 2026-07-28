@@ -66,8 +66,6 @@ Not a changelog and not a tutorial. I want to explain what Comet actually is, on
 
 Some of them will come in parts, because "2D lighting" is not one post and pretending it is would make it a bad one. When a post belongs to a series I will say so at the bottom and tell you what is coming the following Wednesday.
 
-Roughly, the year looks like this: the scripting migration and the editor first, then the object model, then a long run through rendering, so lighting, shadows, shaders, the Shader Graph and post processing. Then particles and performance. Then scripting tools, the built in code editor and visual scripting. Then tilemaps, animation, physics, UI, audio and navigation. Then the content pipeline and shipping to web and mobile. Then multiplayer. And at the end of it, a proper look back at what is now seven years of this project.
-
 Next Wednesday: the migration. What a Comet script looked like in C#, what the mono bridge was actually doing, which parts of the port were mechanical, and the three things AngelScript flatly does not have that I had to design around.
 
 *See you Wednesday. Feel free to share comments or questions ;)*
