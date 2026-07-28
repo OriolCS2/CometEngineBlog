@@ -49,9 +49,9 @@ The settings block is small and every switch in it matters.
 
 A keyword compiles two versions of the shader, one with a branch included and one with it removed entirely. A material picks which variant it uses.
 
-What you get out of that is that the disabled variant does not contain the code at all. There is no runtime branch and no cost, so a glow you can toggle per material genuinely costs nothing on the materials that have it off.
+What you get out of that is that the disabled variant does not contain the code at all. There is no runtime branch and no cost, so a glow you can toggle per material really costs nothing on the materials that have it off.
 
-The trap is combinatorial. Each keyword doubles the variant count. Three keywords is eight shaders to compile at build time, and six keywords is sixty-four. Use them for genuinely separate looks, and not for things a float could express.
+The trap is combinatorial. Each keyword doubles the variant count. Three keywords is eight shaders to compile at build time, and six keywords is sixty-four. Use them for properly separate looks, and not for things a float could express.
 
 ## Sub Graphs
 
@@ -90,7 +90,7 @@ Two of the ones in Utility are worth knowing about specifically. **Custom HLSL**
 
 Two things bother me.
 
-**Large graphs are hard to read.** Past forty nodes or so, following a wire across the canvas is genuinely difficult. Sub Graphs are the answer and I do not think they are enough on their own. I would like to add some form of grouping, or reroute nodes.
+**Large graphs are hard to read.** Past forty nodes or so, following a wire across the canvas is really difficult. Sub Graphs are the answer and I do not think they are enough on their own. I would like to add some form of grouping, or reroute nodes.
 
 **There is no diffing.** A shader graph is a file, but it is not one you can review in a pull request in any useful way. Text shaders diff well. Graphs do not, and I do not have a good answer for that yet.
 

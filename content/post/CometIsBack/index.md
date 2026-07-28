@@ -32,7 +32,7 @@ Since the last post there have been **nine releases**, 2.0 through 2.8. The engi
 
 ![Release timeline](releases.png)
 
-The biggest change is the one I was writing about last time. **C# is gone**, completely. AngelScript is the only scripting language now, and 2.0 was a hard break, so projects written for 1.x do not open. That decision made me genuinely uncomfortable and I am going to spend the next two Wednesdays on it, because "I rewrote 300 files" is not really the point. What matters is what I got in exchange, and what it cost me.
+The biggest change is the one I was writing about last time. **C# is gone**, completely. AngelScript is the only scripting language now, and 2.0 was a hard break, so projects written for 1.x do not open. That decision made me quite uncomfortable and I am going to spend the next two Wednesdays on it, because "I rewrote 300 files" is not really the point. What matters is what I got in exchange, and what it cost me.
 
 The short version of the exchange is that the engine now runs in a browser and on a phone. That was the entire reason for the migration, and it worked.
 

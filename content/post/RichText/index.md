@@ -29,7 +29,7 @@ Kerning is the detail that separates text from text that looks right. Set the wo
 
 Comet also imports **`.fnt` bitmap fonts** as a `BitmapFont`, which is the right answer for pixel art. A hand drawn font at a fixed size, with no rasterisation and no smoothing, so you get exactly the pixels the artist drew.
 
-The font inspector shows the generated texture and every available glyph, which is genuinely useful when a character is missing and you are trying to work out whether it is a layout problem or a font problem.
+The font inspector shows the generated texture and every available glyph, which is really useful when a character is missing and you are trying to work out whether it is a layout problem or a font problem.
 
 ## Rich text
 

@@ -31,7 +31,7 @@ I did that for four years. The camera controller I use in every prototype existe
 
 Four sources: a local **archive**, a local **folder**, a **git URL**, or a **registry name** from the marketplace.
 
-The folder option is the one I use most while developing a package — point a project at the working directory and iterate without publishing anything.
+The folder option is the one I use most while developing a package. I point a project at the working directory and iterate without publishing anything.
 
 All four go through the same resolution: **transitivity** (a package's own dependencies are pulled in), a **dependency plan popup** showing exactly what is about to be installed and why, and **conflict detection** when two packages want incompatible versions of the same thing.
 
@@ -39,7 +39,7 @@ Showing the plan before acting matters. Package managers that silently resolve a
 
 ## The Packages folder
 
-Installed packages live in `Packages/` at the project root, next to `Assets/`. Not inside it — which is deliberate: `Assets/` is yours, `Packages/` is other people's, and the split means you can delete and reinstall the second without worrying about the first.
+Installed packages live in `Packages/` at the project root, next to `Assets/`. Not inside it, which is deliberate: `Assets/` is yours, `Packages/` is other people's, and the split means you can delete and reinstall the second without worrying about the first.
 
 Packages are **read-only** in the editor. Trying to import into one is refused rather than silently allowed, because a local edit to an installed package is a change you will lose on the next update and not notice.
 
@@ -47,7 +47,7 @@ Packages are **read-only** in the editor. Trying to import into one is refused r
 
 ![Authoring](authoring.png)
 
-The **creation wizard** generates the whole skeleton under `Packages/<slug>/` — manifest, licence file, namespace layout, runtime assembly, and the hidden folders the tooling expects. Getting the structure right by hand is the kind of thing that is easy to get subtly wrong, and a wizard removes the question.
+The **creation wizard** generates the whole skeleton under `Packages/<slug>/`: manifest, licence file, namespace layout, runtime assembly, and the hidden folders the tooling expects. Getting the structure right by hand is the kind of thing that is easy to get subtly wrong, and a wizard removes the question.
 
 The manifest is `package.cometPackage`, with a dedicated inspector.
 
@@ -80,6 +80,6 @@ None of that is a reason not to use it. All of it is on the list.
 
 ---
 
-Next Wednesday: the platform that started all of this. Shipping to the web — Emscripten, ASYNCIFY, and an honest list of what a browser does not get and what Comet does instead.
+Next Wednesday: the platform that started all of this. Shipping to the web: Emscripten, ASYNCIFY, and an honest list of what a browser does not get and what Comet does instead.
 
 *Comments and questions welcome ;)*

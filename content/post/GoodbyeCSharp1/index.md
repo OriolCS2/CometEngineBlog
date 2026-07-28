@@ -24,7 +24,7 @@ Comet used C# through Mono. If you have never had to ship a Mono runtime to four
 
 The editor compiled your scripts with Roslyn into a real .NET assembly. At runtime, Comet embedded the Mono runtime, loaded that assembly, and every single call between your script and the engine went across a bridge: marshal the arguments, pin the managed objects so the garbage collector could not move them mid call, call into C++, unpin, marshal the result back.
 
-On Windows and Linux this worked fine. I shipped 1.0 with it and it was genuinely pleasant to write games in.
+On Windows and Linux this worked fine. I shipped 1.0 with it and it was really pleasant to write games in.
 
 Then I tried to export to the web.
 
@@ -64,7 +64,7 @@ AngelScript has type information, but it is type information that somebody regis
 
 **Garbage collection.** C# scripts could allocate freely and then forget about it. AngelScript reference counts, and reference counting means cycles leak. An Entity holding a script that holds a reference back to the Entity is not a hypothetical, it is the most natural thing a gameplay programmer writes. Comet's object model already used reference counting on the C++ side, so the two systems had to be taught about each other properly rather than approximately.
 
-That work is also the reason `IsValid()`, `IsNull()` and `Is()` exist as global functions instead of you just writing `== null`. A plain null check genuinely lies in some situations during teardown. I will write a whole post about that later in the year.
+That work is also the reason `IsValid()`, `IsNull()` and `Is()` exist as global functions instead of you just writing `== null`. A plain null check really does lie in some situations during teardown. I will write a whole post about that later in the year.
 
 ## The day it compiled
 
@@ -74,7 +74,7 @@ For about five months the script console was a wall of red. Not a few errors but
 
 Then one evening in February 2026 I fixed what I assumed was another one of the several hundred errors that were left, and the console printed nothing.
 
-I genuinely thought it had crashed.
+I really thought it had crashed.
 
 It had not. It had compiled. Then of course nothing worked, the game booted and every script did the wrong thing, which is a completely different and much more enjoyable kind of problem, because at that point you can actually run something and look at it.
 

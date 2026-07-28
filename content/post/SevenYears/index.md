@@ -1,5 +1,5 @@
 ---
-title: Seven Years of Comet — and What Comes Next
+title: Seven Years of Comet, and What Comes Next
 description: February 2020 to July 2027, fifty-two Wednesdays, and what I would tell the version of me who started
 date: 2027-07-21 18:00:00+0000
 image: cover.png
@@ -16,13 +16,13 @@ First commit: **6 February 2020**. That makes this seven years and five months, 
 
 ## The arc
 
-**2020–2022** was learning. A 2D renderer that barely worked, then one that worked, then an editor around it. Most of what I wrote in those two years has been replaced, and that is fine — it was the cost of finding out what a game engine actually needs to contain.
+**2020 to 2022** was learning. A 2D renderer that barely worked, then one that worked, then an editor around it. Most of what I wrote in those two years has been replaced, and that is fine. It was the cost of finding out what a game engine actually needs to contain.
 
 **2023** brought the things that made it feel like a tool rather than a project: sprite atlases, curves and gradients, unique instances, a line renderer, animating script fields. 0.9.2's changelog is the first one that reads like an engine.
 
-**January 2025: 1.0.** C# through Mono, and genuinely pleasant to build games in — on Windows and Linux, which turned out to be the sentence that mattered.
+**January 2025: 1.0.** C# through Mono, and really pleasant to build games in, on Windows and Linux, which turned out to be the sentence that mattered.
 
-**2026 was the year everything changed.** [2.0 removed C#]({{< ref "/post/GoodbyeCSharp1" >}}) after nine months of work and broke every existing project. In exchange Comet got [the web]({{< ref "/post/WebExport" >}}) and [Android]({{< ref "/post/AndroidExport" >}}). Then eight more releases in four months, ending with 2.8 — [HLSL]({{< ref "/post/HelloHLSL" >}}), [Shader Graph]({{< ref "/post/ShaderGraph1" >}}), [Visual Scripting]({{< ref "/post/VisualScripting1" >}}), [GPU particles]({{< ref "/post/Particles2" >}}), [networking]({{< ref "/post/Multiplayer1" >}}), [packages]({{< ref "/post/Packages" >}}), [the content system]({{< ref "/post/Content1" >}}), [the profiler]({{< ref "/post/Profiler" >}}), [the MCP server]({{< ref "/post/McpServer" >}}).
+**2026 was the year everything changed.** [2.0 removed C#]({{< ref "/post/GoodbyeCSharp1" >}}) after nine months of work and broke every existing project. In exchange Comet got [the web]({{< ref "/post/WebExport" >}}) and [Android]({{< ref "/post/AndroidExport" >}}). Then eight more releases in four months, ending with 2.8: [HLSL]({{< ref "/post/HelloHLSL" >}}), [Shader Graph]({{< ref "/post/ShaderGraph1" >}}), [Visual Scripting]({{< ref "/post/VisualScripting1" >}}), [GPU particles]({{< ref "/post/Particles2" >}}), [networking]({{< ref "/post/Multiplayer1" >}}), [packages]({{< ref "/post/Packages" >}}), [the content system]({{< ref "/post/Content1" >}}), [the profiler]({{< ref "/post/Profiler" >}}), [the MCP server]({{< ref "/post/McpServer" >}}).
 
 **2027 has been consolidation**, which does not make exciting changelogs and has made the engine considerably better to use.
 
@@ -68,9 +68,9 @@ Around **7,000 commits**. Two render backends, four platforms. About 115 Shader 
 
 It continues.
 
-Year two starts next Wednesday and it is deliberately a different shape. Year one was *the engine*, system by system. Year two is **using it** — starting with fourteen Wednesdays building a complete small game in public, from an empty scene to a playable web build, and then the internals, the craft, and the things I have never written down.
+Year two starts next Wednesday and it is deliberately a different shape. Year one was *the engine*, system by system. Year two is **using it**, starting with fourteen Wednesdays building a complete small game in public, from an empty scene to a playable web build, and then the internals, the craft, and the things I have never written down.
 
-Thank you for reading. Genuinely — the comments on these posts have changed things in the engine, which is more than I expected when I started writing again a year ago.
+Thank you for reading. The comments on these posts have really changed things in the engine, which is more than I expected when I started writing again a year ago.
 
 See you Wednesday.
 

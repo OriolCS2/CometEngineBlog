@@ -43,7 +43,7 @@ The Content page is where you see a group as a group: its delivery mode, everyth
 
 ## Addressing
 
-Every grouped asset has an **address** — its relative path, like `Textures/Enemies/orc`.
+Every grouped asset has an **address**, which is its relative path, like `Textures/Enemies/orc`.
 
 ```
 Assets::Find("Textures/Enemies/orc")
@@ -61,7 +61,7 @@ The important word is *relative*. An address is not a file system path and it do
 
 Here is the feature that changes how you build.
 
-A normal reference — a `Sprite` field on a script pointing at an asset — loads that asset when the scene loads, whether or not it is ever used. That is correct and it is why a scene "just works". It also means a boss you fight once loads with the level every time.
+A normal reference, say a `Sprite` field on a script pointing at an asset, loads that asset when the scene loads, whether or not it is ever used. That is correct and it is why a scene "just works". It also means a boss you fight once loads with the level every time.
 
 `Assets::AssetHandle` is a **soft** reference. The field holds the address, not the asset. Nothing loads until you ask, and you ask when the fight actually starts.
 
@@ -75,19 +75,19 @@ The rule to know: the target **must be in a content group**, because a handle re
 
 Both qualifiers matter. Least-recently-used is the sensible heuristic. *Unreferenced* is the safety property: nothing currently in use is ever evicted, so the governor cannot pull a texture out from under a sprite that is drawing it.
 
-This is the system that makes a large project viable on a phone without hand-managing every load. Set a budget appropriate to the device and stop thinking about it — with the honest caveat that a budget which is too tight produces thrashing, loading and evicting the same assets repeatedly, and the profiler is how you find that.
+This is the system that makes a large project viable on a phone without hand-managing every load. Set a budget appropriate to the device and stop thinking about it, with the caveat that a budget which is too tight produces thrashing, loading and evicting the same assets repeatedly, and the profiler is how you find that.
 
 ## Stripping
 
 Assets that are **unreferenced and have no group assigned** are stripped from the build automatically.
 
-That is a good default with one sharp edge worth knowing: if you load something purely by string address at runtime and forget to put it in a group, nothing references it, so it does not ship — and you find out in the build rather than the editor. The fix is the same as the rule above: things you load by address belong in a group.
+That is a good default with one sharp edge worth knowing: if you load something purely by string address at runtime and forget to put it in a group, nothing references it, so it does not ship, and you find out in the build rather than the editor. The fix is the same as the rule above: things you load by address belong in a group.
 
 ## Local and remote
 
 Groups are marked **local** or **remote**.
 
-Local groups are memory-mapped into the main build pack, so mounting them costs essentially nothing. Remote groups build as separate packs staged for a CDN — the game downloads, verifies by checksum, and updates them on the fly without a full game update.
+Local groups are memory-mapped into the main build pack, so mounting them costs essentially nothing. Remote groups build as separate packs staged for a CDN. The game downloads, verifies by checksum, and updates them on the fly without a full game update.
 
 That is the DLC and live-content story, and it is [next Wednesday]({{< ref "/post/Content2" >}}) along with the rest of the packaging.
 

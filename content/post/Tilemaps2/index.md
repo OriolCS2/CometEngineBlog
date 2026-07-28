@@ -88,7 +88,7 @@ It is obvious in hindsight. The palette held a pointer to something the project 
 
 Rule evaluation happens when a tile's neighbourhood changes, not every frame, so a static level costs nothing at runtime. Painting is where you feel it. A large box fill with a complex RuleTile re-evaluates every affected cell and their neighbours, and on a big stroke you will notice it.
 
-The other limit is authoring. A RuleTile with forty rules is genuinely hard to reason about, because "first match wins" means the behaviour depends on an ordering you cannot see all at once. When a ruleset gets that big, I usually end up splitting it into two simpler tile types instead of keeping one clever one.
+The other limit is authoring. A RuleTile with forty rules is very hard to reason about, because "first match wins" means the behaviour depends on an ordering you cannot see all at once. When a ruleset gets that big, I usually end up splitting it into two simpler tile types instead of keeping one clever one.
 
 ---
 

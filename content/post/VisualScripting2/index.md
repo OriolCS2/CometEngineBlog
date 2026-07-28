@@ -57,7 +57,7 @@ That advantage goes away as soon as the graph is big enough that you cannot see 
 
 There are no conditional breakpoints. Break when `health < 0` is not there, in graphs or in text. It is the single feature I would add next to both.
 
-Large graphs are hard. Past about forty nodes, following a wire across the canvas is genuinely difficult, and lighting up the path helps less than you would hope, because the path leaves the screen. Sub-graphs are the answer and I do not think they are a complete one.
+Large graphs are hard. Past about forty nodes, following a wire across the canvas is really difficult, and lighting up the path helps less than you would hope, because the path leaves the screen. Sub-graphs are the answer and I do not think they are a complete one.
 
 There is no diff. A graph is a file, but not one you can read in a pull request. For a solo project that costs me nothing. For a team it is a real problem, and it is the reason I would still write shared, long lived systems as text.
 

@@ -32,7 +32,7 @@ The Tile Palette panel is where you build your brush set and where you paint fro
 
 ![The Tile Palette panel](palette.png)
 
-You fill a palette by dragging in a texture, a set of sprites, or existing tile assets. Since 2.1 all three show a **placement preview** at the mouse position, so you can see what you are about to paint before you commit. It sounds obvious and it was genuinely missing.
+You fill a palette by dragging in a texture, a set of sprites, or existing tile assets. Since 2.1 all three show a **placement preview** at the mouse position, so you can see what you are about to paint before you commit. It sounds obvious and it really was missing.
 
 The palette is itself a tilemap. That is why it looks like a level laid out flat. You arrange your brushes spatially, in the shape they will be used in, instead of scrolling a list of thumbnails.
 
@@ -50,7 +50,7 @@ A level is almost never one tilemap. The usual arrangement is a background for p
 
 The problem with layers is that painting becomes ambiguous, because it is not obvious which one your stroke is going into. My answer to that is **focus modes**. The Tile Palette can focus on the active tilemap, on the whole grid, or on everything, and the tilemaps that are not focused render dimmed.
 
-I would put this in the small set of features that decide whether a tool is usable at all. Painting into the wrong layer and not noticing for ten minutes is a genuinely bad experience, and dimming everything else removes it.
+I would put this in the small set of features that decide whether a tool is usable at all. Painting into the wrong layer and not noticing for ten minutes is a horrible experience, and dimming everything else removes it.
 
 ## Colliders, and the seam problem
 

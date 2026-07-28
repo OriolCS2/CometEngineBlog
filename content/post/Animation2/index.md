@@ -36,7 +36,7 @@ That indirection is the whole design. Your movement script says `animator.SetFlo
 
 Each type has its own colour in the list, and the value next to it is the default the controller starts with.
 
-Triggers are the special case, a bool that consumes itself when a transition uses it. 1.0 added `ResetTrigger()` by name or by parameter ID, because a trigger set on a frame where no transition could consume it stays armed and fires later. That produces a genuinely confusing bug, an attack animation that plays half a second after the button, once.
+Triggers are the special case, a bool that consumes itself when a transition uses it. 1.0 added `ResetTrigger()` by name or by parameter ID, because a trigger set on a frame where no transition could consume it stays armed and fires later. That produces a very confusing bug, an attack animation that plays half a second after the button, once.
 
 ## What a state holds
 

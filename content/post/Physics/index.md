@@ -11,7 +11,7 @@ tags:
     - Editor
 ---
 
-Comet uses **Box2D 3.x** for physics. I did not write a physics engine and I am not going to write one. Box2D is twenty years of accumulated correctness about a genuinely hard problem, and my job is to wrap it well.
+Comet uses **Box2D 3.x** for physics. I did not write a physics engine and I am not going to write one. Box2D is twenty years of accumulated correctness about a really hard problem, and my job is to wrap it well.
 
 So this post is mostly about the wrapping. What Comet exposes, which decisions are left to you, and where I found the sharp edges.
 

@@ -101,7 +101,7 @@ Two things from the [migration]({{< ref "/post/GoodbyeCSharp1" >}}) shape everyd
 
 Use `IsValid(obj)` rather than `obj !is null`.
 
-It looks like pedantry, but during teardown a plain null check genuinely returns the wrong answer, because an object can be destroyed and not yet gone. `IsValid`, `IsNull` and `Is` exist for exactly that gap. The bugs you get from ignoring them are the intermittent kind that only appear when something is being destroyed on the same frame it is being used.
+It looks like pedantry, but during teardown a plain null check really does return the wrong answer, because an object can be destroyed and not yet gone. `IsValid`, `IsNull` and `Is` exist for exactly that gap. The bugs you get from ignoring them are the intermittent kind that only appear when something is being destroyed on the same frame it is being used.
 
 ---
 

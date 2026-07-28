@@ -68,7 +68,7 @@ It is also why "does this work on the web?" is a question I have to ask about ev
 
 Two backends means two implementations of every feature that touches the GPU. Render targets, texture formats, shader binding models, framebuffer blits. Each of those exists twice, and a bug can live in either.
 
-What makes it manageable is that the shared layer above is deliberately large. Culling, sorting, batching, the whole notion of what a frame contains, all of that is backend-agnostic. The backends only handle turning that list into API calls, which is the part that genuinely has to differ.
+What makes it manageable is that the shared layer above is deliberately large. Culling, sorting, batching, the whole notion of what a frame contains, all of that is backend-agnostic. The backends only handle turning that list into API calls, which is the part that actually has to differ.
 
 I still think about whether the split is in the right place. Right now it sits a bit lower than I would like. There are a few concepts, particularly around render targets, that leak upward more than they should.
 

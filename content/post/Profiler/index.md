@@ -25,7 +25,7 @@ There are five views across the bottom, and each one answers a different questio
 
 **Hierarchy** is where I start. It is a tree of what called what, with total time and self time. Total time tells you which subsystem is expensive, and self time tells you whether it is expensive by itself or just calling something that is. The gap between those two numbers is usually where the answer is.
 
-**Timeline** is the flame graph. Same data, laid out horizontally, across threads. This is the view that shows you what overlapped, so you can see whether the render thread was genuinely working in parallel with the game thread or sitting idle waiting for it. The hierarchy view cannot answer that.
+**Timeline** is the flame graph. Same data, laid out horizontally, across threads. This is the view that shows you what overlapped, so you can see whether the render thread was actually working in parallel with the game thread or sitting idle waiting for it. The hierarchy view cannot answer that.
 
 **Counters** are the numbers over time: draw calls, batches, allocations. Useful for spotting the frame where something spiked.
 

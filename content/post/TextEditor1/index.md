@@ -56,7 +56,7 @@ The editor is a panel, so it docks like any other panel. But writing code inside
 
 So there is a **Code Workspace**, a layout that gives most of the window to the editor. You toggle into it, write, and toggle out.
 
-There is also a preference to make the text editor always live in its own OS window. That is how I use it, the engine on one monitor and the code on the other, both fullscreen. No alt-tab, because they are genuinely two windows.
+There is also a preference to make the text editor always live in its own OS window. That is how I use it, the engine on one monitor and the code on the other, both fullscreen. No alt-tab, because they really are two windows.
 
 ## The parts that were harder than expected
 

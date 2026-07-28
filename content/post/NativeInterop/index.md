@@ -23,7 +23,7 @@ Every scripting language ends up needing an escape hatch. Somebody wants to use 
 
 ![An example](example.png)
 
-That is genuinely the whole surface. What I wanted was for calling a C function to be about as much ceremony as calling an engine function, and mostly it is. The one extra thing you have to do is declare the signature, because a `.dll` export is just an address and nothing in the file tells you it takes two floats.
+That is the entire surface. What I wanted was for calling a C function to be about as much ceremony as calling an engine function, and mostly it is. The one extra thing you have to do is declare the signature, because a `.dll` export is just an address and nothing in the file tells you it takes two floats.
 
 ## A portable FFI, not a per-platform hack
 
@@ -51,7 +51,7 @@ Without that, every project using a native library grows a copy step that somebo
 
 Honestly, rarely.
 
-Good reasons: a mature library that would take months to reimplement, like a solver, a codec or a format parser. Vendor SDKs for hardware. Code that is genuinely hot, where the scripting layer is measurably the bottleneck and you have profiled it instead of assuming it.
+Good reasons: a mature library that would take months to reimplement, like a solver, a codec or a format parser. Vendor SDKs for hardware. Code that is really hot, where the scripting layer is measurably the bottleneck and you have profiled it instead of assuming it.
 
 Bad reasons: "native is faster" as a general belief. It is faster per instruction, but each call across the boundary costs something, so a native function called in a tight loop can easily end up slower overall than the AngelScript one it replaced. Measure the whole loop and not the function.
 

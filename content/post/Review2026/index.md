@@ -48,7 +48,7 @@ The evening the AngelScript layer compiled clean for the first time.
 
 I described this back in [August]({{< ref "/post/GoodbyeCSharp1" >}}): five months of a console that was solid red, hundreds of errors, and no way to run anything because nothing runs until all of it compiles. Then one evening I fixed what I assumed was another of several hundred remaining errors, and the console printed nothing at all.
 
-I genuinely thought it had crashed.
+I really thought it had crashed.
 
 ## Some numbers
 
@@ -87,7 +87,7 @@ Roughly, in order of confidence:
 
 **Consolidation over features.** A lot of 2.8 shipped as version one. Shader Graph needs better navigation for large graphs. Visual Scripting needs the same. The content system needs its rough edges filed down. None of that makes a good changelog line and all of it makes the engine better to use.
 
-**Documentation.** Genuinely the weakest part of the project. This blog helps, but a blog is not reference documentation.
+**Documentation.** This is the weakest part of the project. This blog helps, but a blog is not reference documentation.
 
 **The in-editor AI assistant.** The MCP server was built with this in mind. The tool layer is deliberately independent of the protocol, so an assistant panel inside the editor drives the same tools an external client does. That is the piece I am most curious about.
 

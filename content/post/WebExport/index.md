@@ -71,7 +71,7 @@ Two things worth knowing.
 
 For jams, demos and anything you want people to try without installing, yes, without hesitation. A link that plays is worth a lot, and for me it is the best reason to have gone through the C# migration.
 
-For a large commercial game I would think about it carefully. No threads means the CPU budget is genuinely smaller, and the download is a real barrier once the game grows.
+For a large commercial game I would think about it carefully. No threads means the CPU budget is smaller, and the download is a real barrier once the game grows.
 
 What I wanted was for that decision to be yours instead of the engine's, and that is why the fallbacks exist instead of a compile error.
 

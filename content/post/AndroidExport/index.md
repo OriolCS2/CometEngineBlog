@@ -27,7 +27,7 @@ Window settings are per platform, and Android's are a different set entirely: im
 
 ![Android player settings](player-settings.png)
 
-Player settings are where the store-facing details live — package name, version code, launcher icons — and the **permissions** list, which is the Android manifest expressed as checkboxes. Ticking only what you use matters: every permission is something a user gets asked about, or silently judges you for.
+Player settings are where the store-facing details live (package name, version code, launcher icons), and the **permissions** list, which is the Android manifest expressed as checkboxes. Ticking only what you use matters: every permission is something a user gets asked about, or silently judges you for.
 
 ## Four architectures
 
@@ -43,7 +43,7 @@ The [plugin system]({{< ref "/post/NativeInterop" >}}) targets per architecture 
 
 ![Mobile differences](mobile.png)
 
-**The renderer.** Comet prefers [Vulkan on Android]({{< ref "/post/TwoBackends" >}}) with a GLES fallback, and the reason is driver quality. OpenGL ES implementations vary enormously between vendors, and "works on my phone" is worth very little. Vulkan is more consistent, and having a second path to fall back to when one misbehaves on a specific device has genuinely saved me. Compute is available, so [GPU particles]({{< ref "/post/Particles2" >}}) work on Vulkan-capable devices and silently fall back on the rest.
+**The renderer.** Comet prefers [Vulkan on Android]({{< ref "/post/TwoBackends" >}}) with a GLES fallback, and the reason is driver quality. OpenGL ES implementations vary enormously between vendors, and "works on my phone" is worth very little. Vulkan is more consistent, and having a second path to fall back to when one misbehaves on a specific device has saved me more than once. Compute is available, so [GPU particles]({{< ref "/post/Particles2" >}}) work on Vulkan-capable devices and silently fall back on the rest.
 
 **Input.** [Touch and pinch]({{< ref "/post/Input" >}}) instead of a mouse. There is no hover, so any UI relying on it has no mobile equivalent. There is no right-click. Touch targets need to be physically larger than a cursor needs.
 
@@ -63,7 +63,7 @@ Export a [development build]({{< ref "/post/DevelopmentBuilds" >}}), run it on t
 
 A phone that runs your game at 60 fps for two minutes may run it at 40 fps after ten, because it got hot and the SoC clocked down.
 
-This is genuinely different from desktop and it changes what "fast enough" means. A game sitting at exactly 60 fps on a cool device has no headroom and will visibly degrade. Test after a sustained session, not after thirty seconds.
+This is really different from desktop and it changes what "fast enough" means. A game sitting at exactly 60 fps on a cool device has no headroom and will visibly degrade. Test after a sustained session, not after thirty seconds.
 
 I do not have tooling to help with this and I am not sure what it would look like. It is on the list mainly as a warning.
 
@@ -81,6 +81,6 @@ Several Window project settings are per-platform now, grouped into **Standalone 
 
 ---
 
-Next Wednesday: shipping a build that still has its tools inside. Development builds — debug drawing, an on-screen stats HUD, an in-game console you can extend from script, and attaching the editor's profiler and debugger to a running binary.
+Next Wednesday: shipping a build that still has its tools inside. Development builds: debug drawing, an on-screen stats HUD, an in-game console you can extend from script, and attaching the editor's profiler and debugger to a running binary.
 
 *Comments and questions welcome ;)*

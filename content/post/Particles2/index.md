@@ -38,7 +38,7 @@ Comet exposes compute through the render hardware abstraction, gated behind `IRe
 
 Comet instead compacts with a **prefix sum**, which preserves order. The alive list stays sorted oldest-first, deterministically.
 
-That one decision buys two things. **Force Respawn** mode can recycle the genuinely oldest particle, because it knows which one that is. And both CHUNK sort modes become free, since sorting front-to-back or back-to-front is just walking the alive list forwards or backwards.
+That one decision buys two things. **Force Respawn** mode can recycle the actual oldest particle, because it knows which one that is. And both CHUNK sort modes become free, since sorting front-to-back or back-to-front is just walking the alive list forwards or backwards.
 
 **Draw** is a single `DrawIndirect`. The vertex shader reads the particle pool and the alive list and expands each entry into a quad on the fly.
 

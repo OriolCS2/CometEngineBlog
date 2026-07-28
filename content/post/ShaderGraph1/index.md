@@ -29,7 +29,7 @@ The **left column** is the graph's contract with the outside world: Graph Settin
 
 ![The Graph Settings panel](settings.png)
 
-The **preview** renders the graph live on a quad. It is not a mockup, it is the actual compiled shader. Every node has its own small preview too, so you can look at the noise on its own, then the noise after a step, then the result of the multiply. Being able to see the intermediate values is most of the reason a graph is easier than a text file, and it is the thing I find genuinely hard to replicate in a code editor.
+The **preview** renders the graph live on a quad. It is not a mockup, it is the actual compiled shader. Every node has its own small preview too, so you can look at the noise on its own, then the noise after a step, then the result of the multiply. Being able to see the intermediate values is most of the reason a graph is easier than a text file, and it is the thing I find hardest to replicate in a code editor.
 
 ## Building a dissolve
 

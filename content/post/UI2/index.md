@@ -64,7 +64,7 @@ Every UI graphic has a **Mouse Filter**. `PROPAGATE` bubbles the event up until 
 
 `CanvasGroup` also has **Ignore Mouse**, which applies to a whole subtree at once, plus alpha and interactable flags. Fading a menu out and making it non-interactive is one behaviour rather than a pass over every child.
 
-The drag and pointer interfaces (`IPointerClickAction`, `IBeginDragAction` and the rest) all receive a `PointerEvent` with the event details, which 2.0 changed from the previous parameterless versions. It is a small break that made writing custom interactables genuinely possible.
+The drag and pointer interfaces (`IPointerClickAction`, `IBeginDragAction` and the rest) all receive a `PointerEvent` with the event details, which 2.0 changed from the previous parameterless versions. It is a small break that made writing custom interactables properly possible.
 
 ## Controller navigation
 

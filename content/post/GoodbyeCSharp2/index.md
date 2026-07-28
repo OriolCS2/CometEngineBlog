@@ -47,7 +47,7 @@ C# is statically typed too, so I was not expecting a difference here. There was 
 
 Implicit numeric conversion is the big one. C# will quietly widen an `int` to a `float` and let you carry on. AngelScript is far less willing, and while porting I found a genuine bug in the animation system that had been sitting there for over a year: a frame index doing integer division where it should have been float, producing a value that was correct for most frame counts and subtly wrong for others. It had shipped. Nobody had reported it, because it looked like an animation being slightly off rather than a number being wrong.
 
-I want to be clear about the limit of all this. **Type safety does not solve object lifetime.** A reference to a destroyed Entity is still type correct. That problem needed its own answer, which is why Comet has `IsValid()` instead of letting you write `!= null`, because a plain null check genuinely returns the wrong answer in some teardown situations. There is a whole post about object lifetime later in the year.
+I want to be clear about the limit of all this. **Type safety does not solve object lifetime.** A reference to a destroyed Entity is still type correct. That problem needed its own answer, which is why Comet has `IsValid()` instead of letting you write `!= null`, because a plain null check really does return the wrong answer in some teardown situations. There is a whole post about object lifetime later in the year.
 
 ## What I actually miss
 

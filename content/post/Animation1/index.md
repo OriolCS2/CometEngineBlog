@@ -70,7 +70,7 @@ The Animator is for when you have states and decisions, and that is next week.
 
 ## Two bugs
 
-Single-frame animations looped forever instead of finishing, right up to 2.2.1. The completion check assumed at least two frames existed, so a one-frame "animation", which people genuinely make as a way of setting a pose, never reported that it had ended, and anything waiting on it waited forever.
+Single-frame animations looped forever instead of finishing, right up to 2.2.1. The completion check assumed at least two frames existed, so a one-frame "animation", which people do make as a way of setting a pose, never reported that it had ended, and anything waiting on it waited forever.
 
 Previewing also left values applied. Selecting an entity with an Animator or a Single Animation and scrubbing the timeline previewed the animation, which is correct, but deselecting left those previewed values permanently applied to the scene entity. You would preview a death animation, click away, and your character was now lying down in the saved scene.
 

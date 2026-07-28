@@ -13,7 +13,7 @@ tags:
 
 "It only happens in the build" is the worst sentence in game development.
 
-Not because build-only bugs are especially hard — because historically, the moment you left the editor you lost every tool you had. No inspector, no profiler, no breakpoints. Just a log file and your imagination.
+Not because build-only bugs are especially hard. It is because historically, the moment you left the editor you lost every tool you had. No inspector, no profiler, no breakpoints. Just a log file and your imagination.
 
 Development builds are the answer to that.
 
@@ -25,7 +25,7 @@ Development builds are the answer to that.
 
 Tick `Development Build` and the export carries a set of things a shipping build does not.
 
-**Debug drawing** — colliders, navigation graphs, gizmos — rendered in the real build, on the real device.
+**Debug drawing**: colliders, navigation graphs and gizmos, rendered in the real build, on the real device.
 
 **An on-screen stats HUD** with FPS and frame timing, toggled with `Ctrl+F3`.
 
@@ -43,7 +43,7 @@ Press the tilde key and an in-game console drops down. Live engine logs, and bui
 
 The part that matters is that **you can add your own**, from script, via `DevConsole::onCommand`. Register a listener, parse the command, do the thing.
 
-This is the highest value-per-line feature in the whole list. A console command that spawns you at the boss is worth an hour of walking to the boss, every time you test the boss. `/give`, `/teleport`, `/killall`, `/setflag` — half an hour of work that pays back for the rest of the project.
+This is the highest value-per-line feature in the whole list. A console command that spawns you at the boss is worth an hour of walking to the boss, every time you test the boss. `/give`, `/teleport`, `/killall`, `/setflag`. Half an hour of work that pays back for the rest of the project.
 
 The trap worth naming: it is easy to write commands that put the game into states it could never reach legitimately, then spend an afternoon debugging a "bug" that only your console can produce.
 
@@ -51,7 +51,7 @@ The trap worth naming: it is easy to write commands that put the game into state
 
 This is the part that changes what is possible.
 
-The [profiler]({{< ref "/post/Profiler" >}}) and the [AngelScript debugger]({{< ref "/post/TextEditor2" >}}) both attach to a running development build over loopback TCP. Not the game inside the editor — the exported binary, running as its own process, on the target machine.
+The [profiler]({{< ref "/post/Profiler" >}}) and the [AngelScript debugger]({{< ref "/post/TextEditor2" >}}) both attach to a running development build over loopback TCP. Not the game inside the editor, but the exported binary, running as its own process, on the target machine.
 
 You get live CPU timeline streaming, and breakpoints, stepping and variable inspection **in a shipped binary**. On [Android]({{< ref "/post/AndroidExport" >}}) you attach across the network to the phone, which is the only way to get honest numbers from real hardware.
 
@@ -69,19 +69,19 @@ That turns "it only happens in the build" from a dead end into a normal debuggin
 #endif
 ```
 
-The word to notice is *stripped*, not hidden. Code inside that guard is not in the shipping binary at all — it cannot be found by a determined player, because it is not there. That is a meaningfully different guarantee from a disabled flag, and it is the right way to ship debug affordances.
+The word to notice is *stripped*, not hidden. Code inside that guard is not in the shipping binary at all, so it cannot be found by a determined player, because it is not there. That is a meaningfully different guarantee from a disabled flag, and it is the right way to ship debug affordances.
 
 ## The cost
 
 A development build is slower and larger. Instrumentation is not free, the servers are running, and the debug drawing has to build its geometry.
 
-So do not benchmark against one. If you want to know whether your game hits 60 fps, that is a shipping build question. A development build tells you *where the time goes*, which is a different and equally important question — you just have to know which one you are asking.
+So do not benchmark against one. If you want to know whether your game hits 60 fps, that is a shipping build question. A development build tells you *where the time goes*, which is a different and equally important question. You just have to know which one you are asking.
 
 ## Automating it
 
 Worth mentioning here because it belongs to the same workflow: `--export <platform>` builds a project from the command line. It forces headless mode, switches the target platform, reimports what it needs, logs progress and exits.
 
-That is what makes nightly builds possible, and combined with [the headless test gates]({{< ref "/post/BuildSystem" >}}) it means a machine can build and validate the engine without anyone watching — which is next week.
+That is what makes nightly builds possible, and combined with [the headless test gates]({{< ref "/post/BuildSystem" >}}) it means a machine can build and validate the engine without anyone watching, which is next week.
 
 ---
 

@@ -21,13 +21,13 @@ Comet builds with **SCons**, driven through a `Build.py` wrapper. One command pr
 
 The part I am most pleased with is the module system, and the design rule is one sentence: **no central file is edited to add a module or a feature.**
 
-A folder under `Modules/` becomes a module when it contains three things — an `SCsub` (one line, builds it into a static library), a `config.py` (dependencies and build conditions), and a `RegisterModule<Name>.cpp` (the entry point).
+A folder under `Modules/` becomes a module when it contains three things: an `SCsub` (one line, builds it into a static library), a `config.py` (dependencies and build conditions), and a `RegisterModule<Name>.cpp` (the entry point).
 
 The build discovers it, compiles every source under it recursively, and generates a dispatcher that calls its registration. You never list source files and you never add yourself to a registry.
 
 The dependency rule that keeps this honest: **engine core never includes anything under `Modules/`.** The arrow always points module → engine. The only thing that names modules is a generated file that lives under `Modules/` itself.
 
-Physics, UI, Audio, Animation, Tilemap, Particles, Navigation, Networking, Multiplayer, Video, VisualScript, NodeGraph, NativeInterop, Input, Bezier — all of them are modules, and each one built into its own static library.
+Physics, UI, Audio, Animation, Tilemap, Particles, Navigation, Networking, Multiplayer, Video, VisualScript, NodeGraph, NativeInterop, Input, Bezier. All of them are modules, and each one built into its own static library.
 
 ## Optional dependencies
 
@@ -39,7 +39,7 @@ That is how the Physics module can use tilemap colliders when Tilemap is present
 
 ![Dropping modules](drop.png)
 
-`COMET_DISABLE_MODULES="Video,Multiplayer"` removes them from a **game** build entirely — not compiled, not linked, not shipped.
+`COMET_DISABLE_MODULES="Video,Multiplayer"` removes them from a **game** build entirely, so it is not compiled, not linked and not shipped.
 
 The editor always keeps every module, so any project stays authorable regardless of what a particular game build excludes. That asymmetry is deliberate and it is the right way round.
 
@@ -49,7 +49,7 @@ The editor always keeps every module, so any project stays authorable regardless
 
 Comet has **no unit test suite**, and I want to be honest that this is a real gap rather than a philosophy.
 
-What it has instead are **headless gates** — the engine runs itself with no window and checks something specific.
+What it has instead are **headless gates**, where the engine runs itself with no window and checks something specific.
 
 `--test-particles-soa` covers every [property module's]({{< ref "/post/Particles1" >}}) maths, pool compaction, lookup-table fidelity, threading determinism and the 100k performance fixture. That last one matters most: a performance rewrite without a performance test is a rewrite that quietly regresses six months later.
 
@@ -87,6 +87,6 @@ Neither is interesting. Both cost an hour the first time.
 
 ---
 
-Next Wednesday: two players in the same world. The networking stack — low-level sockets, one peer abstraction over ENet, WebSocket and WebRTC, TLS and DTLS, and the web constraint that shaped all of it.
+Next Wednesday: two players in the same world. The networking stack: low-level sockets, one peer abstraction over ENet, WebSocket and WebRTC, TLS and DTLS, and the web constraint that shaped all of it.
 
 *Comments and questions welcome ;)*

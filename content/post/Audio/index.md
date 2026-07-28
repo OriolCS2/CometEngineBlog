@@ -55,7 +55,7 @@ A machine humming off to the left of the screen sounds like it is off to the lef
 
 The rolloff curve is worth tuning instead of leaving it at the default. Linear rolloff is rarely right, because real sound falls off fast when you are close and slowly when you are far away, and a curve shaped like that sounds much more natural.
 
-Keep UI sounds and music in 2D. A menu click that pans because the camera happens to be off centre is a bug, and it is one that people find genuinely disorienting.
+Keep UI sounds and music in 2D. A menu click that pans because the camera happens to be off centre is a bug, and it is one that people find really disorienting.
 
 ## Import settings
 

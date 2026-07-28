@@ -56,7 +56,7 @@ Three namespaces sit alongside the save layers.
 
 `Compression` does ZLIB and GZIP at four levels, plus Base64. It is worth it on large binary saves and pointless on a settings file.
 
-`Encryption` does authenticated **AES-256-GCM**, with the key derived by PBKDF2-HMAC-SHA256 over a random salt. It has `Encrypt`, `Decrypt`, and `TryDecrypt` with an explicit success flag, which is the one I would use. With that flag you can tell a genuinely empty plaintext apart from an authentication failure, and that is the difference between "the save is empty" and "the save has been tampered with". Conflating the two is a real bug.
+`Encryption` does authenticated **AES-256-GCM**, with the key derived by PBKDF2-HMAC-SHA256 over a random salt. It has `Encrypt`, `Decrypt`, and `TryDecrypt` with an explicit success flag, which is the one I would use. With that flag you can tell a truly empty plaintext apart from an authentication failure, and that is the difference between "the save is empty" and "the save has been tampered with". Conflating the two is a real bug.
 
 `Crypto` gives you `Sha256`, `HmacSha256` and `SecureRandomBytes` from the OS entropy source.
 

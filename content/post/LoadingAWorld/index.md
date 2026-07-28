@@ -33,7 +33,7 @@ That readability is a deliberate editor only choice. In a **build**, this same s
 
 ## Putting it back together, in order
 
-This part is genuinely delicate.
+This part is delicate.
 
 You cannot just walk the entity list and construct things as you meet them. Think of a scene where a rigid body has a collider, and a joint connects that body to a second one that appears **later** in the file. Construct the joint when you reach it and you are connecting to a body that does not exist yet.
 
