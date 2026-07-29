@@ -7,8 +7,6 @@ categories:
     - Scripting
 tags:
     - AngelScript
-    
-weight: 1
 ---
 Comet Engine is currently using C# for the scripting system. C# is a really powerful programming language but I have found trouble when trying to export for Web and Android. That is why some weeks ago I started looking for a new scripting language more cross-platform friendly. 
 

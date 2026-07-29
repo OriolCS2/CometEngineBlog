@@ -7,8 +7,6 @@ categories:
     - Documentation
 tags:
     - Editor
-    
-weight: 1
 ---
 
 Welcome everyone to my blog about Comet Engine. In this blog I'm going to talk about the development and current features of my custom game engine, Comet Engine. 
