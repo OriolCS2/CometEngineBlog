@@ -61,7 +61,7 @@ The honest headline is that the engine held up and the tooling around it was bet
 
 **What was bad, and it was all one area.** The UI module cost me three separate weeks. `BehaviourRectTransform::LoadBehaviour` assigns its fields without calling its own setters, so anything editing one rect at a time on a live scene stores values that never take effect. A rect anchored at the centre lands hundreds of units from where the numbers say. And the Text renderer draws the wrong glyphs, which is why every readable word in this game's menus is a PNG I made outside the engine with a Python script.
 
-That last one deserves to be said plainly rather than buried: **this game has no working text.** A 2D engine whose font rendering cannot be trusted is missing something fundamental, and I shipped a menu made of pictures of words to work around it.
+That last one is the one I want to chase first, because a 2D engine whose font rendering I cannot trust is missing something fundamental, and shipping a menu made of pictures of words to get around it is not a state I want to leave the engine in.
 
 **The list I am taking into the engine.** The Text renderer. Centre anchoring. `LoadBehaviour` and its setters. `behaviour_set_reference` accepting a field name nothing reads and reporting success, which cost me an hour in week fourteen. `Renderer.material`'s doc comment naming a function that does not exist. A scene name that is not in the build list failing silently. Setting a build path from a tool. Filling in a script's resource fields from a tool. And a way to give a Button's click handler an argument, so a menu does not need eight identical functions.
 
@@ -83,6 +83,8 @@ Total: twenty-two evenings.
 
 ---
 
-The series ends here. The next one is going to be about fixing the UI module, and I now have a game that will tell me when I have.
+This is also where the Wednesdays stop for now. Seventy-four of them without missing one, and I would like to take some time to think about what the next one should be instead of starting another series on the following Wednesday because it is the following Wednesday.
+
+I have a few ideas about where to go next, and none of them is ready. When one is, the weekly posts come back.
 
 *Comments and questions welcome ;)*
