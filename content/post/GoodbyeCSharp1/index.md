@@ -60,8 +60,6 @@ This is where the months went.
 
 **Reflection.** The C# editor integration leaned on reflection constantly. Draw an inspector for an arbitrary class? Walk its fields. Find every class inheriting `CometBehaviour`? Ask the assembly. Read an attribute to decide how a field should be drawn? Reflection again.
 
-AngelScript has type information, but it is type information that somebody registered. The engine knows about a type because something told it, not because it can interrogate the language at runtime. Rebuilding the inspector on top of that meant the script compiler now has to hand the editor a description of every user class it compiled. That subsystem did not exist at all in the C# version. It is now one of the parts of Comet I am most happy with, and it only exists because reflection was taken away from me.
-
 **Garbage collection.** C# scripts could allocate freely and then forget about it. AngelScript reference counts, and reference counting means cycles leak. An Entity holding a script that holds a reference back to the Entity is not a hypothetical, it is the most natural thing a gameplay programmer writes. Comet's object model already used reference counting on the C++ side, so the two systems had to be taught about each other properly rather than approximately.
 
 That work is also the reason `IsValid()`, `IsNull()` and `Is()` exist as global functions instead of you just writing `== null`. A plain null check really does lie in some situations during teardown. I will write a whole post about that later in the year.
