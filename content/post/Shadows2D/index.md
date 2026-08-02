@@ -1,7 +1,7 @@
 ---
 title: Shadows in Two Dimensions
 description: Occluders, soft edges, per-light control, and the afternoon everything pointed the wrong way
-date: 2026-10-21 18:00:00+0000
+date: 2026-10-21 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

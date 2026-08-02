@@ -1,7 +1,7 @@
 ---
 title: "Entities You Can Stamp (Part 1): The InstanciableEntity System"
 description: Build it once, place it a hundred times, and change all hundred at once
-date: 2026-09-02 18:00:00+0000
+date: 2026-09-02 03:00:00+0000
 image: cover.png
 categories:
     - Systems

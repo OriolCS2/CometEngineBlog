@@ -1,7 +1,7 @@
 ---
 title: "Visual Scripting (Part 1): Graphs That Compile to Bytecode"
 description: Not interpreted. The node graph becomes AngelScript bytecode and runs at exactly the same speed
-date: 2027-01-27 18:00:00+0000
+date: 2027-01-27 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

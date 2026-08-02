@@ -1,7 +1,7 @@
 ---
 title: Talking to Native Code
 description: Loading a real dynamic library from AngelScript, and shipping only the binary each platform needs
-date: 2027-02-17 18:00:00+0000
+date: 2027-02-17 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

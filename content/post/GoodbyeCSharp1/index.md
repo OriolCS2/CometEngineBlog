@@ -1,7 +1,7 @@
 ---
 title: "Saying Goodbye to C#: How the Migration Actually Went (Part 1)"
 description: 300 script files, six months of evenings, and the three things AngelScript simply does not have
-date: 2026-08-05 18:00:00+0000
+date: 2026-08-05 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

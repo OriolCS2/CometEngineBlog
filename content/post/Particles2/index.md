@@ -1,7 +1,7 @@
 ---
 title: "A Hundred Thousand Particles (Part 2): Moving It to the GPU"
 description: Three compute kernels, an indirect draw, and a CPU that never learns how many particles are alive
-date: 2026-12-02 18:00:00+0000
+date: 2026-12-02 03:00:00+0000
 image: cover.png
 categories:
     - Performance

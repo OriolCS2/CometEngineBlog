@@ -1,7 +1,7 @@
 ---
 title: Everything Falls Down
 description: Box2D 3, colliders, joints, the collision matrix, and three bugs that each taught me something
-date: 2027-04-07 18:00:00+0000
+date: 2027-04-07 03:00:00+0000
 image: cover.png
 categories:
     - Systems

@@ -1,7 +1,7 @@
 ---
 title: Shipping to Android
 description: The NDK, four architectures, Vulkan on mobile, and what changes when the screen is a finger
-date: 2027-06-09 18:00:00+0000
+date: 2027-06-09 03:00:00+0000
 image: cover.png
 categories:
     - Platforms

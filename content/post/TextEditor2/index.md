@@ -1,7 +1,7 @@
 ---
 title: "The Editor Has Its Own IDE (Part 2): Refactor and Debug"
 description: Rename Symbol, Find All References, and breakpoints in a game that is already running
-date: 2027-01-20 18:00:00+0000
+date: 2027-01-20 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

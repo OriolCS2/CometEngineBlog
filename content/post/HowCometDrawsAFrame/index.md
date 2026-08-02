@@ -1,7 +1,7 @@
 ---
 title: How Comet Draws a Frame
 description: From four thousand sprites to twelve draw calls, and what quietly refuses to merge
-date: 2026-09-23 18:00:00+0000
+date: 2026-09-23 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

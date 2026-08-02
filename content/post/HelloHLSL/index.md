@@ -1,7 +1,7 @@
 ---
 title: The Year I Deleted Every Shader
 description: 2.8 removed GLSL authoring entirely and replaced it with HLSL. Here is why that was worth it
-date: 2026-10-28 18:00:00+0000
+date: 2026-10-28 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

@@ -1,7 +1,7 @@
 ---
 title: "Animation (Part 2): State Machines"
 description: States, parameters, exit time, controller overrides and root motion
-date: 2027-03-31 18:00:00+0000
+date: 2027-03-31 03:00:00+0000
 image: cover.png
 categories:
     - Systems

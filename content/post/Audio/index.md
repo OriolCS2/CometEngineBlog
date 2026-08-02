@@ -1,7 +1,7 @@
 ---
 title: Making Noise
 description: SoLoud, the redesigned mixer, effects, and 3D audio in a game with no third dimension
-date: 2026-12-16 18:00:00+0000
+date: 2026-12-16 03:00:00+0000
 image: cover.png
 categories:
     - Systems

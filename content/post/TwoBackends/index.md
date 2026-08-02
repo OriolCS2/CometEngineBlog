@@ -1,7 +1,7 @@
 ---
 title: Two Backends, One Renderer
 description: Why a 2D engine has a Vulkan path, and what the render thread is actually for
-date: 2026-09-30 18:00:00+0000
+date: 2026-09-30 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

@@ -1,7 +1,7 @@
 ---
 title: How Comet Builds Itself
 description: SCons, modules that wire themselves in, and testing an engine with no unit test framework
-date: 2027-06-23 18:00:00+0000
+date: 2027-06-23 03:00:00+0000
 image: cover.png
 categories:
     - Platforms

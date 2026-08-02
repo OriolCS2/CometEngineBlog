@@ -1,7 +1,7 @@
 ---
 title: "Multiplayer (Part 1): The Stack Underneath"
 description: One peer abstraction over three transports, and the web constraint that shaped all of it
-date: 2027-06-30 18:00:00+0000
+date: 2027-06-30 03:00:00+0000
 image: cover.png
 categories:
     - Networking

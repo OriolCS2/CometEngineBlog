@@ -1,7 +1,7 @@
 ---
 title: "Multiplayer (Part 2): Replication Without the Pain"
 description: RPCs, synchronizers, spawners, authority, and the late joiner everybody forgets
-date: 2027-07-07 18:00:00+0000
+date: 2027-07-07 03:00:00+0000
 image: cover.png
 categories:
     - Networking

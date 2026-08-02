@@ -1,7 +1,7 @@
 ---
 title: Entities, Behaviours and What Holds Them
 description: Comet's object model explained without a single line of C++
-date: 2026-08-26 18:00:00+0000
+date: 2026-08-26 03:00:00+0000
 image: cover.png
 categories:
     - Documentation

@@ -1,7 +1,7 @@
 ---
 title: "Tilemaps (Part 2): Tiles That Think"
 description: Rule tiles, autotile bitmasks, and randomness that looks random and never changes
-date: 2027-03-10 18:00:00+0000
+date: 2027-03-10 03:00:00+0000
 image: cover.png
 categories:
     - Systems

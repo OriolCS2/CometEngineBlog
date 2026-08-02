@@ -1,7 +1,7 @@
 ---
 title: "The Editor Has Its Own IDE (Part 1)"
 description: I wrote a code editor inside a game engine. Here is why, and what it does all day
-date: 2027-01-13 18:00:00+0000
+date: 2027-01-13 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

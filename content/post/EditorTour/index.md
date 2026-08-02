@@ -1,7 +1,7 @@
 ---
 title: A Tour of the Comet Editor
 description: Six panels, one dark theme, and a pile of small decisions that took longer than they look
-date: 2026-08-19 18:00:00+0000
+date: 2026-08-19 03:00:00+0000
 image: cover.png
 categories:
     - Editor

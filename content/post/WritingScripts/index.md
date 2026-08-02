@@ -1,7 +1,7 @@
 ---
 title: A Day of Writing Comet Scripts
 description: Not the language, the loop. Fields become widgets, attributes are direction, and the scene survives a recompile
-date: 2027-01-06 18:00:00+0000
+date: 2027-01-06 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

@@ -1,7 +1,7 @@
 ---
 title: "Entities You Can Stamp (Part 2): Variants and Overrides"
 description: An instance only remembers what it disagrees about, and the rule for when three levels argue
-date: 2026-09-09 18:00:00+0000
+date: 2026-09-09 03:00:00+0000
 image: cover.png
 categories:
     - Systems

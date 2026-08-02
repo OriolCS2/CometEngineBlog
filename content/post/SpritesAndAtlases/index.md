@@ -1,7 +1,7 @@
 ---
 title: Sprites, Atlases and Draw Calls
 description: Slicing, pivots, 9-slice borders, and the reason all of it exists
-date: 2027-03-17 18:00:00+0000
+date: 2027-03-17 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

@@ -1,7 +1,7 @@
 ---
 title: "Let There Be Light (Part 1): 2D Lighting"
 description: Five light types, four blend modes, a height value in a flat world, and a light that removes light
-date: 2026-10-07 18:00:00+0000
+date: 2026-10-07 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

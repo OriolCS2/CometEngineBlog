@@ -1,7 +1,7 @@
 ---
 title: "Shader Graph (Part 2): Blackboard, Sub Graphs and Vertex Offset"
 description: Turning a graph into a material somebody else can use, and moving the geometry, not just colouring it
-date: 2026-11-11 18:00:00+0000
+date: 2026-11-11 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

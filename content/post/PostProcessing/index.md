@@ -1,7 +1,7 @@
 ---
 title: Painting Over the Whole Screen
 description: Post-process profiles, writing your own full-screen pass, and the cost nobody notices until mobile
-date: 2026-11-18 18:00:00+0000
+date: 2026-11-18 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

@@ -1,7 +1,7 @@
 ---
 title: "Tilemaps (Part 1): Grids, Palettes and Painting"
 description: Building a world one brush stroke at a time, and the collider merging that makes it walkable
-date: 2027-03-03 18:00:00+0000
+date: 2027-03-03 03:00:00+0000
 image: cover.png
 categories:
     - Systems

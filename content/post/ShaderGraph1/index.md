@@ -1,7 +1,7 @@
 ---
 title: "Shader Graph (Part 1): Nodes Instead of Code"
 description: Building a dissolve effect by wiring boxes together, with a live preview the whole way
-date: 2026-11-04 18:00:00+0000
+date: 2026-11-04 03:00:00+0000
 image: cover.png
 categories:
     - Rendering

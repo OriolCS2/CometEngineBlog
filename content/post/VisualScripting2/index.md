@@ -1,7 +1,7 @@
 ---
 title: "Visual Scripting (Part 2): Watching a Graph Think"
 description: Nodes light up as execution flows through them, pins show live values, and you can stop on one
-date: 2027-02-03 18:00:00+0000
+date: 2027-02-03 03:00:00+0000
 image: cover.png
 categories:
     - Scripting

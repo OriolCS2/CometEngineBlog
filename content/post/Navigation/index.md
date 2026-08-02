@@ -1,7 +1,7 @@
 ---
 title: Getting From A to B
 description: Grid A* with jump point search, navmeshes, agents, and per-agent rules about what counts as walkable
-date: 2027-04-28 18:00:00+0000
+date: 2027-04-28 03:00:00+0000
 image: cover.png
 categories:
     - Systems

@@ -1,7 +1,7 @@
 ---
 title: Text That Moves
 description: Kerning, glyph atlases, and writing a BBCode tag for the occasion
-date: 2026-12-23 18:00:00+0000
+date: 2026-12-23 03:00:00+0000
 image: cover.png
 categories:
     - Systems

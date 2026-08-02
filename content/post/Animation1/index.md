@@ -1,7 +1,7 @@
 ---
 title: "Animation (Part 1): The Timeline"
 description: Recording, keyframes, events that call your code, and animating your own script fields
-date: 2027-03-24 18:00:00+0000
+date: 2027-03-24 03:00:00+0000
 image: cover.png
 categories:
     - Systems

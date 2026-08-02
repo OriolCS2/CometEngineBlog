@@ -1,7 +1,7 @@
 ---
 title: An Editor That Edits Itself
 description: Custom windows, custom inspectors, scriptable settings pages, and building your own node-graph tools
-date: 2027-02-10 18:00:00+0000
+date: 2027-02-10 03:00:00+0000
 image: cover.png
 categories:
     - Editor

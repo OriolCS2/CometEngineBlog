@@ -1,7 +1,7 @@
 ---
 title: An Editor an AI Can Drive
 description: A Model Context Protocol server inside the engine, and exactly how this blog was illustrated
-date: 2027-07-14 18:00:00+0000
+date: 2027-07-14 03:00:00+0000
 image: cover.png
 categories:
     - Editor

@@ -1,7 +1,7 @@
 ---
 title: Loading a World
 description: What is inside a scene file, three ways to load one, and why the order matters
-date: 2026-09-16 18:00:00+0000
+date: 2026-09-16 03:00:00+0000
 image: cover.png
 categories:
     - Systems

@@ -1,7 +1,7 @@
 ---
 title: "Let There Be Light (Part 2): Normal Maps and Specular"
 description: Teaching a flat rectangle to lie convincingly about being a surface
-date: 2026-10-14 18:00:00+0000
+date: 2026-10-14 03:00:00+0000
 image: cover.png
 categories:
     - Rendering
