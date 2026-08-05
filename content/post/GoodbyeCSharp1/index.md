@@ -1,8 +1,11 @@
 ---
 title: "Saying Goodbye to C#: How the Migration Actually Went (Part 1)"
+slug: saying-goodbye-to-csharp-how-the-migration-actually-went-part-1
 description: 300 script files, six months of evenings, and the three things AngelScript simply does not have
 date: 2026-08-05 03:00:00+0000
 image: cover.png
+aliases:
+    - "/p/saying-goodbye-to-c#-how-the-migration-actually-went-part-1/"
 categories:
     - Scripting
 tags:

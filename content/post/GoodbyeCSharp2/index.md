@@ -1,5 +1,6 @@
 ---
 title: "Saying Goodbye to C# (Part 2): What I Got Back"
+slug: saying-goodbye-to-csharp-part-2-what-i-got-back
 description: One binary instead of a runtime, a compiler that argues with me, and a Comet game running in a browser tab
 date: 2026-08-12 03:00:00+0000
 image: cover.png
