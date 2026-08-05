@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Devlog on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/categories/devlog/</link><description>Recent content in Devlog on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 29 Jul 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/categories/devlog/index.xml" rel="self" type="application/rss+xml"/><item><title>Comet Engine Is Back, And It Grew Up</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</link><pubDate>Wed, 29 Jul 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/cover.png" alt="Featured image of post Comet Engine Is Back, And It Grew Up" /&gt;&lt;p&gt;The last time I posted here was May 2025. I had just decided to throw away the C# scripting system, I was three weeks into rewriting 300 script files in AngelScript, and I finished that post with a sentence I have thought about many times since:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I missed it by about four months. 2.0 shipped in April 2026.&lt;/p&gt;
+&lt;p&gt;What I did not expect is that once 2.0 was out, everything got faster. Nine releases landed between April and July. The blog stayed quiet the whole time, because every evening went into the engine instead of into writing about the engine. I think that was the right call back then. It is the wrong call now, because there is a year of work in here that nobody has seen.&lt;/p&gt;
+&lt;p&gt;So this post is the catch up, and at the end of it there is a promise.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today.png"
+width="1124"
+height="580"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_2d9c0720c8757e3b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_b9de506ec9442d02.png 1024w"
+loading="lazy"
+alt="Comet Engine today"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;h2 id="what-has-changed-since-then"&gt;What has changed since then
+&lt;/h2&gt;&lt;p&gt;I want to put the numbers down first, because they surprised me when I collected them.&lt;/p&gt;
+&lt;p&gt;Since the last post there have been &lt;strong&gt;nine releases&lt;/strong&gt;, 2.0 through 2.8. The engine went from &amp;ldquo;a 2D editor with C# scripting that runs on Windows and Linux&amp;rdquo; to something I have a hard time describing in one sentence. That is a problem by itself, and part of why this blog is starting again.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases.png"
+width="1100"
+height="300"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_33479d57f7f216d0.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_ca11e65aaa9c391.png 1024w"
+loading="lazy"
+alt="Release timeline"
+class="gallery-image"
+data-flex-grow="366"
+data-flex-basis="880px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The biggest change is the one I was writing about last time. &lt;strong&gt;C# is gone&lt;/strong&gt;, completely. AngelScript is the only scripting language now, and 2.0 was a hard break, so projects written for 1.x do not open. That decision made me quite uncomfortable and I am going to spend the next two Wednesdays on it, because &amp;ldquo;I rewrote 300 files&amp;rdquo; is not really the point. What matters is what I got in exchange, and what it cost me.&lt;/p&gt;
+&lt;p&gt;The short version of the exchange is that the engine now runs in a browser and on a phone. That was the entire reason for the migration, and it worked.&lt;/p&gt;
+&lt;h2 id="other-things-that-landed"&gt;Other things that landed
+&lt;/h2&gt;&lt;p&gt;If the story had ended at AngelScript, Web and Android, this would be a shorter post. It did not.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_6b453f80de4c78ed.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_5db4f15bd07aa44c.png 1024w"
+loading="lazy"
+alt="What landed"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Somewhere around 2.2 the pace changed. Things I had written down as &amp;ldquo;maybe in a few years&amp;rdquo; started landing in single releases. A &lt;strong&gt;Shader Graph&lt;/strong&gt; with about 115 nodes, so you can build a dissolve effect without writing a line of HLSL. &lt;strong&gt;Visual Scripting&lt;/strong&gt;, where the node graph compiles directly into AngelScript bytecode, so it is not interpreted and it is not a slower path, it is the same bytecode a hand written script produces. &lt;strong&gt;2D dynamic shadows&lt;/strong&gt;. &lt;strong&gt;A Vulkan backend&lt;/strong&gt;, loaded at runtime so machines without a Vulkan driver still boot on OpenGL.&lt;/p&gt;
+&lt;p&gt;And the one I am still a bit amazed by: the particle system now simulates &lt;strong&gt;a hundred thousand particles in 2.7 milliseconds&lt;/strong&gt; on the CPU, or moves the whole simulation onto the GPU with compute shaders if the backend supports it. The old particle system was one object per particle, with a virtual call per property per particle. That rewrite deserves a post of its own, probably two.&lt;/p&gt;
+&lt;p&gt;There is also a full networking stack now, with ENet, WebSocket and WebRTC transports and high level scene replication on top. There is a package manager with a marketplace. There is a profiler with flame graphs that can attach to a running build over TCP. There is an MCP server inside the editor, so an AI assistant can drive it.&lt;/p&gt;
+&lt;p&gt;I am listing all this like a changelog, which is exactly what I do not want this blog to be, so I will stop here.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_1a8bfe7da0367a95.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_8f8dbba7c94442d.png 1024w"
+loading="lazy"
+alt="The game view"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;h2 id="why-the-blog-is-starting-again"&gt;Why the blog is starting again
+&lt;/h2&gt;&lt;p&gt;Comet has become quite capable and almost completely invisible. When somebody asks me what it does, I either give a two word answer that undersells it, or I talk for twenty minutes and lose them. There is nothing in between, and that is a writing problem, not an engine problem.&lt;/p&gt;
+&lt;p&gt;There is also a selfish reason. Every time I have written about a system in this blog, I have found a bug in it. Explaining how something works to a stranger is the most reliable code review I know. Fourteen months of not writing is fourteen months of not doing that review.&lt;/p&gt;
+&lt;h2 id="a-post-every-wednesday"&gt;A post every Wednesday
+&lt;/h2&gt;&lt;p&gt;That is the promise, and I want to keep it for a year.&lt;/p&gt;
+&lt;p&gt;Not a changelog and not a tutorial. I want to explain what Comet actually is, one system at a time, in a way that is enjoyable to read whether or not you ever intend to use it. Lots of pictures, and real screenshots from the real editor instead of marketing renders.&lt;/p&gt;
+&lt;p&gt;Some of them will come in parts, because &amp;ldquo;2D lighting&amp;rdquo; is not one post and pretending it is would make it a bad one. When a post belongs to a series I will say so at the bottom and tell you what is coming the following Wednesday.&lt;/p&gt;
+&lt;p&gt;Next Wednesday: the migration. What a Comet script looked like in C#, what the mono bridge was actually doing, which parts of the port were mechanical, and the three things AngelScript flatly does not have that I had to design around.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;See you Wednesday. Feel free to share comments or questions ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

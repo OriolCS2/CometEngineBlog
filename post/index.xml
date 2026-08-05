@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/post/</link><description>Recent content in Posts on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 05 Aug 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Saying Goodbye to C#: How the Migration Actually Went (Part 1)</title><link>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</link><pubDate>Wed, 05 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/cover.png" alt="Featured image of post Saying Goodbye to C#: How the Migration Actually Went (Part 1)" /&gt;&lt;p&gt;In May 2025 I wrote a post about picking a new scripting language. I tried Lua, I tried ChaiScript, I ended up with AngelScript, and I closed that post with a confident estimate: about six months to convert 300 C# files.&lt;/p&gt;
+&lt;p&gt;The conversion took closer to nine. The file count was never the hard part though, and I want to be honest about what was.&lt;/p&gt;
+&lt;h2 id="why-i-did-this-at-all"&gt;Why I did this at all
+&lt;/h2&gt;&lt;p&gt;Comet used C# through Mono. If you have never had to ship a Mono runtime to four platforms, this is the shape of the problem.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_12c811bfcf5dd1d2.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_1c77be7f389ff63.png 1024w"
+loading="lazy"
+alt="The old bridge"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The editor compiled your scripts with Roslyn into a real .NET assembly. At runtime, Comet embedded the Mono runtime, loaded that assembly, and every single call between your script and the engine went across a bridge: marshal the arguments, pin the managed objects so the garbage collector could not move them mid call, call into C++, unpin, marshal the result back.&lt;/p&gt;
+&lt;p&gt;On Windows and Linux this worked fine. I shipped 1.0 with it and it was really pleasant to write games in.&lt;/p&gt;
+&lt;p&gt;Then I tried to export to the web.&lt;/p&gt;
+&lt;p&gt;Mono can technically target WebAssembly. Getting it to do that inside an engine that also wants SDL3, OpenGL ES and Emscripten&amp;rsquo;s own threading model, at a binary size that a browser will actually download, turned out to be a project roughly the size of the engine itself. Android was less bad and still bad. I spent a long time on both of them before I admitted that the problem was not my build configuration. The problem was that I had chosen a scripting language that brings its own runtime, and I needed one that compiles into mine.&lt;/p&gt;
+&lt;p&gt;So the reason for all of this was &lt;strong&gt;portability&lt;/strong&gt;, not performance and not language taste.&lt;/p&gt;
+&lt;h2 id="what-a-comet-script-looks-like"&gt;What a Comet script looks like
+&lt;/h2&gt;&lt;p&gt;Here is the same Behaviour, before and after. It is a real one, a patrolling enemy that walks between two points.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side.png"
+width="1180"
+height="750"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_8d98b0c27ff7fc1b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_45682f152bc6f540.png 1024w"
+loading="lazy"
+alt="C# and AngelScript side by side"
+class="gallery-image"
+data-flex-grow="157"
+data-flex-basis="377px"
+&gt;&lt;/p&gt;
+&lt;p&gt;If your reaction is &amp;ldquo;those are nearly the same file&amp;rdquo;, good. That is exactly the bet I made when I chose AngelScript over Lua. Lua would have been easier to embed and it would have forced me to redesign the whole scripting API around tables and closures. AngelScript is statically typed, class based, compiles to bytecode, and looks enough like C# that most of my engine&amp;rsquo;s API surface could survive the move.&lt;/p&gt;
+&lt;p&gt;The mechanical differences you can see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;using CometEngine&lt;/code&gt; becomes &lt;code&gt;using namespace CometEngine&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Static access uses &lt;code&gt;::&lt;/code&gt; instead of &lt;code&gt;.&lt;/code&gt;, so &lt;code&gt;Time::deltaTime&lt;/code&gt; and &lt;code&gt;Vector2::Distance&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;public&lt;/code&gt; on members. In AngelScript everything is public by default and you write &lt;code&gt;private&lt;/code&gt; when you mean it&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;override&lt;/code&gt;. Engine callbacks like &lt;code&gt;Start&lt;/code&gt; and &lt;code&gt;Update&lt;/code&gt; are found by name, not by virtual dispatch&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;var&lt;/code&gt; is gone. Types are written out&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For maybe 70% of the 300 files that was the whole change. I wrote a script that did the obvious substitutions, ran it over everything, and then went through the results by hand.&lt;/p&gt;
+&lt;h2 id="the-other-30"&gt;The other 30%
+&lt;/h2&gt;&lt;p&gt;This is where the months went.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_5a5d28b6b4495147.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_153acf1b918533ff.png 1024w"
+loading="lazy"
+alt="Three gaps"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Generics.&lt;/strong&gt; AngelScript has &lt;code&gt;array&amp;lt;T&amp;gt;&lt;/code&gt;, and that is essentially it. There is no &lt;code&gt;List&amp;lt;T&amp;gt;&lt;/code&gt;, no &lt;code&gt;Dictionary&amp;lt;TKey, TValue&amp;gt;&lt;/code&gt; in the general case, and no way to write your own generic container. Every place where the C# API had exposed a generic helper, I had to either pick a concrete type or register a new template type from C++ by hand. This is the single biggest reason the port took longer than I estimated. It is also why 2.8 added &lt;code&gt;list&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;stack&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;queue&amp;lt;T&amp;gt;&lt;/code&gt; and &lt;code&gt;set&amp;lt;T&amp;gt;&lt;/code&gt;, because I kept hitting the same wall while porting.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reflection.&lt;/strong&gt; The C# editor integration leaned on reflection constantly. Draw an inspector for an arbitrary class? Walk its fields. Find every class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt;? Ask the assembly. Read an attribute to decide how a field should be drawn? Reflection again.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Garbage collection.&lt;/strong&gt; C# scripts could allocate freely and then forget about it. AngelScript reference counts, and reference counting means cycles leak. An Entity holding a script that holds a reference back to the Entity is not a hypothetical, it is the most natural thing a gameplay programmer writes. Comet&amp;rsquo;s object model already used reference counting on the C++ side, so the two systems had to be taught about each other properly rather than approximately.&lt;/p&gt;
+&lt;p&gt;That work is also the reason &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt; exist as global functions instead of you just writing &lt;code&gt;== null&lt;/code&gt;. A plain null check really does lie in some situations during teardown. I will write a whole post about that later in the year.&lt;/p&gt;
+&lt;h2 id="the-day-it-compiled"&gt;The day it compiled
+&lt;/h2&gt;&lt;p&gt;The part I remember most clearly is not finishing, it is the console.&lt;/p&gt;
+&lt;p&gt;For about five months the script console was a wall of red. Not a few errors but hundreds of them, because a missing type near the bottom of the dependency graph fails every file above it. You fix one thing and the count goes up, because now the compiler can get far enough into a file to find the next problem. There is no partial credit and no way to test anything, because nothing runs until all of it compiles.&lt;/p&gt;
+&lt;p&gt;Then one evening in February 2026 I fixed what I assumed was another one of the several hundred errors that were left, and the console printed nothing.&lt;/p&gt;
+&lt;p&gt;I really thought it had crashed.&lt;/p&gt;
+&lt;p&gt;It had not. It had compiled. Then of course nothing worked, the game booted and every script did the wrong thing, which is a completely different and much more enjoyable kind of problem, because at that point you can actually run something and look at it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;That is the cost side. Next Wednesday is the other half, what I got in exchange. One binary instead of a runtime, type safety that caught things I did not expect, compile times that changed how I work, and the thing that started all of this, a Comet game running in a browser tab and on a phone.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Part 2 is next Wednesday. Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Comet Engine Is Back, And It Grew Up</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</link><pubDate>Wed, 29 Jul 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/cover.png" alt="Featured image of post Comet Engine Is Back, And It Grew Up" /&gt;&lt;p&gt;The last time I posted here was May 2025. I had just decided to throw away the C# scripting system, I was three weeks into rewriting 300 script files in AngelScript, and I finished that post with a sentence I have thought about many times since:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I missed it by about four months. 2.0 shipped in April 2026.&lt;/p&gt;
+&lt;p&gt;What I did not expect is that once 2.0 was out, everything got faster. Nine releases landed between April and July. The blog stayed quiet the whole time, because every evening went into the engine instead of into writing about the engine. I think that was the right call back then. It is the wrong call now, because there is a year of work in here that nobody has seen.&lt;/p&gt;
+&lt;p&gt;So this post is the catch up, and at the end of it there is a promise.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today.png"
+width="1124"
+height="580"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_2d9c0720c8757e3b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_b9de506ec9442d02.png 1024w"
+loading="lazy"
+alt="Comet Engine today"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;h2 id="what-has-changed-since-then"&gt;What has changed since then
+&lt;/h2&gt;&lt;p&gt;I want to put the numbers down first, because they surprised me when I collected them.&lt;/p&gt;
+&lt;p&gt;Since the last post there have been &lt;strong&gt;nine releases&lt;/strong&gt;, 2.0 through 2.8. The engine went from &amp;ldquo;a 2D editor with C# scripting that runs on Windows and Linux&amp;rdquo; to something I have a hard time describing in one sentence. That is a problem by itself, and part of why this blog is starting again.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases.png"
+width="1100"
+height="300"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_33479d57f7f216d0.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_ca11e65aaa9c391.png 1024w"
+loading="lazy"
+alt="Release timeline"
+class="gallery-image"
+data-flex-grow="366"
+data-flex-basis="880px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The biggest change is the one I was writing about last time. &lt;strong&gt;C# is gone&lt;/strong&gt;, completely. AngelScript is the only scripting language now, and 2.0 was a hard break, so projects written for 1.x do not open. That decision made me quite uncomfortable and I am going to spend the next two Wednesdays on it, because &amp;ldquo;I rewrote 300 files&amp;rdquo; is not really the point. What matters is what I got in exchange, and what it cost me.&lt;/p&gt;
+&lt;p&gt;The short version of the exchange is that the engine now runs in a browser and on a phone. That was the entire reason for the migration, and it worked.&lt;/p&gt;
+&lt;h2 id="other-things-that-landed"&gt;Other things that landed
+&lt;/h2&gt;&lt;p&gt;If the story had ended at AngelScript, Web and Android, this would be a shorter post. It did not.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_6b453f80de4c78ed.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_5db4f15bd07aa44c.png 1024w"
+loading="lazy"
+alt="What landed"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Somewhere around 2.2 the pace changed. Things I had written down as &amp;ldquo;maybe in a few years&amp;rdquo; started landing in single releases. A &lt;strong&gt;Shader Graph&lt;/strong&gt; with about 115 nodes, so you can build a dissolve effect without writing a line of HLSL. &lt;strong&gt;Visual Scripting&lt;/strong&gt;, where the node graph compiles directly into AngelScript bytecode, so it is not interpreted and it is not a slower path, it is the same bytecode a hand written script produces. &lt;strong&gt;2D dynamic shadows&lt;/strong&gt;. &lt;strong&gt;A Vulkan backend&lt;/strong&gt;, loaded at runtime so machines without a Vulkan driver still boot on OpenGL.&lt;/p&gt;
+&lt;p&gt;And the one I am still a bit amazed by: the particle system now simulates &lt;strong&gt;a hundred thousand particles in 2.7 milliseconds&lt;/strong&gt; on the CPU, or moves the whole simulation onto the GPU with compute shaders if the backend supports it. The old particle system was one object per particle, with a virtual call per property per particle. That rewrite deserves a post of its own, probably two.&lt;/p&gt;
+&lt;p&gt;There is also a full networking stack now, with ENet, WebSocket and WebRTC transports and high level scene replication on top. There is a package manager with a marketplace. There is a profiler with flame graphs that can attach to a running build over TCP. There is an MCP server inside the editor, so an AI assistant can drive it.&lt;/p&gt;
+&lt;p&gt;I am listing all this like a changelog, which is exactly what I do not want this blog to be, so I will stop here.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_1a8bfe7da0367a95.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_8f8dbba7c94442d.png 1024w"
+loading="lazy"
+alt="The game view"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;h2 id="why-the-blog-is-starting-again"&gt;Why the blog is starting again
+&lt;/h2&gt;&lt;p&gt;Comet has become quite capable and almost completely invisible. When somebody asks me what it does, I either give a two word answer that undersells it, or I talk for twenty minutes and lose them. There is nothing in between, and that is a writing problem, not an engine problem.&lt;/p&gt;
+&lt;p&gt;There is also a selfish reason. Every time I have written about a system in this blog, I have found a bug in it. Explaining how something works to a stranger is the most reliable code review I know. Fourteen months of not writing is fourteen months of not doing that review.&lt;/p&gt;
+&lt;h2 id="a-post-every-wednesday"&gt;A post every Wednesday
+&lt;/h2&gt;&lt;p&gt;That is the promise, and I want to keep it for a year.&lt;/p&gt;
+&lt;p&gt;Not a changelog and not a tutorial. I want to explain what Comet actually is, one system at a time, in a way that is enjoyable to read whether or not you ever intend to use it. Lots of pictures, and real screenshots from the real editor instead of marketing renders.&lt;/p&gt;
+&lt;p&gt;Some of them will come in parts, because &amp;ldquo;2D lighting&amp;rdquo; is not one post and pretending it is would make it a bad one. When a post belongs to a series I will say so at the bottom and tell you what is coming the following Wednesday.&lt;/p&gt;
+&lt;p&gt;Next Wednesday: the migration. What a Comet script looked like in C#, what the mono bridge was actually doing, which parts of the port were mechanical, and the three things AngelScript flatly does not have that I had to design around.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;See you Wednesday. Feel free to share comments or questions ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Scripting System Rework</title><link>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</link><pubDate>Tue, 27 May 2025 21:48:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/cover.png" alt="Featured image of post Scripting System Rework" /&gt;&lt;p&gt;Comet Engine is currently using C# for the scripting system. C# is a really powerful programming language but I have found trouble when trying to export for Web and Android. That is why some weeks ago I started looking for a new scripting language more cross-platform friendly.&lt;/p&gt;
+&lt;p&gt;After some research I gave a try to this three languages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.lua.org/about.html" target="_blank" rel="noopener"
+&gt;Lua&lt;/a&gt;: It is one of the most known scripting languages and it is really easy to embed to a C++ application using &lt;a class="link" href="https://github.com/ThePhD/sol2" target="_blank" rel="noopener"
+&gt;Sol3&lt;/a&gt;. After making a try to integrate this language I decided to look for another because Lua is not an object oriented language and I would like to find one that it is.
+This is how lua looks like:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua.png"
+width="513"
+height="471"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_b70600a9c67390f5.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_479547485bdb45ea.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="108"
+data-flex-basis="261px"
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="http://chaiscript.com/index.html" target="_blank" rel="noopener"
+&gt;Chaiscript&lt;/a&gt;: It is a javascript-like scripting language created to be embeded to C++ applications. I did also some testing using it and I was feeling really comfortable working with it, but after reading more about it I felt that it was not prepared to be exported to Web or Android even if some post said that it was possible. As the main purpose is to change to a cross-platform language I had to give up implementing this one. Chaiscript looks like this:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai.png"
+width="538"
+height="587"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_8e8cf6aec172b108.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_add168df5f6385b8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="91"
+data-flex-basis="219px"
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.angelcode.com/angelscript/" target="_blank" rel="noopener"
+&gt;AngelScript&lt;/a&gt;: It is a scripting language really similar to C# and also it could be compared to C++ as well. It is mainly used to be integrated to C/C++ applications. It is a object oriented language and it is compiled in byte code, so this makes this language to be type safety. Also the C++ library used to embed this language works almost the same way I used with C# with mono. This is the most important point because this will allow me to keep everything from my current scripting system and I just have to adapt some new things.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel.png"
+width="540"
+height="504"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_2283614cbd2473d1.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_a69742e39c248c72.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="107"
+data-flex-basis="257px"
+&gt;&lt;/p&gt;
+&lt;p&gt;A few days ago I started adapting all the Comet Engine C# classes to Angelscript and even if the syntaxis is quite the same I think it will take me about 6 months to adapt the 300 C# script files to AngelScript. So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p&gt;
+&lt;p&gt;Here it is a comparasion between the same script in C# and in AngelScript:&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp.png"
+width="999"
+height="600"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_7492f63da4cc0748.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_30f7599b6d6f4735.png 1024w"
+loading="lazy"
+alt="AngelScript"
+class="gallery-image"
+data-flex-grow="166"
+data-flex-basis="399px"
+&gt; &lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp.png"
+width="964"
+height="681"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_b8505c3b29c2916c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_2d80ee8513fe3212.png 1024w"
+loading="lazy"
+alt="C#"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Once I will have all the AngelScript scripting integrated, I will take a look to export to Web and Android again. Let&amp;rsquo;s see if AngelScript has been a good choice.&lt;/p&gt;</description></item><item><title>Comet Engine</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</link><pubDate>Tue, 13 May 2025 18:49:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/cover.png" alt="Featured image of post Comet Engine" /&gt;&lt;p&gt;Welcome everyone to my blog about Comet Engine. In this blog I&amp;rsquo;m going to talk about the development and current features of my custom game engine, Comet Engine.&lt;/p&gt;
+&lt;p&gt;First of all, what is Comet Engine? It is a custom game engine made from scratch with C++, SDL3 and OpenGL. It&amp;rsquo;s been 4 years since I started developing it and now it looks like this:
+&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor.png"
+width="1919"
+height="1037"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c832f1589efe3a70.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c6128973a697599b.png 1024w"
+loading="lazy"
+alt="Image 1"
+class="gallery-image"
+data-flex-grow="185"
+data-flex-basis="444px"
+&gt;&lt;/p&gt;
+&lt;p&gt;At this point the main features are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;2D Rendering&lt;/li&gt;
+&lt;li&gt;Sprite atlas subsystem&lt;/li&gt;
+&lt;li&gt;Physics&lt;/li&gt;
+&lt;li&gt;2D Lighting&lt;/li&gt;
+&lt;li&gt;2D and 3D Audio&lt;/li&gt;
+&lt;li&gt;Custom Shaders&lt;/li&gt;
+&lt;li&gt;Bunch of in editor customizations&lt;/li&gt;
+&lt;li&gt;Exporting for Windows and Linux&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is also possible to create game scripts using the C# system integrated in Comet, but now I&amp;rsquo;m working on a new system because it&amp;rsquo;s been quite difficult to export the C# system to web or android. So expect a new Comet Engine major version (2.0) breaking the compatibility with C# is comming this year! This topic will have a custom post soon.&lt;/p&gt;
+&lt;p&gt;I attach a presentation trailer that I made 3 years ago in order to start understanding what is Comet and how it works!
+&lt;div class="video-wrapper"&gt;
+&lt;iframe loading="lazy"
+src="https://www.youtube.com/embed/zLf-vsr-gkk"
+allowfullscreen
+title="YouTube Video"
+&gt;
+&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p&gt;Feel free to share comments or questions ;)&lt;/p&gt;</description></item></channel></rss>

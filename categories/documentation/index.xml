@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Documentation on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/categories/documentation/</link><description>Recent content in Documentation on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 13 May 2025 18:49:32 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/categories/documentation/index.xml" rel="self" type="application/rss+xml"/><item><title>Comet Engine</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</link><pubDate>Tue, 13 May 2025 18:49:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/cover.png" alt="Featured image of post Comet Engine" /&gt;&lt;p&gt;Welcome everyone to my blog about Comet Engine. In this blog I&amp;rsquo;m going to talk about the development and current features of my custom game engine, Comet Engine.&lt;/p&gt;
+&lt;p&gt;First of all, what is Comet Engine? It is a custom game engine made from scratch with C++, SDL3 and OpenGL. It&amp;rsquo;s been 4 years since I started developing it and now it looks like this:
+&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor.png"
+width="1919"
+height="1037"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c832f1589efe3a70.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c6128973a697599b.png 1024w"
+loading="lazy"
+alt="Image 1"
+class="gallery-image"
+data-flex-grow="185"
+data-flex-basis="444px"
+&gt;&lt;/p&gt;
+&lt;p&gt;At this point the main features are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;2D Rendering&lt;/li&gt;
+&lt;li&gt;Sprite atlas subsystem&lt;/li&gt;
+&lt;li&gt;Physics&lt;/li&gt;
+&lt;li&gt;2D Lighting&lt;/li&gt;
+&lt;li&gt;2D and 3D Audio&lt;/li&gt;
+&lt;li&gt;Custom Shaders&lt;/li&gt;
+&lt;li&gt;Bunch of in editor customizations&lt;/li&gt;
+&lt;li&gt;Exporting for Windows and Linux&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is also possible to create game scripts using the C# system integrated in Comet, but now I&amp;rsquo;m working on a new system because it&amp;rsquo;s been quite difficult to export the C# system to web or android. So expect a new Comet Engine major version (2.0) breaking the compatibility with C# is comming this year! This topic will have a custom post soon.&lt;/p&gt;
+&lt;p&gt;I attach a presentation trailer that I made 3 years ago in order to start understanding what is Comet and how it works!
+&lt;div class="video-wrapper"&gt;
+&lt;iframe loading="lazy"
+src="https://www.youtube.com/embed/zLf-vsr-gkk"
+allowfullscreen
+title="YouTube Video"
+&gt;
+&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p&gt;Feel free to share comments or questions ;)&lt;/p&gt;</description></item></channel></rss>
