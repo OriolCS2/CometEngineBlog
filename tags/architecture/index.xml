@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Architecture on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/architecture/</link><description>Recent content in Architecture on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 26 Aug 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/architecture/index.xml" rel="self" type="application/rss+xml"/><item><title>Entities, Behaviours and What Holds Them</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</link><pubDate>Wed, 26 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/cover.png" alt="Featured image of post Entities, Behaviours and What Holds Them" /&gt;&lt;p&gt;Every engine has to answer the same question: what is a thing in your game, and how does it get its behaviour?&lt;/p&gt;
+&lt;p&gt;Comet answers it with two words, and the rest of this post is what they mean.&lt;/p&gt;
+&lt;p&gt;An &lt;strong&gt;Entity&lt;/strong&gt; is a thing in the world. A &lt;strong&gt;Behaviour&lt;/strong&gt; is something it can do.&lt;/p&gt;
+&lt;h2 id="the-empty-entity"&gt;The empty entity
+&lt;/h2&gt;&lt;p&gt;Make a new entity and it arrives with one behaviour already attached, a &lt;strong&gt;Transform&lt;/strong&gt;. Position, rotation and scale. You cannot remove it, because a thing in the world without a place in the world is not very useful.&lt;/p&gt;
+&lt;p&gt;That is all an entity is. A name, an enabled flag, a tag, a layer, an identity, and a list of behaviours. It has no idea whether it is a player, a bullet or a cloud.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack.png"
+width="560"
+height="878"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_cc65edd984f10ebf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_517ed91d3bb0e1c8.png 1024w"
+loading="lazy"
+alt="An entity in the Inspector with its Transform and Sprite Renderer"
+class="gallery-image"
+data-flex-grow="63"
+data-flex-basis="153px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything the entity above can do comes from the second block. I added a &lt;strong&gt;Sprite Renderer&lt;/strong&gt;, and now it draws. Remove it and the entity still exists, still has a position and still has children. It just stops being visible.&lt;/p&gt;
+&lt;h2 id="why-composition-and-what-it-costs"&gt;Why composition, and what it costs
+&lt;/h2&gt;&lt;p&gt;The alternative is inheritance: a &lt;code&gt;GameEntity&lt;/code&gt; base class, then &lt;code&gt;MovingEntity&lt;/code&gt;, then &lt;code&gt;Enemy&lt;/code&gt;, then &lt;code&gt;FlyingEnemy&lt;/code&gt;. That works right up until you need a flying enemy that is also destructible and also a light source. At that point your inheritance tree needs to be a graph and everything gets unpleasant.&lt;/p&gt;
+&lt;p&gt;Composition avoids that. A flying destructible light is an entity with four behaviours on it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_ef45368496cd6fef.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_2b36265b4265e283.png 1024w"
+loading="lazy"
+alt="The same entity built out of separate behaviours"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;There is no &lt;code&gt;Coin&lt;/code&gt; class in Comet. A coin is an entity with a Transform, a Sprite Renderer, a Circle Collider set to trigger, and a script that says what happens when something walks into it. If you decide coins should also glow, you add a light behaviour, and nothing about the coin&amp;rsquo;s type has to change, because it never had one.&lt;/p&gt;
+&lt;p&gt;The cost of this approach is discoverability. With inheritance you read a class name and you know roughly what something is. With composition you have to look at the list. In practice the Hierarchy and the Inspector are that documentation, which is part of why I spend so much time on the Inspector.&lt;/p&gt;
+&lt;p&gt;The other cost is that behaviours have to find each other. &amp;ldquo;Find the Rigid Body on my own entity&amp;rdquo; is a lookup and not a field access. That is a real cost, and it is why Comet caches those lookups aggressively.&lt;/p&gt;
+&lt;h2 id="identity"&gt;Identity
+&lt;/h2&gt;&lt;p&gt;Every object in Comet, every entity, every behaviour and every resource, has a &lt;strong&gt;unique 64-bit ID&lt;/strong&gt;. Not a pointer, not an index into an array, not a name. An ID that is allocated once and never reused.&lt;/p&gt;
+&lt;p&gt;That ID is what makes most of the rest of the engine work. It survives saving and loading, so a scene can say that the camera field of a script points at object 8173077113600595134 and still mean it after a restart. It survives duplication correctly, because a copy gets a new one. It is how references between entities in different scenes resolve, and it is how the undo system knows what to put back.&lt;/p&gt;
+&lt;p&gt;It also means that &amp;ldquo;is this thing still there?&amp;rdquo; is a real question with a non-obvious answer, so Comet gives you three functions for it: &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt;. You use those instead of &lt;code&gt;== null&lt;/code&gt; or &lt;code&gt;is&lt;/code&gt;, because during teardown a plain null check can lie to you. An object can be destroyed but not yet gone, and a raw comparison does not know the difference.&lt;/p&gt;
+&lt;p&gt;That surprises people, so I will give it its own post later in the year.&lt;/p&gt;
+&lt;h2 id="parents-and-children"&gt;Parents and children
+&lt;/h2&gt;&lt;p&gt;Entities form a tree. Parenting is a drag in the Hierarchy, and the effect is what you would expect: a child&amp;rsquo;s transform is relative to its parent, so moving the parent moves everything under it.&lt;/p&gt;
+&lt;p&gt;Two things are less obvious.&lt;/p&gt;
+&lt;p&gt;Disabling a parent disables everything under it, but it does not change the children&amp;rsquo;s own enabled flags. Re-enable the parent and whatever was individually disabled stays disabled. The state you set by hand is never silently overwritten.&lt;/p&gt;
+&lt;p&gt;Deleting is deferred. Destroying an entity does not tear it out of memory in the middle of the frame while other behaviours might still be iterating over it. It is marked, the frame finishes cleanly, and the teardown happens at a safe point. This is the most common source of &amp;ldquo;wait, it still exists?&amp;rdquo; confusion, and it is also the reason the engine is not full of crashes.&lt;/p&gt;
+&lt;h2 id="the-order-things-happen-in"&gt;The order things happen in
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_dc3366629e0ce9df.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_8141cd516f32e367.png 1024w"
+loading="lazy"
+alt="The order of the lifecycle callbacks when a scene loads"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;When a scene loads, entities are created, behaviours are attached, and serialized field values are restored. Nothing of yours has run yet.&lt;/p&gt;
+&lt;p&gt;Then, on the first frame, every &lt;code&gt;Awake&lt;/code&gt; runs across every behaviour in the scene, and only then does any &lt;code&gt;Start&lt;/code&gt; run. That ordering is the guarantee that makes &lt;code&gt;Start&lt;/code&gt; useful. By the time your &lt;code&gt;Start&lt;/code&gt; executes, every other object has finished its own initialisation, so it is safe to go looking for them.&lt;/p&gt;
+&lt;p&gt;This was a real bug. Until 2.3 there were situations where some &lt;code&gt;Start&lt;/code&gt; methods ran before other behaviours&amp;rsquo; &lt;code&gt;Awake&lt;/code&gt;, which produced the kind of intermittent, ordering dependent failure that eats a whole evening. It is in the changelog under &amp;ldquo;Inconsistent execution order&amp;rdquo;, which is a very calm way of describing how it felt to find.&lt;/p&gt;
+&lt;p&gt;After that it is the normal loop, &lt;code&gt;Update&lt;/code&gt; for your logic, then physics, then rendering, until something asks to be destroyed, and that gets deferred to a safe point.&lt;/p&gt;
+&lt;h2 id="behaviours-you-did-not-write"&gt;Behaviours you did not write
+&lt;/h2&gt;&lt;p&gt;Most of what makes a game is behaviours that ship with the engine: Sprite Renderer, Camera, Rigid Body, colliders, joints, Animator, Tilemap, the whole UI set, particles, audio sources, lights and navigation agents.&lt;/p&gt;
+&lt;p&gt;Your scripts are behaviours too. A class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt; shows up in the Add Behaviour menu next to the built-in ones, its fields appear in the Inspector as real editable widgets, and it gets the same lifecycle callbacks. There is no second class citizenship for user code, and I did that on purpose. If scripting feels bolted on, people write less of it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: what happens when you want a hundred of the same entity and the ability to change all hundred at once. That is the &lt;strong&gt;InstanciableEntity&lt;/strong&gt; system, and it is the part of Comet I have rewritten the most times.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

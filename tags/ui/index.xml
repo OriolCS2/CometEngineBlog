@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>UI on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/ui/</link><description>Recent content in UI on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 19 Aug 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/ui/index.xml" rel="self" type="application/rss+xml"/><item><title>A Tour of the Comet Editor</title><link>https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/</link><pubDate>Wed, 19 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/cover.png" alt="Featured image of post A Tour of the Comet Editor" /&gt;&lt;p&gt;If you have never opened Comet, this is the post that fixes that. No code today, just a walk around the room, pointing at things.&lt;/p&gt;
+&lt;p&gt;Here is the whole editor, in its default layout, with a small scene open.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor.png"
+width="1124"
+height="580"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor_hu_11f0760a12c80ad2.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor_hu_f8bdbd3bbae4f088.png 1024w"
+loading="lazy"
+alt="The full editor"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything in Comet is a &lt;strong&gt;panel&lt;/strong&gt;. Panels dock to each other, tear off, resize, and remember where you left them. The default arrangement above is four regions: the hierarchy on the left, the viewport in the middle, the inspector on the right, and a shared dock along the bottom holding the console and the project browser.&lt;/p&gt;
+&lt;p&gt;That is not an original layout. It is the one most 2D and 3D editors converged on, and I did not try to be clever about it, because an editor is a tool you use for eight hours and novelty wears off in about twenty minutes.&lt;/p&gt;
+&lt;h2 id="the-hierarchy"&gt;The Hierarchy
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy.png"
+width="544"
+height="562"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy_hu_8a577727f875543.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy_hu_2ebb94e88801ced3.png 1024w"
+loading="lazy"
+alt="The Hierarchy panel"
+class="gallery-image"
+data-flex-grow="96"
+data-flex-basis="232px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything in the open scene, as a tree. Parent an entity to another by dragging it. Rename with a double-click.&lt;/p&gt;
+&lt;p&gt;The two small icons on the left of every row are the ones people miss, and they are the ones I use most. The &lt;strong&gt;eye&lt;/strong&gt; hides an entity in the scene view without disabling it. It is purely a viewing decision, it does not change what the game does. The &lt;strong&gt;arrow&lt;/strong&gt; locks an entity against being picked in the viewport, which sounds like nothing until you have tried to select a small object sitting on top of a full-screen background sprite for the fifth time.&lt;/p&gt;
+&lt;p&gt;At the top there is a filter box, and the &lt;code&gt;+&lt;/code&gt; creates entities: empty ones, or ready-made ones like a camera, a light, or a UI element. Right-clicking a UI element there will find the nearest canvas, or make one if there is not one, and put the element inside it. Small thing. Saves a step every single time.&lt;/p&gt;
+&lt;h2 id="the-scene-and-the-game"&gt;The Scene and the Game
+&lt;/h2&gt;&lt;p&gt;The middle is two tabs over the same space.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Scene&lt;/strong&gt; is the editable view. Grid, gizmos, the red rectangle showing what the active camera can see, and the manipulation tools in the top-left of the toolbar: pan, move, rotate, scale and rect. The &lt;code&gt;Pivot&lt;/code&gt;/&lt;code&gt;Global&lt;/code&gt; toggles next to them decide whether a gizmo works in the object&amp;rsquo;s own space or the world&amp;rsquo;s.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Game&lt;/strong&gt; is what the player would see, rendered through the real camera.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel_hu_810059f53ba2e36f.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel_hu_fcf1b0d20796391.png 1024w"
+loading="lazy"
+alt="The Game panel"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;p&gt;It has an aspect ratio selector, a zoom scale, a &lt;code&gt;Stats&lt;/code&gt; toggle that overlays live rendering statistics, &lt;code&gt;Maximize On Play&lt;/code&gt;, and a mute. The aspect list is editable, so if you are targeting a specific device resolution you add it once and it stays.&lt;/p&gt;
+&lt;h2 id="the-inspector"&gt;The Inspector
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector.png"
+width="544"
+height="852"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector_hu_a1191512e1d73caf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector_hu_abd6c05694527d97.png 1024w"
+loading="lazy"
+alt="The Inspector"
+class="gallery-image"
+data-flex-grow="63"
+data-flex-basis="153px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Select something, and this is where you edit it. An entity&amp;rsquo;s name, its enabled checkbox, its tag and layer, and then one collapsible block per behaviour attached to it.&lt;/p&gt;
+&lt;p&gt;Two details worth knowing. The &lt;strong&gt;padlock&lt;/strong&gt; at the top pins the inspector to whatever is currently selected, so you can go click other things without losing it, which is essential when you are dragging a reference from one object into another&amp;rsquo;s field. And you can open a &lt;strong&gt;second&lt;/strong&gt; inspector; they are independent, so you can pin one and browse with the other.&lt;/p&gt;
+&lt;p&gt;Numeric fields are draggable. Grab the label and pull sideways to scrub the value. In 2.8 that drag became unbounded. The cursor hides and locks in place, so you can keep dragging past the edge of the screen and it comes back where it started when you let go. That is a stupid amount of engineering for something nobody will consciously notice, and I would do it again.&lt;/p&gt;
+&lt;h2 id="the-project-panel"&gt;The Project panel
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project.png"
+width="1124"
+height="315"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project_hu_a0e88929fd62dbbd.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project_hu_b8f264fae0bda695.png 1024w"
+loading="lazy"
+alt="The Project panel"
+class="gallery-image"
+data-flex-grow="356"
+data-flex-basis="856px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Your &lt;code&gt;Assets/&lt;/code&gt; folder, as the engine understands it. Folder tree on the left, contents on the right, filter and tag search along the top.&lt;/p&gt;
+&lt;p&gt;The important idea here is that this is not a file browser. Every asset the editor knows about has an identity that survives being renamed or moved &lt;em&gt;inside the editor&lt;/em&gt;. Move a texture in the Project panel and every material still points at it. Move the same file in Windows Explorer while the editor is closed, and you find out what a broken reference looks like. There is a whole post about why later in the year.&lt;/p&gt;
+&lt;h2 id="the-console"&gt;The Console
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console.png"
+width="1124"
+height="321"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console_hu_c805cb2fcba29847.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console_hu_2583f71e3839a335.png 1024w"
+loading="lazy"
+alt="The Console"
+class="gallery-image"
+data-flex-grow="350"
+data-flex-basis="840px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Logs, with counts per severity, a collapse button that folds repeated messages, and a filter.&lt;/p&gt;
+&lt;p&gt;The part that matters is what a &lt;em&gt;script&lt;/em&gt; log carries. When AngelScript code logs something, the entry knows the script path, the function name and the line number, and double-clicking it opens that file at that line in the built-in code editor. Error messages became a navigation tool rather than something to read and then go hunting for.&lt;/p&gt;
+&lt;h2 id="the-rest-of-the-room"&gt;The rest of the room
+&lt;/h2&gt;&lt;p&gt;There is a lot more than fits in one post. The &lt;strong&gt;Profiler&lt;/strong&gt; with CPU and GPU flame graphs. The &lt;strong&gt;Package Manager&lt;/strong&gt; and its marketplace. The &lt;strong&gt;Build&lt;/strong&gt; panel. The &lt;strong&gt;Animator&lt;/strong&gt; and &lt;strong&gt;Animation Timeline&lt;/strong&gt;. The &lt;strong&gt;Tile Palette&lt;/strong&gt;. The &lt;strong&gt;Audio Mixer&lt;/strong&gt;. The &lt;strong&gt;Sprite Editor&lt;/strong&gt;. The &lt;strong&gt;Shader Graph&lt;/strong&gt;. A full &lt;strong&gt;code editor&lt;/strong&gt;, inside the engine, with autocomplete and a debugger.&lt;/p&gt;
+&lt;p&gt;Each of those has its own Wednesday coming.&lt;/p&gt;
+&lt;h2 id="two-things-about-how-it-looks"&gt;Two things about how it looks
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;It is immediate-mode.&lt;/strong&gt; The whole interface is built on Dear ImGui, which means it is rebuilt from scratch every frame. That has one enormous advantage, that adding a field to an inspector is one line so there is almost no friction to exposing something, and some real costs around layout and animation. That trade-off is a whole post in itself.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Panels are real OS windows.&lt;/strong&gt; Drag a panel out of the main window and it becomes an actual window you can throw onto a second monitor. The code editor in particular has a preference to always live in its own window, which is how I use it.&lt;/p&gt;
+&lt;p&gt;Finally, &lt;code&gt;Layout&lt;/code&gt; in the top right saves and restores arrangements. Make one that suits what you are doing, a cramped one for scripting or a wide one for level building, and switch between them. Preferences and keyboard shortcuts are both fully customisable, and both persist per machine.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday we stop looking at the furniture and start on the actual object model: what an Entity is, what a Behaviour is, why Comet chose composition, and the order things happen in when the game starts.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

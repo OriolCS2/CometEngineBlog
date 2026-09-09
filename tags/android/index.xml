@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Android on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/android/</link><description>Recent content in Android on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 12 Aug 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/android/index.xml" rel="self" type="application/rss+xml"/><item><title>Saying Goodbye to C# (Part 2): What I Got Back</title><link>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/</link><pubDate>Wed, 12 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/cover.png" alt="Featured image of post Saying Goodbye to C# (Part 2): What I Got Back" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/" &gt;Last Wednesday&lt;/a&gt; was the bill. Nine months, 300 files, no generics, no reflection, no garbage collector, and five months of a console that was nothing but red.&lt;/p&gt;
+&lt;p&gt;This is the part where I explain why I would do it again.&lt;/p&gt;
+&lt;h2 id="one-binary"&gt;One binary
+&lt;/h2&gt;&lt;p&gt;This is the whole thing, really. Everything else in this post is a consequence of it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary_hu_91d437e3752512de.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary_hu_21579d38ce09c008.png 1024w"
+loading="lazy"
+alt="One binary"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;With Mono, a Comet game was three things that had to agree with each other: the engine, the Mono runtime, and your compiled assembly. Shipping to a platform meant getting all three of them onto it, in versions that were compatible, at a size that was acceptable.&lt;/p&gt;
+&lt;p&gt;With AngelScript there is no second runtime. The compiler and the virtual machine are a C++ library that builds as part of the engine, the same way Box2D or SoLoud does. Your scripts compile to bytecode that lives inside the project. When Comet builds for Android, the scripting system is simply already there, because it was compiled into the engine binary along with everything else.&lt;/p&gt;
+&lt;p&gt;The practical consequence is that adding a platform stopped being a scripting problem. Web and Android landed in 2.0, the same release that removed C#, and that is not a coincidence, it is cause and effect.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms.png"
+width="1100"
+height="300"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms_hu_c5019e08efe8d12.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms_hu_145907239b50e401.png 1024w"
+loading="lazy"
+alt="Platforms unlocked"
+class="gallery-image"
+data-flex-grow="366"
+data-flex-basis="880px"
+&gt;&lt;/p&gt;
+&lt;h2 id="compile-times-and-how-they-changed-my-evenings"&gt;Compile times, and how they changed my evenings
+&lt;/h2&gt;&lt;p&gt;I did not expect this one to matter as much as it does.&lt;/p&gt;
+&lt;p&gt;Compiling the C# layer meant invoking Roslyn, producing an assembly and reloading it. It was not slow in absolute terms, a few seconds, but a few seconds is exactly the length of time that makes you stop and check something else, and then you have lost the thread.&lt;/p&gt;
+&lt;p&gt;AngelScript compiles the whole script project in well under a second on this machine. It sounds like a minor quality of life detail, and it is not. It changed the way I write gameplay code, because the loop is now short enough that trying something beats reasoning about it. I make more small changes and fewer big ones.&lt;/p&gt;
+&lt;h2 id="what-the-compiler-started-catching"&gt;What the compiler started catching
+&lt;/h2&gt;&lt;p&gt;C# is statically typed too, so I was not expecting a difference here. There was one anyway, and it comes from AngelScript being stricter about the things C# is relaxed about.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught_hu_23f338dc9ea1f875.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught_hu_f33e3e0a217b6ad5.png 1024w"
+loading="lazy"
+alt="What typing caught"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Implicit numeric conversion is the big one. C# will quietly widen an &lt;code&gt;int&lt;/code&gt; to a &lt;code&gt;float&lt;/code&gt; and let you carry on. AngelScript is far less willing, and while porting I found a genuine bug in the animation system that had been sitting there for over a year: a frame index doing integer division where it should have been float, producing a value that was correct for most frame counts and subtly wrong for others. It had shipped. Nobody had reported it, because it looked like an animation being slightly off rather than a number being wrong.&lt;/p&gt;
+&lt;p&gt;I want to be clear about the limit of all this. &lt;strong&gt;Type safety does not solve object lifetime.&lt;/strong&gt; A reference to a destroyed Entity is still type correct. That problem needed its own answer, which is why Comet has &lt;code&gt;IsValid()&lt;/code&gt; instead of letting you write &lt;code&gt;!= null&lt;/code&gt;, because a plain null check really does return the wrong answer in some teardown situations. There is a whole post about object lifetime later in the year.&lt;/p&gt;
+&lt;h2 id="what-i-actually-miss"&gt;What I actually miss
+&lt;/h2&gt;&lt;p&gt;Three things, and I would take the trade again knowing all three.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;LINQ.&lt;/strong&gt; Not the clever parts, just &lt;code&gt;.Where()&lt;/code&gt; and &lt;code&gt;.Select()&lt;/code&gt; on a collection. I write more loops now than I used to.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Real generics.&lt;/strong&gt; I covered this last week. &lt;code&gt;array&amp;lt;T&amp;gt;&lt;/code&gt; plus hand registered container types is a workable answer, and 2.8 filling in &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;stack&lt;/code&gt;, &lt;code&gt;queue&lt;/code&gt; and &lt;code&gt;set&lt;/code&gt; closed most of the gap, but &amp;ldquo;I need a generic helper&amp;rdquo; is still a conversation with the engine rather than something I just write.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The tooling ecosystem.&lt;/strong&gt; When you write C#, an enormous amount of editor intelligence comes for free from tools other people built. With AngelScript, if I want autocomplete that understands my project, find all references, rename symbol, or a debugger, &lt;strong&gt;I have to write it&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;So I did. That turned out to be one of the better things to come out of this whole migration, and it gets two posts of its own in January.&lt;/p&gt;
+&lt;h2 id="was-it-worth-it"&gt;Was it worth it?
+&lt;/h2&gt;&lt;p&gt;The migration cost about nine months of evenings and it broke every existing project. In exchange, Comet gained two platforms it could not otherwise have had, a script compile loop fast enough to change how I work, a type system strict enough to find a bug I had already shipped, and a scripting layer with no external runtime to keep alive for the rest of the engine&amp;rsquo;s life.&lt;/p&gt;
+&lt;p&gt;The thing I did not appreciate in May 2025 is that the last one is the real prize. Mono was not only a portability problem, it was a permanent portability problem, one that comes back with every new platform and every runtime update, forever. Removing it did not only unlock web and Android. It removed an entire category of future work.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday, something much lighter and a lot more visual: a proper tour of the editor. What every panel is for, why the layout is shaped the way it is, and a few small touches that took far longer to build than they look.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

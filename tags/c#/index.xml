@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C# on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/c%23/</link><description>Recent content in C# on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 05 Aug 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/c%23/index.xml" rel="self" type="application/rss+xml"/><item><title>Saying Goodbye to C#: How the Migration Actually Went (Part 1)</title><link>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</link><pubDate>Wed, 05 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/cover.png" alt="Featured image of post Saying Goodbye to C#: How the Migration Actually Went (Part 1)" /&gt;&lt;p&gt;In May 2025 I wrote a post about picking a new scripting language. I tried Lua, I tried ChaiScript, I ended up with AngelScript, and I closed that post with a confident estimate: about six months to convert 300 C# files.&lt;/p&gt;
+&lt;p&gt;The conversion took closer to nine. The file count was never the hard part though, and I want to be honest about what was.&lt;/p&gt;
+&lt;h2 id="why-i-did-this-at-all"&gt;Why I did this at all
+&lt;/h2&gt;&lt;p&gt;Comet used C# through Mono. If you have never had to ship a Mono runtime to four platforms, this is the shape of the problem.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_12c811bfcf5dd1d2.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_1c77be7f389ff63.png 1024w"
+loading="lazy"
+alt="The old bridge"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The editor compiled your scripts with Roslyn into a real .NET assembly. At runtime, Comet embedded the Mono runtime, loaded that assembly, and every single call between your script and the engine went across a bridge: marshal the arguments, pin the managed objects so the garbage collector could not move them mid call, call into C++, unpin, marshal the result back.&lt;/p&gt;
+&lt;p&gt;On Windows and Linux this worked fine. I shipped 1.0 with it and it was really pleasant to write games in.&lt;/p&gt;
+&lt;p&gt;Then I tried to export to the web.&lt;/p&gt;
+&lt;p&gt;Mono can technically target WebAssembly. Getting it to do that inside an engine that also wants SDL3, OpenGL ES and Emscripten&amp;rsquo;s own threading model, at a binary size that a browser will actually download, turned out to be a project roughly the size of the engine itself. Android was less bad and still bad. I spent a long time on both of them before I admitted that the problem was not my build configuration. The problem was that I had chosen a scripting language that brings its own runtime, and I needed one that compiles into mine.&lt;/p&gt;
+&lt;p&gt;So the reason for all of this was &lt;strong&gt;portability&lt;/strong&gt;, not performance and not language taste.&lt;/p&gt;
+&lt;h2 id="what-a-comet-script-looks-like"&gt;What a Comet script looks like
+&lt;/h2&gt;&lt;p&gt;Here is the same Behaviour, before and after. It is a real one, a patrolling enemy that walks between two points.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side.png"
+width="1180"
+height="750"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_8d98b0c27ff7fc1b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_45682f152bc6f540.png 1024w"
+loading="lazy"
+alt="C# and AngelScript side by side"
+class="gallery-image"
+data-flex-grow="157"
+data-flex-basis="377px"
+&gt;&lt;/p&gt;
+&lt;p&gt;If your reaction is &amp;ldquo;those are nearly the same file&amp;rdquo;, good. That is exactly the bet I made when I chose AngelScript over Lua. Lua would have been easier to embed and it would have forced me to redesign the whole scripting API around tables and closures. AngelScript is statically typed, class based, compiles to bytecode, and looks enough like C# that most of my engine&amp;rsquo;s API surface could survive the move.&lt;/p&gt;
+&lt;p&gt;The mechanical differences you can see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;using CometEngine&lt;/code&gt; becomes &lt;code&gt;using namespace CometEngine&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Static access uses &lt;code&gt;::&lt;/code&gt; instead of &lt;code&gt;.&lt;/code&gt;, so &lt;code&gt;Time::deltaTime&lt;/code&gt; and &lt;code&gt;Vector2::Distance&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;public&lt;/code&gt; on members. In AngelScript everything is public by default and you write &lt;code&gt;private&lt;/code&gt; when you mean it&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;override&lt;/code&gt;. Engine callbacks like &lt;code&gt;Start&lt;/code&gt; and &lt;code&gt;Update&lt;/code&gt; are found by name, not by virtual dispatch&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;var&lt;/code&gt; is gone. Types are written out&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For maybe 70% of the 300 files that was the whole change. I wrote a script that did the obvious substitutions, ran it over everything, and then went through the results by hand.&lt;/p&gt;
+&lt;h2 id="the-other-30"&gt;The other 30%
+&lt;/h2&gt;&lt;p&gt;This is where the months went.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_5a5d28b6b4495147.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_153acf1b918533ff.png 1024w"
+loading="lazy"
+alt="Three gaps"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Generics.&lt;/strong&gt; AngelScript has &lt;code&gt;array&amp;lt;T&amp;gt;&lt;/code&gt;, and that is essentially it. There is no &lt;code&gt;List&amp;lt;T&amp;gt;&lt;/code&gt;, no &lt;code&gt;Dictionary&amp;lt;TKey, TValue&amp;gt;&lt;/code&gt; in the general case, and no way to write your own generic container. Every place where the C# API had exposed a generic helper, I had to either pick a concrete type or register a new template type from C++ by hand. This is the single biggest reason the port took longer than I estimated. It is also why 2.8 added &lt;code&gt;list&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;stack&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;queue&amp;lt;T&amp;gt;&lt;/code&gt; and &lt;code&gt;set&amp;lt;T&amp;gt;&lt;/code&gt;, because I kept hitting the same wall while porting.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reflection.&lt;/strong&gt; The C# editor integration leaned on reflection constantly. Draw an inspector for an arbitrary class? Walk its fields. Find every class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt;? Ask the assembly. Read an attribute to decide how a field should be drawn? Reflection again.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Garbage collection.&lt;/strong&gt; C# scripts could allocate freely and then forget about it. AngelScript reference counts, and reference counting means cycles leak. An Entity holding a script that holds a reference back to the Entity is not a hypothetical, it is the most natural thing a gameplay programmer writes. Comet&amp;rsquo;s object model already used reference counting on the C++ side, so the two systems had to be taught about each other properly rather than approximately.&lt;/p&gt;
+&lt;p&gt;That work is also the reason &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt; exist as global functions instead of you just writing &lt;code&gt;== null&lt;/code&gt;. A plain null check really does lie in some situations during teardown. I will write a whole post about that later in the year.&lt;/p&gt;
+&lt;h2 id="the-day-it-compiled"&gt;The day it compiled
+&lt;/h2&gt;&lt;p&gt;The part I remember most clearly is not finishing, it is the console.&lt;/p&gt;
+&lt;p&gt;For about five months the script console was a wall of red. Not a few errors but hundreds of them, because a missing type near the bottom of the dependency graph fails every file above it. You fix one thing and the count goes up, because now the compiler can get far enough into a file to find the next problem. There is no partial credit and no way to test anything, because nothing runs until all of it compiles.&lt;/p&gt;
+&lt;p&gt;Then one evening in February 2026 I fixed what I assumed was another one of the several hundred errors that were left, and the console printed nothing.&lt;/p&gt;
+&lt;p&gt;I really thought it had crashed.&lt;/p&gt;
+&lt;p&gt;It had not. It had compiled. Then of course nothing worked, the game booted and every script did the wrong thing, which is a completely different and much more enjoyable kind of problem, because at that point you can actually run something and look at it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;That is the cost side. Next Wednesday is the other half, what I got in exchange. One binary instead of a runtime, type safety that caught things I did not expect, compile times that changed how I work, and the thing that started all of this, a Comet game running in a browser tab and on a phone.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Part 2 is next Wednesday. Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

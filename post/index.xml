@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/post/</link><description>Recent content in Posts on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 09 Sep 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Entities You Can Stamp (Part 2): Variants and Overrides</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</link><pubDate>Wed, 09 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/cover.png" alt="Featured image of post Entities You Can Stamp (Part 2): Variants and Overrides" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/" &gt;Last Wednesday&lt;/a&gt; covered the easy half: an InstanciableEntity is an entity saved as an asset, instances point back at it, and nesting is where it gets hard.&lt;/p&gt;
+&lt;p&gt;This week is the half that makes the system usable. A hundred identical coins is not much of a game. What you want is a hundred coins where three are bigger, one is on fire and two are worth double.&lt;/p&gt;
+&lt;h2 id="an-override-is-a-diff"&gt;An override is a diff
+&lt;/h2&gt;&lt;p&gt;Take one instance and change something. Make it larger and tint it orange.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector.png"
+width="544"
+height="880"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_ceaf5642d3211827.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_2d647c9746235d5b.png 1024w"
+loading="lazy"
+alt="An instance in the Inspector with its overridden fields marked"
+class="gallery-image"
+data-flex-grow="61"
+data-flex-basis="148px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Look at what Comet stores for that instance. Not a copy of the coin. Two values, &lt;code&gt;scale = 0.70&lt;/code&gt; and &lt;code&gt;colour = orange&lt;/code&gt;. That is the whole record.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_43bdbd5fbf0bf771.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_1d149993d8d86bfe.png 1024w"
+loading="lazy"
+alt="The stored diff next to the full asset data it inherits"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything else, the sprite, the sorting order, the collider radius, the script and all its fields, is still being read from the asset, live. So if I go and change the coin&amp;rsquo;s sprite tomorrow, this instance follows, because it never had an opinion about the sprite. It only ever disagreed about two things, and it still disagrees about exactly those two things.&lt;/p&gt;
+&lt;p&gt;This is the property that makes the system worth having. The naive implementation, copy the whole entity and let the user edit the copy, is much easier to write and useless in practice, because the moment you copy, the instance stops receiving improvements to the original.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene.png"
+width="1113"
+height="538"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_c75942385bd930bf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_5707c508d981c09b.png 1024w"
+loading="lazy"
+alt="Eight coins in the scene, one of them overridden"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Seven of those coins agree with the asset entirely. One does not. The scene file is seven links, and one link with two extra lines attached.&lt;/p&gt;
+&lt;h2 id="the-bar-at-the-top"&gt;The bar at the top
+&lt;/h2&gt;&lt;p&gt;When an instance has overrides, the Inspector grows a block above everything else with four buttons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Open&lt;/strong&gt;, edit the asset itself&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Select Asset&lt;/strong&gt;, highlight it in the Project panel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Apply All&lt;/strong&gt;, push this instance&amp;rsquo;s changes back into the asset, so every other instance gets them&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Revert All&lt;/strong&gt;, throw this instance&amp;rsquo;s changes away and go back to agreeing with the asset&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;Apply All&lt;/code&gt; is the one to be careful with. It is the right button when you have been tweaking an instance in the scene because that is where you can see it, and you have arrived at the version you want everywhere. It is the wrong button when you had made that one deliberately special.&lt;/p&gt;
+&lt;h2 id="variants"&gt;Variants
+&lt;/h2&gt;&lt;p&gt;Sometimes what you want is not one exception but a whole new kind of thing.&lt;/p&gt;
+&lt;p&gt;You have a basic enemy. You want an armoured version: same everything, but more health, a different tint, and one extra behaviour. You could make a second asset by copying the first, and then you have two assets that will drift apart forever.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;variant&lt;/strong&gt; is the third option. It is a new asset that inherits from another asset. Change the base enemy&amp;rsquo;s sprite and the armoured variant&amp;rsquo;s sprite changes too, unless the variant had an opinion about the sprite, in which case it keeps its own.&lt;/p&gt;
+&lt;p&gt;It is the same override mechanism, one level up. An instance overrides an asset, and a variant overrides an asset and can itself be instanced and overridden.&lt;/p&gt;
+&lt;h2 id="the-rule-shallowest-wins"&gt;The rule: shallowest wins
+&lt;/h2&gt;&lt;p&gt;So now three things can have an opinion about &lt;code&gt;health&lt;/code&gt;: the base asset, the variant, and the specific instance sitting in this scene.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_19ce9e154ec18db0.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_74340204814e3787.png 1024w"
+loading="lazy"
+alt="The three levels of the override chain and their depths"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The rule is depth based, and the shallowest depth wins. Depth 0 is the scene. If the scene has an override, that is the answer. If the scene is silent, the variant&amp;rsquo;s value is used. If the variant is also silent, you get the base asset&amp;rsquo;s value.&lt;/p&gt;
+&lt;p&gt;In other words the scene always gets the last word. Whatever you did by hand, in the level, in front of your eyes, is never quietly overruled by something further up the chain. That was not the first rule I tried, and the earlier version, where a variant could win over a scene edit in some nesting configurations, produced the most baffling bug reports I have ever written for myself.&lt;/p&gt;
+&lt;p&gt;Reconstructing that merged view is not free, so Comet caches it. When you ask for an entity&amp;rsquo;s effective data, the scene manager walks the override chain once and remembers the result until something invalidates it. Getting that invalidation right is most of what 2.4.1&amp;rsquo;s &amp;ldquo;multiple errors&amp;rdquo; were.&lt;/p&gt;
+&lt;h2 id="deletion-is-a-tombstone"&gt;Deletion is a tombstone
+&lt;/h2&gt;&lt;p&gt;I mentioned this last week and it belongs here properly.&lt;/p&gt;
+&lt;p&gt;You cannot delete a child of an instance, because the asset still says the child exists. So the instance records that the child is &lt;code&gt;&amp;quot;Valid&amp;quot;: false&lt;/code&gt;, a tombstone in the overrides list.&lt;/p&gt;
+&lt;p&gt;The consequence people hit: if you delete a child from an instance and later use &lt;code&gt;Apply All&lt;/code&gt;, you are pushing a tombstone into the asset, and now every instance loses that child. That is either exactly what you wanted or a small disaster, and the engine cannot tell which.&lt;/p&gt;
+&lt;h2 id="two-bugs-worth-remembering"&gt;Two bugs worth remembering
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;The self-referencing joint.&lt;/strong&gt; Not strictly an InstanciableEntity bug, but it lived here. Instancing an asset containing a physics joint could, in a specific override configuration, produce a joint connecting a body to itself. Box2D does not enjoy that. The world corrupted, and the crash surfaced several frames later somewhere unrelated. Fixed in 2.8.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The save that ate the asset.&lt;/strong&gt; Saving an InstanciableEntity used to write directly over the original file. If anything interrupted that write, the asset was gone. Now it writes to a temporary file and atomically replaces the original, so a failed save leaves the old version intact. It is a two line change that I should have made years earlier, and it is in 2.8 because it finally happened to me.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: scenes. What is actually inside one, the three different ways to load one, why load order matters when a rigid body points at a joint that points at a collider, and why a scene is readable JSON in the editor but a binary blob in a build.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Entities You Can Stamp (Part 1): The InstanciableEntity System</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/</link><pubDate>Wed, 02 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/cover.png" alt="Featured image of post Entities You Can Stamp (Part 1): The InstanciableEntity System" /&gt;&lt;p&gt;Comet calls them &lt;strong&gt;InstanciableEntities&lt;/strong&gt;. If you are coming from Unity, this is the idea you already know as a prefab.&lt;/p&gt;
+&lt;p&gt;The concept fits in one sentence: an InstanciableEntity is an entity you saved as an asset, so you can place it as many times as you like and edit all of the copies from one place.&lt;/p&gt;
+&lt;p&gt;Getting the consequences of that sentence right took me about three rewrites.&lt;/p&gt;
+&lt;h2 id="making-one"&gt;Making one
+&lt;/h2&gt;&lt;p&gt;Build an entity in a scene, a coin for example. Transform, Sprite Renderer, a collider set to trigger, a little script. Then drag it from the Hierarchy into the Project panel.&lt;/p&gt;
+&lt;p&gt;That is all. You now have a &lt;code&gt;.cometInstanciableEntity&lt;/code&gt; asset, and the entity still sitting in your scene is no longer just an entity, it is an &lt;strong&gt;instance&lt;/strong&gt; of that asset. It remembers where it came from.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances.png"
+width="1113"
+height="538"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances_hu_7eae403d68e30e26.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances_hu_694cdd93cc79a168.png 1024w"
+loading="lazy"
+alt="Eight instances of the coin asset placed around the scene"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Drop that asset into the scene eight more times and you have eight instances. Open the asset, change the sprite, save, and all eight change. The value here is not clever architecture. It is that you do not have to select ninety-three coins to make them all slightly bigger.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy.png"
+width="544"
+height="564"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy_hu_9b9765e328b23b57.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy_hu_47c85192c7033696.png 1024w"
+loading="lazy"
+alt="The same instances listed in the Hierarchy panel"
+class="gallery-image"
+data-flex-grow="96"
+data-flex-basis="231px"
+&gt;&lt;/p&gt;
+&lt;p&gt;In the Hierarchy they look almost like normal entities, because they are. An instance is a real entity in the scene with a real transform that you move, rotate and parent like anything else. The only difference is that it holds a link back to the asset it came from.&lt;/p&gt;
+&lt;h2 id="what-is-actually-stored"&gt;What is actually stored
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is_hu_289aa486efa8dcc3.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is_hu_723b72f8ca1ada94.png 1024w"
+loading="lazy"
+alt="What an instance stores on disk next to what a full copy would store"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;An instance is not a copy. When you place ten instances of an asset containing forty entities, your scene file does not gain four hundred entities. It gains ten short records that say &amp;ldquo;an instance of asset X lives here, with these specific differences&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;That has three consequences you can feel:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Scene files stay small and readable even in levels made mostly of repeated content.&lt;/li&gt;
+&lt;li&gt;Loading a scene means loading the asset once and stamping it, rather than parsing the same forty entities ten times.&lt;/li&gt;
+&lt;li&gt;Changing the asset really does change every instance everywhere, including in scenes that are not currently open, because they never had their own copy of the data to go stale.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="nesting-and-why-it-took-three-tries"&gt;Nesting, and why it took three tries
+&lt;/h2&gt;&lt;p&gt;An InstanciableEntity can contain another InstanciableEntity. A turret asset contains a muzzle flash asset. A room asset contains four turret assets. A level scene contains six room assets.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting_hu_238c062837dbc923.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting_hu_c3b90b8440274615.png 1024w"
+loading="lazy"
+alt="A muzzle flash asset inside a turret asset inside a room asset"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Now edit the muzzle flash.&lt;/p&gt;
+&lt;p&gt;Every turret has to update. Every room containing those turrets has to update. Every scene containing those rooms has to update. And none of them may lose the changes they made themselves. If one particular turret in one particular room was rotated 40 degrees and had its fire rate doubled, that has to survive an edit three levels below it.&lt;/p&gt;
+&lt;p&gt;Comet&amp;rsquo;s answer is that every entity inside an instance carries a small set of identifiers: which asset it belongs to, which asset it is inside, which asset is outermost, and what its parent asset is. Those four values are what let the engine walk a three level deep structure and work out, for any given entity, which asset it should be inheriting from and which changes belong to it.&lt;/p&gt;
+&lt;p&gt;The original version of this system, back in 1.x, only supported one level. Nesting was added in 2.0 and it was the largest change in that release that nobody outside could see. It also produced the largest crop of bugs. The 2.4.1 changelog contains the line &amp;ldquo;Multiples errors on InstanciableEntities&amp;rdquo;, which is doing a lot of work to describe a fortnight.&lt;/p&gt;
+&lt;h2 id="the-bar-at-the-top-of-the-scene-view"&gt;The bar at the top of the scene view
+&lt;/h2&gt;&lt;p&gt;Open an InstanciableEntity asset for editing and Comet puts you in a slightly different mode. You are editing the asset itself, not an instance of it. A header bar appears at the top of the scene view telling you so, with buttons to save or discard.&lt;/p&gt;
+&lt;p&gt;That bar exists because I kept editing an asset, wandering off, and losing the changes, or worse, saving something I had only meant to try. Making the state visible and the exit explicit fixed both.&lt;/p&gt;
+&lt;h2 id="what-breaks-the-illusion"&gt;What breaks the illusion
+&lt;/h2&gt;&lt;p&gt;Two limitations I am not happy about.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;You cannot delete a child of an instance.&lt;/strong&gt; Not really. If a turret asset has a barrel, and you delete the barrel on one instance, the engine cannot simply remove it, because the asset still says there is a barrel and re-stamping would bring it back. What actually happens is a tombstone: the instance records that this particular child is no longer valid. It works, and I think it is the correct answer, but it means the deletion is a stored opinion rather than an absence.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reordering behaviours on an instance is not free.&lt;/strong&gt; The list of behaviours is part of what is inherited, so changing the order on one instance is a diff like any other, and if the asset later gains a behaviour the merge has to make a decision. Comet errs on the side of the asset. Until 2.2 it errored on the side of showing you a confusing popup, which was worse.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday is the other half, and I think the more interesting one: what happens when instances start disagreeing with the asset. Overrides stored as diffs, variants that fork an asset while still inheriting from it, and the rule that decides who wins when three levels of the hierarchy have opinions about the same field.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Entities, Behaviours and What Holds Them</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</link><pubDate>Wed, 26 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/cover.png" alt="Featured image of post Entities, Behaviours and What Holds Them" /&gt;&lt;p&gt;Every engine has to answer the same question: what is a thing in your game, and how does it get its behaviour?&lt;/p&gt;
+&lt;p&gt;Comet answers it with two words, and the rest of this post is what they mean.&lt;/p&gt;
+&lt;p&gt;An &lt;strong&gt;Entity&lt;/strong&gt; is a thing in the world. A &lt;strong&gt;Behaviour&lt;/strong&gt; is something it can do.&lt;/p&gt;
+&lt;h2 id="the-empty-entity"&gt;The empty entity
+&lt;/h2&gt;&lt;p&gt;Make a new entity and it arrives with one behaviour already attached, a &lt;strong&gt;Transform&lt;/strong&gt;. Position, rotation and scale. You cannot remove it, because a thing in the world without a place in the world is not very useful.&lt;/p&gt;
+&lt;p&gt;That is all an entity is. A name, an enabled flag, a tag, a layer, an identity, and a list of behaviours. It has no idea whether it is a player, a bullet or a cloud.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack.png"
+width="560"
+height="878"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_cc65edd984f10ebf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_517ed91d3bb0e1c8.png 1024w"
+loading="lazy"
+alt="An entity in the Inspector with its Transform and Sprite Renderer"
+class="gallery-image"
+data-flex-grow="63"
+data-flex-basis="153px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything the entity above can do comes from the second block. I added a &lt;strong&gt;Sprite Renderer&lt;/strong&gt;, and now it draws. Remove it and the entity still exists, still has a position and still has children. It just stops being visible.&lt;/p&gt;
+&lt;h2 id="why-composition-and-what-it-costs"&gt;Why composition, and what it costs
+&lt;/h2&gt;&lt;p&gt;The alternative is inheritance: a &lt;code&gt;GameEntity&lt;/code&gt; base class, then &lt;code&gt;MovingEntity&lt;/code&gt;, then &lt;code&gt;Enemy&lt;/code&gt;, then &lt;code&gt;FlyingEnemy&lt;/code&gt;. That works right up until you need a flying enemy that is also destructible and also a light source. At that point your inheritance tree needs to be a graph and everything gets unpleasant.&lt;/p&gt;
+&lt;p&gt;Composition avoids that. A flying destructible light is an entity with four behaviours on it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_ef45368496cd6fef.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_2b36265b4265e283.png 1024w"
+loading="lazy"
+alt="The same entity built out of separate behaviours"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;There is no &lt;code&gt;Coin&lt;/code&gt; class in Comet. A coin is an entity with a Transform, a Sprite Renderer, a Circle Collider set to trigger, and a script that says what happens when something walks into it. If you decide coins should also glow, you add a light behaviour, and nothing about the coin&amp;rsquo;s type has to change, because it never had one.&lt;/p&gt;
+&lt;p&gt;The cost of this approach is discoverability. With inheritance you read a class name and you know roughly what something is. With composition you have to look at the list. In practice the Hierarchy and the Inspector are that documentation, which is part of why I spend so much time on the Inspector.&lt;/p&gt;
+&lt;p&gt;The other cost is that behaviours have to find each other. &amp;ldquo;Find the Rigid Body on my own entity&amp;rdquo; is a lookup and not a field access. That is a real cost, and it is why Comet caches those lookups aggressively.&lt;/p&gt;
+&lt;h2 id="identity"&gt;Identity
+&lt;/h2&gt;&lt;p&gt;Every object in Comet, every entity, every behaviour and every resource, has a &lt;strong&gt;unique 64-bit ID&lt;/strong&gt;. Not a pointer, not an index into an array, not a name. An ID that is allocated once and never reused.&lt;/p&gt;
+&lt;p&gt;That ID is what makes most of the rest of the engine work. It survives saving and loading, so a scene can say that the camera field of a script points at object 8173077113600595134 and still mean it after a restart. It survives duplication correctly, because a copy gets a new one. It is how references between entities in different scenes resolve, and it is how the undo system knows what to put back.&lt;/p&gt;
+&lt;p&gt;It also means that &amp;ldquo;is this thing still there?&amp;rdquo; is a real question with a non-obvious answer, so Comet gives you three functions for it: &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt;. You use those instead of &lt;code&gt;== null&lt;/code&gt; or &lt;code&gt;is&lt;/code&gt;, because during teardown a plain null check can lie to you. An object can be destroyed but not yet gone, and a raw comparison does not know the difference.&lt;/p&gt;
+&lt;p&gt;That surprises people, so I will give it its own post later in the year.&lt;/p&gt;
+&lt;h2 id="parents-and-children"&gt;Parents and children
+&lt;/h2&gt;&lt;p&gt;Entities form a tree. Parenting is a drag in the Hierarchy, and the effect is what you would expect: a child&amp;rsquo;s transform is relative to its parent, so moving the parent moves everything under it.&lt;/p&gt;
+&lt;p&gt;Two things are less obvious.&lt;/p&gt;
+&lt;p&gt;Disabling a parent disables everything under it, but it does not change the children&amp;rsquo;s own enabled flags. Re-enable the parent and whatever was individually disabled stays disabled. The state you set by hand is never silently overwritten.&lt;/p&gt;
+&lt;p&gt;Deleting is deferred. Destroying an entity does not tear it out of memory in the middle of the frame while other behaviours might still be iterating over it. It is marked, the frame finishes cleanly, and the teardown happens at a safe point. This is the most common source of &amp;ldquo;wait, it still exists?&amp;rdquo; confusion, and it is also the reason the engine is not full of crashes.&lt;/p&gt;
+&lt;h2 id="the-order-things-happen-in"&gt;The order things happen in
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_dc3366629e0ce9df.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_8141cd516f32e367.png 1024w"
+loading="lazy"
+alt="The order of the lifecycle callbacks when a scene loads"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;When a scene loads, entities are created, behaviours are attached, and serialized field values are restored. Nothing of yours has run yet.&lt;/p&gt;
+&lt;p&gt;Then, on the first frame, every &lt;code&gt;Awake&lt;/code&gt; runs across every behaviour in the scene, and only then does any &lt;code&gt;Start&lt;/code&gt; run. That ordering is the guarantee that makes &lt;code&gt;Start&lt;/code&gt; useful. By the time your &lt;code&gt;Start&lt;/code&gt; executes, every other object has finished its own initialisation, so it is safe to go looking for them.&lt;/p&gt;
+&lt;p&gt;This was a real bug. Until 2.3 there were situations where some &lt;code&gt;Start&lt;/code&gt; methods ran before other behaviours&amp;rsquo; &lt;code&gt;Awake&lt;/code&gt;, which produced the kind of intermittent, ordering dependent failure that eats a whole evening. It is in the changelog under &amp;ldquo;Inconsistent execution order&amp;rdquo;, which is a very calm way of describing how it felt to find.&lt;/p&gt;
+&lt;p&gt;After that it is the normal loop, &lt;code&gt;Update&lt;/code&gt; for your logic, then physics, then rendering, until something asks to be destroyed, and that gets deferred to a safe point.&lt;/p&gt;
+&lt;h2 id="behaviours-you-did-not-write"&gt;Behaviours you did not write
+&lt;/h2&gt;&lt;p&gt;Most of what makes a game is behaviours that ship with the engine: Sprite Renderer, Camera, Rigid Body, colliders, joints, Animator, Tilemap, the whole UI set, particles, audio sources, lights and navigation agents.&lt;/p&gt;
+&lt;p&gt;Your scripts are behaviours too. A class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt; shows up in the Add Behaviour menu next to the built-in ones, its fields appear in the Inspector as real editable widgets, and it gets the same lifecycle callbacks. There is no second class citizenship for user code, and I did that on purpose. If scripting feels bolted on, people write less of it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: what happens when you want a hundred of the same entity and the ability to change all hundred at once. That is the &lt;strong&gt;InstanciableEntity&lt;/strong&gt; system, and it is the part of Comet I have rewritten the most times.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>A Tour of the Comet Editor</title><link>https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/</link><pubDate>Wed, 19 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/cover.png" alt="Featured image of post A Tour of the Comet Editor" /&gt;&lt;p&gt;If you have never opened Comet, this is the post that fixes that. No code today, just a walk around the room, pointing at things.&lt;/p&gt;
+&lt;p&gt;Here is the whole editor, in its default layout, with a small scene open.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor.png"
+width="1124"
+height="580"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor_hu_11f0760a12c80ad2.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/full-editor_hu_f8bdbd3bbae4f088.png 1024w"
+loading="lazy"
+alt="The full editor"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything in Comet is a &lt;strong&gt;panel&lt;/strong&gt;. Panels dock to each other, tear off, resize, and remember where you left them. The default arrangement above is four regions: the hierarchy on the left, the viewport in the middle, the inspector on the right, and a shared dock along the bottom holding the console and the project browser.&lt;/p&gt;
+&lt;p&gt;That is not an original layout. It is the one most 2D and 3D editors converged on, and I did not try to be clever about it, because an editor is a tool you use for eight hours and novelty wears off in about twenty minutes.&lt;/p&gt;
+&lt;h2 id="the-hierarchy"&gt;The Hierarchy
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy.png"
+width="544"
+height="562"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy_hu_8a577727f875543.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/hierarchy_hu_2ebb94e88801ced3.png 1024w"
+loading="lazy"
+alt="The Hierarchy panel"
+class="gallery-image"
+data-flex-grow="96"
+data-flex-basis="232px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything in the open scene, as a tree. Parent an entity to another by dragging it. Rename with a double-click.&lt;/p&gt;
+&lt;p&gt;The two small icons on the left of every row are the ones people miss, and they are the ones I use most. The &lt;strong&gt;eye&lt;/strong&gt; hides an entity in the scene view without disabling it. It is purely a viewing decision, it does not change what the game does. The &lt;strong&gt;arrow&lt;/strong&gt; locks an entity against being picked in the viewport, which sounds like nothing until you have tried to select a small object sitting on top of a full-screen background sprite for the fifth time.&lt;/p&gt;
+&lt;p&gt;At the top there is a filter box, and the &lt;code&gt;+&lt;/code&gt; creates entities: empty ones, or ready-made ones like a camera, a light, or a UI element. Right-clicking a UI element there will find the nearest canvas, or make one if there is not one, and put the element inside it. Small thing. Saves a step every single time.&lt;/p&gt;
+&lt;h2 id="the-scene-and-the-game"&gt;The Scene and the Game
+&lt;/h2&gt;&lt;p&gt;The middle is two tabs over the same space.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Scene&lt;/strong&gt; is the editable view. Grid, gizmos, the red rectangle showing what the active camera can see, and the manipulation tools in the top-left of the toolbar: pan, move, rotate, scale and rect. The &lt;code&gt;Pivot&lt;/code&gt;/&lt;code&gt;Global&lt;/code&gt; toggles next to them decide whether a gizmo works in the object&amp;rsquo;s own space or the world&amp;rsquo;s.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Game&lt;/strong&gt; is what the player would see, rendered through the real camera.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel_hu_810059f53ba2e36f.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/game-panel_hu_fcf1b0d20796391.png 1024w"
+loading="lazy"
+alt="The Game panel"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;p&gt;It has an aspect ratio selector, a zoom scale, a &lt;code&gt;Stats&lt;/code&gt; toggle that overlays live rendering statistics, &lt;code&gt;Maximize On Play&lt;/code&gt;, and a mute. The aspect list is editable, so if you are targeting a specific device resolution you add it once and it stays.&lt;/p&gt;
+&lt;h2 id="the-inspector"&gt;The Inspector
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector.png"
+width="544"
+height="852"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector_hu_a1191512e1d73caf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/inspector_hu_abd6c05694527d97.png 1024w"
+loading="lazy"
+alt="The Inspector"
+class="gallery-image"
+data-flex-grow="63"
+data-flex-basis="153px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Select something, and this is where you edit it. An entity&amp;rsquo;s name, its enabled checkbox, its tag and layer, and then one collapsible block per behaviour attached to it.&lt;/p&gt;
+&lt;p&gt;Two details worth knowing. The &lt;strong&gt;padlock&lt;/strong&gt; at the top pins the inspector to whatever is currently selected, so you can go click other things without losing it, which is essential when you are dragging a reference from one object into another&amp;rsquo;s field. And you can open a &lt;strong&gt;second&lt;/strong&gt; inspector; they are independent, so you can pin one and browse with the other.&lt;/p&gt;
+&lt;p&gt;Numeric fields are draggable. Grab the label and pull sideways to scrub the value. In 2.8 that drag became unbounded. The cursor hides and locks in place, so you can keep dragging past the edge of the screen and it comes back where it started when you let go. That is a stupid amount of engineering for something nobody will consciously notice, and I would do it again.&lt;/p&gt;
+&lt;h2 id="the-project-panel"&gt;The Project panel
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project.png"
+width="1124"
+height="315"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project_hu_a0e88929fd62dbbd.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/project_hu_b8f264fae0bda695.png 1024w"
+loading="lazy"
+alt="The Project panel"
+class="gallery-image"
+data-flex-grow="356"
+data-flex-basis="856px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Your &lt;code&gt;Assets/&lt;/code&gt; folder, as the engine understands it. Folder tree on the left, contents on the right, filter and tag search along the top.&lt;/p&gt;
+&lt;p&gt;The important idea here is that this is not a file browser. Every asset the editor knows about has an identity that survives being renamed or moved &lt;em&gt;inside the editor&lt;/em&gt;. Move a texture in the Project panel and every material still points at it. Move the same file in Windows Explorer while the editor is closed, and you find out what a broken reference looks like. There is a whole post about why later in the year.&lt;/p&gt;
+&lt;h2 id="the-console"&gt;The Console
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console.png"
+width="1124"
+height="321"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console_hu_c805cb2fcba29847.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-tour-of-the-comet-editor/console_hu_2583f71e3839a335.png 1024w"
+loading="lazy"
+alt="The Console"
+class="gallery-image"
+data-flex-grow="350"
+data-flex-basis="840px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Logs, with counts per severity, a collapse button that folds repeated messages, and a filter.&lt;/p&gt;
+&lt;p&gt;The part that matters is what a &lt;em&gt;script&lt;/em&gt; log carries. When AngelScript code logs something, the entry knows the script path, the function name and the line number, and double-clicking it opens that file at that line in the built-in code editor. Error messages became a navigation tool rather than something to read and then go hunting for.&lt;/p&gt;
+&lt;h2 id="the-rest-of-the-room"&gt;The rest of the room
+&lt;/h2&gt;&lt;p&gt;There is a lot more than fits in one post. The &lt;strong&gt;Profiler&lt;/strong&gt; with CPU and GPU flame graphs. The &lt;strong&gt;Package Manager&lt;/strong&gt; and its marketplace. The &lt;strong&gt;Build&lt;/strong&gt; panel. The &lt;strong&gt;Animator&lt;/strong&gt; and &lt;strong&gt;Animation Timeline&lt;/strong&gt;. The &lt;strong&gt;Tile Palette&lt;/strong&gt;. The &lt;strong&gt;Audio Mixer&lt;/strong&gt;. The &lt;strong&gt;Sprite Editor&lt;/strong&gt;. The &lt;strong&gt;Shader Graph&lt;/strong&gt;. A full &lt;strong&gt;code editor&lt;/strong&gt;, inside the engine, with autocomplete and a debugger.&lt;/p&gt;
+&lt;p&gt;Each of those has its own Wednesday coming.&lt;/p&gt;
+&lt;h2 id="two-things-about-how-it-looks"&gt;Two things about how it looks
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;It is immediate-mode.&lt;/strong&gt; The whole interface is built on Dear ImGui, which means it is rebuilt from scratch every frame. That has one enormous advantage, that adding a field to an inspector is one line so there is almost no friction to exposing something, and some real costs around layout and animation. That trade-off is a whole post in itself.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Panels are real OS windows.&lt;/strong&gt; Drag a panel out of the main window and it becomes an actual window you can throw onto a second monitor. The code editor in particular has a preference to always live in its own window, which is how I use it.&lt;/p&gt;
+&lt;p&gt;Finally, &lt;code&gt;Layout&lt;/code&gt; in the top right saves and restores arrangements. Make one that suits what you are doing, a cramped one for scripting or a wide one for level building, and switch between them. Preferences and keyboard shortcuts are both fully customisable, and both persist per machine.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday we stop looking at the furniture and start on the actual object model: what an Entity is, what a Behaviour is, why Comet chose composition, and the order things happen in when the game starts.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Saying Goodbye to C# (Part 2): What I Got Back</title><link>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/</link><pubDate>Wed, 12 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/cover.png" alt="Featured image of post Saying Goodbye to C# (Part 2): What I Got Back" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/" &gt;Last Wednesday&lt;/a&gt; was the bill. Nine months, 300 files, no generics, no reflection, no garbage collector, and five months of a console that was nothing but red.&lt;/p&gt;
+&lt;p&gt;This is the part where I explain why I would do it again.&lt;/p&gt;
+&lt;h2 id="one-binary"&gt;One binary
+&lt;/h2&gt;&lt;p&gt;This is the whole thing, really. Everything else in this post is a consequence of it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary_hu_91d437e3752512de.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/one-binary_hu_21579d38ce09c008.png 1024w"
+loading="lazy"
+alt="One binary"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;With Mono, a Comet game was three things that had to agree with each other: the engine, the Mono runtime, and your compiled assembly. Shipping to a platform meant getting all three of them onto it, in versions that were compatible, at a size that was acceptable.&lt;/p&gt;
+&lt;p&gt;With AngelScript there is no second runtime. The compiler and the virtual machine are a C++ library that builds as part of the engine, the same way Box2D or SoLoud does. Your scripts compile to bytecode that lives inside the project. When Comet builds for Android, the scripting system is simply already there, because it was compiled into the engine binary along with everything else.&lt;/p&gt;
+&lt;p&gt;The practical consequence is that adding a platform stopped being a scripting problem. Web and Android landed in 2.0, the same release that removed C#, and that is not a coincidence, it is cause and effect.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms.png"
+width="1100"
+height="300"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms_hu_c5019e08efe8d12.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/platforms_hu_145907239b50e401.png 1024w"
+loading="lazy"
+alt="Platforms unlocked"
+class="gallery-image"
+data-flex-grow="366"
+data-flex-basis="880px"
+&gt;&lt;/p&gt;
+&lt;h2 id="compile-times-and-how-they-changed-my-evenings"&gt;Compile times, and how they changed my evenings
+&lt;/h2&gt;&lt;p&gt;I did not expect this one to matter as much as it does.&lt;/p&gt;
+&lt;p&gt;Compiling the C# layer meant invoking Roslyn, producing an assembly and reloading it. It was not slow in absolute terms, a few seconds, but a few seconds is exactly the length of time that makes you stop and check something else, and then you have lost the thread.&lt;/p&gt;
+&lt;p&gt;AngelScript compiles the whole script project in well under a second on this machine. It sounds like a minor quality of life detail, and it is not. It changed the way I write gameplay code, because the loop is now short enough that trying something beats reasoning about it. I make more small changes and fewer big ones.&lt;/p&gt;
+&lt;h2 id="what-the-compiler-started-catching"&gt;What the compiler started catching
+&lt;/h2&gt;&lt;p&gt;C# is statically typed too, so I was not expecting a difference here. There was one anyway, and it comes from AngelScript being stricter about the things C# is relaxed about.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught_hu_23f338dc9ea1f875.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-part-2-what-i-got-back/what-typing-caught_hu_f33e3e0a217b6ad5.png 1024w"
+loading="lazy"
+alt="What typing caught"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Implicit numeric conversion is the big one. C# will quietly widen an &lt;code&gt;int&lt;/code&gt; to a &lt;code&gt;float&lt;/code&gt; and let you carry on. AngelScript is far less willing, and while porting I found a genuine bug in the animation system that had been sitting there for over a year: a frame index doing integer division where it should have been float, producing a value that was correct for most frame counts and subtly wrong for others. It had shipped. Nobody had reported it, because it looked like an animation being slightly off rather than a number being wrong.&lt;/p&gt;
+&lt;p&gt;I want to be clear about the limit of all this. &lt;strong&gt;Type safety does not solve object lifetime.&lt;/strong&gt; A reference to a destroyed Entity is still type correct. That problem needed its own answer, which is why Comet has &lt;code&gt;IsValid()&lt;/code&gt; instead of letting you write &lt;code&gt;!= null&lt;/code&gt;, because a plain null check really does return the wrong answer in some teardown situations. There is a whole post about object lifetime later in the year.&lt;/p&gt;
+&lt;h2 id="what-i-actually-miss"&gt;What I actually miss
+&lt;/h2&gt;&lt;p&gt;Three things, and I would take the trade again knowing all three.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;LINQ.&lt;/strong&gt; Not the clever parts, just &lt;code&gt;.Where()&lt;/code&gt; and &lt;code&gt;.Select()&lt;/code&gt; on a collection. I write more loops now than I used to.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Real generics.&lt;/strong&gt; I covered this last week. &lt;code&gt;array&amp;lt;T&amp;gt;&lt;/code&gt; plus hand registered container types is a workable answer, and 2.8 filling in &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;stack&lt;/code&gt;, &lt;code&gt;queue&lt;/code&gt; and &lt;code&gt;set&lt;/code&gt; closed most of the gap, but &amp;ldquo;I need a generic helper&amp;rdquo; is still a conversation with the engine rather than something I just write.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The tooling ecosystem.&lt;/strong&gt; When you write C#, an enormous amount of editor intelligence comes for free from tools other people built. With AngelScript, if I want autocomplete that understands my project, find all references, rename symbol, or a debugger, &lt;strong&gt;I have to write it&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;So I did. That turned out to be one of the better things to come out of this whole migration, and it gets two posts of its own in January.&lt;/p&gt;
+&lt;h2 id="was-it-worth-it"&gt;Was it worth it?
+&lt;/h2&gt;&lt;p&gt;The migration cost about nine months of evenings and it broke every existing project. In exchange, Comet gained two platforms it could not otherwise have had, a script compile loop fast enough to change how I work, a type system strict enough to find a bug I had already shipped, and a scripting layer with no external runtime to keep alive for the rest of the engine&amp;rsquo;s life.&lt;/p&gt;
+&lt;p&gt;The thing I did not appreciate in May 2025 is that the last one is the real prize. Mono was not only a portability problem, it was a permanent portability problem, one that comes back with every new platform and every runtime update, forever. Removing it did not only unlock web and Android. It removed an entire category of future work.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday, something much lighter and a lot more visual: a proper tour of the editor. What every panel is for, why the layout is shaped the way it is, and a few small touches that took far longer to build than they look.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Saying Goodbye to C#: How the Migration Actually Went (Part 1)</title><link>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</link><pubDate>Wed, 05 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/cover.png" alt="Featured image of post Saying Goodbye to C#: How the Migration Actually Went (Part 1)" /&gt;&lt;p&gt;In May 2025 I wrote a post about picking a new scripting language. I tried Lua, I tried ChaiScript, I ended up with AngelScript, and I closed that post with a confident estimate: about six months to convert 300 C# files.&lt;/p&gt;
+&lt;p&gt;The conversion took closer to nine. The file count was never the hard part though, and I want to be honest about what was.&lt;/p&gt;
+&lt;h2 id="why-i-did-this-at-all"&gt;Why I did this at all
+&lt;/h2&gt;&lt;p&gt;Comet used C# through Mono. If you have never had to ship a Mono runtime to four platforms, this is the shape of the problem.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_12c811bfcf5dd1d2.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/the-bridge_hu_1c77be7f389ff63.png 1024w"
+loading="lazy"
+alt="The old bridge"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The editor compiled your scripts with Roslyn into a real .NET assembly. At runtime, Comet embedded the Mono runtime, loaded that assembly, and every single call between your script and the engine went across a bridge: marshal the arguments, pin the managed objects so the garbage collector could not move them mid call, call into C++, unpin, marshal the result back.&lt;/p&gt;
+&lt;p&gt;On Windows and Linux this worked fine. I shipped 1.0 with it and it was really pleasant to write games in.&lt;/p&gt;
+&lt;p&gt;Then I tried to export to the web.&lt;/p&gt;
+&lt;p&gt;Mono can technically target WebAssembly. Getting it to do that inside an engine that also wants SDL3, OpenGL ES and Emscripten&amp;rsquo;s own threading model, at a binary size that a browser will actually download, turned out to be a project roughly the size of the engine itself. Android was less bad and still bad. I spent a long time on both of them before I admitted that the problem was not my build configuration. The problem was that I had chosen a scripting language that brings its own runtime, and I needed one that compiles into mine.&lt;/p&gt;
+&lt;p&gt;So the reason for all of this was &lt;strong&gt;portability&lt;/strong&gt;, not performance and not language taste.&lt;/p&gt;
+&lt;h2 id="what-a-comet-script-looks-like"&gt;What a Comet script looks like
+&lt;/h2&gt;&lt;p&gt;Here is the same Behaviour, before and after. It is a real one, a patrolling enemy that walks between two points.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side.png"
+width="1180"
+height="750"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_8d98b0c27ff7fc1b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/side-by-side_hu_45682f152bc6f540.png 1024w"
+loading="lazy"
+alt="C# and AngelScript side by side"
+class="gallery-image"
+data-flex-grow="157"
+data-flex-basis="377px"
+&gt;&lt;/p&gt;
+&lt;p&gt;If your reaction is &amp;ldquo;those are nearly the same file&amp;rdquo;, good. That is exactly the bet I made when I chose AngelScript over Lua. Lua would have been easier to embed and it would have forced me to redesign the whole scripting API around tables and closures. AngelScript is statically typed, class based, compiles to bytecode, and looks enough like C# that most of my engine&amp;rsquo;s API surface could survive the move.&lt;/p&gt;
+&lt;p&gt;The mechanical differences you can see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;using CometEngine&lt;/code&gt; becomes &lt;code&gt;using namespace CometEngine&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Static access uses &lt;code&gt;::&lt;/code&gt; instead of &lt;code&gt;.&lt;/code&gt;, so &lt;code&gt;Time::deltaTime&lt;/code&gt; and &lt;code&gt;Vector2::Distance&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;public&lt;/code&gt; on members. In AngelScript everything is public by default and you write &lt;code&gt;private&lt;/code&gt; when you mean it&lt;/li&gt;
+&lt;li&gt;No &lt;code&gt;override&lt;/code&gt;. Engine callbacks like &lt;code&gt;Start&lt;/code&gt; and &lt;code&gt;Update&lt;/code&gt; are found by name, not by virtual dispatch&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;var&lt;/code&gt; is gone. Types are written out&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For maybe 70% of the 300 files that was the whole change. I wrote a script that did the obvious substitutions, ran it over everything, and then went through the results by hand.&lt;/p&gt;
+&lt;h2 id="the-other-30"&gt;The other 30%
+&lt;/h2&gt;&lt;p&gt;This is where the months went.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_5a5d28b6b4495147.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/three-gaps_hu_153acf1b918533ff.png 1024w"
+loading="lazy"
+alt="Three gaps"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Generics.&lt;/strong&gt; AngelScript has &lt;code&gt;array&amp;lt;T&amp;gt;&lt;/code&gt;, and that is essentially it. There is no &lt;code&gt;List&amp;lt;T&amp;gt;&lt;/code&gt;, no &lt;code&gt;Dictionary&amp;lt;TKey, TValue&amp;gt;&lt;/code&gt; in the general case, and no way to write your own generic container. Every place where the C# API had exposed a generic helper, I had to either pick a concrete type or register a new template type from C++ by hand. This is the single biggest reason the port took longer than I estimated. It is also why 2.8 added &lt;code&gt;list&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;stack&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code&gt;queue&amp;lt;T&amp;gt;&lt;/code&gt; and &lt;code&gt;set&amp;lt;T&amp;gt;&lt;/code&gt;, because I kept hitting the same wall while porting.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reflection.&lt;/strong&gt; The C# editor integration leaned on reflection constantly. Draw an inspector for an arbitrary class? Walk its fields. Find every class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt;? Ask the assembly. Read an attribute to decide how a field should be drawn? Reflection again.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Garbage collection.&lt;/strong&gt; C# scripts could allocate freely and then forget about it. AngelScript reference counts, and reference counting means cycles leak. An Entity holding a script that holds a reference back to the Entity is not a hypothetical, it is the most natural thing a gameplay programmer writes. Comet&amp;rsquo;s object model already used reference counting on the C++ side, so the two systems had to be taught about each other properly rather than approximately.&lt;/p&gt;
+&lt;p&gt;That work is also the reason &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt; exist as global functions instead of you just writing &lt;code&gt;== null&lt;/code&gt;. A plain null check really does lie in some situations during teardown. I will write a whole post about that later in the year.&lt;/p&gt;
+&lt;h2 id="the-day-it-compiled"&gt;The day it compiled
+&lt;/h2&gt;&lt;p&gt;The part I remember most clearly is not finishing, it is the console.&lt;/p&gt;
+&lt;p&gt;For about five months the script console was a wall of red. Not a few errors but hundreds of them, because a missing type near the bottom of the dependency graph fails every file above it. You fix one thing and the count goes up, because now the compiler can get far enough into a file to find the next problem. There is no partial credit and no way to test anything, because nothing runs until all of it compiles.&lt;/p&gt;
+&lt;p&gt;Then one evening in February 2026 I fixed what I assumed was another one of the several hundred errors that were left, and the console printed nothing.&lt;/p&gt;
+&lt;p&gt;I really thought it had crashed.&lt;/p&gt;
+&lt;p&gt;It had not. It had compiled. Then of course nothing worked, the game booted and every script did the wrong thing, which is a completely different and much more enjoyable kind of problem, because at that point you can actually run something and look at it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;That is the cost side. Next Wednesday is the other half, what I got in exchange. One binary instead of a runtime, type safety that caught things I did not expect, compile times that changed how I work, and the thing that started all of this, a Comet game running in a browser tab and on a phone.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Part 2 is next Wednesday. Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Comet Engine Is Back, And It Grew Up</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</link><pubDate>Wed, 29 Jul 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/cover.png" alt="Featured image of post Comet Engine Is Back, And It Grew Up" /&gt;&lt;p&gt;The last time I posted here was May 2025. I had just decided to throw away the C# scripting system, I was three weeks into rewriting 300 script files in AngelScript, and I finished that post with a sentence I have thought about many times since:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I missed it by about four months. 2.0 shipped in April 2026.&lt;/p&gt;
+&lt;p&gt;What I did not expect is that once 2.0 was out, everything got faster. Nine releases landed between April and July. The blog stayed quiet the whole time, because every evening went into the engine instead of into writing about the engine. I think that was the right call back then. It is the wrong call now, because there is a year of work in here that nobody has seen.&lt;/p&gt;
+&lt;p&gt;So this post is the catch up, and at the end of it there is a promise.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today.png"
+width="1124"
+height="580"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_2d9c0720c8757e3b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/editor-today_hu_b9de506ec9442d02.png 1024w"
+loading="lazy"
+alt="Comet Engine today"
+class="gallery-image"
+data-flex-grow="193"
+data-flex-basis="465px"
+&gt;&lt;/p&gt;
+&lt;h2 id="what-has-changed-since-then"&gt;What has changed since then
+&lt;/h2&gt;&lt;p&gt;I want to put the numbers down first, because they surprised me when I collected them.&lt;/p&gt;
+&lt;p&gt;Since the last post there have been &lt;strong&gt;nine releases&lt;/strong&gt;, 2.0 through 2.8. The engine went from &amp;ldquo;a 2D editor with C# scripting that runs on Windows and Linux&amp;rdquo; to something I have a hard time describing in one sentence. That is a problem by itself, and part of why this blog is starting again.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases.png"
+width="1100"
+height="300"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_33479d57f7f216d0.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/releases_hu_ca11e65aaa9c391.png 1024w"
+loading="lazy"
+alt="Release timeline"
+class="gallery-image"
+data-flex-grow="366"
+data-flex-basis="880px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The biggest change is the one I was writing about last time. &lt;strong&gt;C# is gone&lt;/strong&gt;, completely. AngelScript is the only scripting language now, and 2.0 was a hard break, so projects written for 1.x do not open. That decision made me quite uncomfortable and I am going to spend the next two Wednesdays on it, because &amp;ldquo;I rewrote 300 files&amp;rdquo; is not really the point. What matters is what I got in exchange, and what it cost me.&lt;/p&gt;
+&lt;p&gt;The short version of the exchange is that the engine now runs in a browser and on a phone. That was the entire reason for the migration, and it worked.&lt;/p&gt;
+&lt;h2 id="other-things-that-landed"&gt;Other things that landed
+&lt;/h2&gt;&lt;p&gt;If the story had ended at AngelScript, Web and Android, this would be a shorter post. It did not.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_6b453f80de4c78ed.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/highlights_hu_5db4f15bd07aa44c.png 1024w"
+loading="lazy"
+alt="What landed"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Somewhere around 2.2 the pace changed. Things I had written down as &amp;ldquo;maybe in a few years&amp;rdquo; started landing in single releases. A &lt;strong&gt;Shader Graph&lt;/strong&gt; with about 115 nodes, so you can build a dissolve effect without writing a line of HLSL. &lt;strong&gt;Visual Scripting&lt;/strong&gt;, where the node graph compiles directly into AngelScript bytecode, so it is not interpreted and it is not a slower path, it is the same bytecode a hand written script produces. &lt;strong&gt;2D dynamic shadows&lt;/strong&gt;. &lt;strong&gt;A Vulkan backend&lt;/strong&gt;, loaded at runtime so machines without a Vulkan driver still boot on OpenGL.&lt;/p&gt;
+&lt;p&gt;And the one I am still a bit amazed by: the particle system now simulates &lt;strong&gt;a hundred thousand particles in 2.7 milliseconds&lt;/strong&gt; on the CPU, or moves the whole simulation onto the GPU with compute shaders if the backend supports it. The old particle system was one object per particle, with a virtual call per property per particle. That rewrite deserves a post of its own, probably two.&lt;/p&gt;
+&lt;p&gt;There is also a full networking stack now, with ENet, WebSocket and WebRTC transports and high level scene replication on top. There is a package manager with a marketplace. There is a profiler with flame graphs that can attach to a running build over TCP. There is an MCP server inside the editor, so an AI assistant can drive it.&lt;/p&gt;
+&lt;p&gt;I am listing all this like a changelog, which is exactly what I do not want this blog to be, so I will stop here.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_1a8bfe7da0367a95.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine-is-back-and-it-grew-up/game-view_hu_8f8dbba7c94442d.png 1024w"
+loading="lazy"
+alt="The game view"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;h2 id="why-the-blog-is-starting-again"&gt;Why the blog is starting again
+&lt;/h2&gt;&lt;p&gt;Comet has become quite capable and almost completely invisible. When somebody asks me what it does, I either give a two word answer that undersells it, or I talk for twenty minutes and lose them. There is nothing in between, and that is a writing problem, not an engine problem.&lt;/p&gt;
+&lt;p&gt;There is also a selfish reason. Every time I have written about a system in this blog, I have found a bug in it. Explaining how something works to a stranger is the most reliable code review I know. Fourteen months of not writing is fourteen months of not doing that review.&lt;/p&gt;
+&lt;h2 id="a-post-every-wednesday"&gt;A post every Wednesday
+&lt;/h2&gt;&lt;p&gt;That is the promise, and I want to keep it for a year.&lt;/p&gt;
+&lt;p&gt;Not a changelog and not a tutorial. I want to explain what Comet actually is, one system at a time, in a way that is enjoyable to read whether or not you ever intend to use it. Lots of pictures, and real screenshots from the real editor instead of marketing renders.&lt;/p&gt;
+&lt;p&gt;Some of them will come in parts, because &amp;ldquo;2D lighting&amp;rdquo; is not one post and pretending it is would make it a bad one. When a post belongs to a series I will say so at the bottom and tell you what is coming the following Wednesday.&lt;/p&gt;
+&lt;p&gt;Next Wednesday: the migration. What a Comet script looked like in C#, what the mono bridge was actually doing, which parts of the port were mechanical, and the three things AngelScript flatly does not have that I had to design around.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;See you Wednesday. Feel free to share comments or questions ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Scripting System Rework</title><link>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</link><pubDate>Tue, 27 May 2025 21:48:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/cover.png" alt="Featured image of post Scripting System Rework" /&gt;&lt;p&gt;Comet Engine is currently using C# for the scripting system. C# is a really powerful programming language but I have found trouble when trying to export for Web and Android. That is why some weeks ago I started looking for a new scripting language more cross-platform friendly.&lt;/p&gt;
+&lt;p&gt;After some research I gave a try to this three languages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.lua.org/about.html" target="_blank" rel="noopener"
+&gt;Lua&lt;/a&gt;: It is one of the most known scripting languages and it is really easy to embed to a C++ application using &lt;a class="link" href="https://github.com/ThePhD/sol2" target="_blank" rel="noopener"
+&gt;Sol3&lt;/a&gt;. After making a try to integrate this language I decided to look for another because Lua is not an object oriented language and I would like to find one that it is.
+This is how lua looks like:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua.png"
+width="513"
+height="471"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_b70600a9c67390f5.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/lua_hu_479547485bdb45ea.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="108"
+data-flex-basis="261px"
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="http://chaiscript.com/index.html" target="_blank" rel="noopener"
+&gt;Chaiscript&lt;/a&gt;: It is a javascript-like scripting language created to be embeded to C++ applications. I did also some testing using it and I was feeling really comfortable working with it, but after reading more about it I felt that it was not prepared to be exported to Web or Android even if some post said that it was possible. As the main purpose is to change to a cross-platform language I had to give up implementing this one. Chaiscript looks like this:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai.png"
+width="538"
+height="587"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_8e8cf6aec172b108.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/chai_hu_add168df5f6385b8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="91"
+data-flex-basis="219px"
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.angelcode.com/angelscript/" target="_blank" rel="noopener"
+&gt;AngelScript&lt;/a&gt;: It is a scripting language really similar to C# and also it could be compared to C++ as well. It is mainly used to be integrated to C/C++ applications. It is a object oriented language and it is compiled in byte code, so this makes this language to be type safety. Also the C++ library used to embed this language works almost the same way I used with C# with mono. This is the most important point because this will allow me to keep everything from my current scripting system and I just have to adapt some new things.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel.png"
+width="540"
+height="504"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_2283614cbd2473d1.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angel_hu_a69742e39c248c72.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="107"
+data-flex-basis="257px"
+&gt;&lt;/p&gt;
+&lt;p&gt;A few days ago I started adapting all the Comet Engine C# classes to Angelscript and even if the syntaxis is quite the same I think it will take me about 6 months to adapt the 300 C# script files to AngelScript. So I expect that just before the ending of 2025 I will be able to release a CometEngine_v2.0_Beta version.&lt;/p&gt;
+&lt;p&gt;Here it is a comparasion between the same script in C# and in AngelScript:&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp.png"
+width="999"
+height="600"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_7492f63da4cc0748.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/angelcomp_hu_30f7599b6d6f4735.png 1024w"
+loading="lazy"
+alt="AngelScript"
+class="gallery-image"
+data-flex-grow="166"
+data-flex-basis="399px"
+&gt; &lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp.png"
+width="964"
+height="681"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_b8505c3b29c2916c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/scripting-system-rework/csharp_hu_2d80ee8513fe3212.png 1024w"
+loading="lazy"
+alt="C#"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Once I will have all the AngelScript scripting integrated, I will take a look to export to Web and Android again. Let&amp;rsquo;s see if AngelScript has been a good choice.&lt;/p&gt;</description></item><item><title>Comet Engine</title><link>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</link><pubDate>Tue, 13 May 2025 18:49:32 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/cover.png" alt="Featured image of post Comet Engine" /&gt;&lt;p&gt;Welcome everyone to my blog about Comet Engine. In this blog I&amp;rsquo;m going to talk about the development and current features of my custom game engine, Comet Engine.&lt;/p&gt;
+&lt;p&gt;First of all, what is Comet Engine? It is a custom game engine made from scratch with C++, SDL3 and OpenGL. It&amp;rsquo;s been 4 years since I started developing it and now it looks like this:
+&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor.png"
+width="1919"
+height="1037"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c832f1589efe3a70.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/comet-engine/editor_hu_c6128973a697599b.png 1024w"
+loading="lazy"
+alt="Image 1"
+class="gallery-image"
+data-flex-grow="185"
+data-flex-basis="444px"
+&gt;&lt;/p&gt;
+&lt;p&gt;At this point the main features are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;2D Rendering&lt;/li&gt;
+&lt;li&gt;Sprite atlas subsystem&lt;/li&gt;
+&lt;li&gt;Physics&lt;/li&gt;
+&lt;li&gt;2D Lighting&lt;/li&gt;
+&lt;li&gt;2D and 3D Audio&lt;/li&gt;
+&lt;li&gt;Custom Shaders&lt;/li&gt;
+&lt;li&gt;Bunch of in editor customizations&lt;/li&gt;
+&lt;li&gt;Exporting for Windows and Linux&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is also possible to create game scripts using the C# system integrated in Comet, but now I&amp;rsquo;m working on a new system because it&amp;rsquo;s been quite difficult to export the C# system to web or android. So expect a new Comet Engine major version (2.0) breaking the compatibility with C# is comming this year! This topic will have a custom post soon.&lt;/p&gt;
+&lt;p&gt;I attach a presentation trailer that I made 3 years ago in order to start understanding what is Comet and how it works!
+&lt;div class="video-wrapper"&gt;
+&lt;iframe loading="lazy"
+src="https://www.youtube.com/embed/zLf-vsr-gkk"
+allowfullscreen
+title="YouTube Video"
+&gt;
+&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;/p&gt;
+&lt;p&gt;Feel free to share comments or questions ;)&lt;/p&gt;</description></item></channel></rss>

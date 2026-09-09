@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>InstanciableEntities on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/instanciableentities/</link><description>Recent content in InstanciableEntities on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 09 Sep 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/instanciableentities/index.xml" rel="self" type="application/rss+xml"/><item><title>Entities You Can Stamp (Part 2): Variants and Overrides</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</link><pubDate>Wed, 09 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/cover.png" alt="Featured image of post Entities You Can Stamp (Part 2): Variants and Overrides" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/" &gt;Last Wednesday&lt;/a&gt; covered the easy half: an InstanciableEntity is an entity saved as an asset, instances point back at it, and nesting is where it gets hard.&lt;/p&gt;
+&lt;p&gt;This week is the half that makes the system usable. A hundred identical coins is not much of a game. What you want is a hundred coins where three are bigger, one is on fire and two are worth double.&lt;/p&gt;
+&lt;h2 id="an-override-is-a-diff"&gt;An override is a diff
+&lt;/h2&gt;&lt;p&gt;Take one instance and change something. Make it larger and tint it orange.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector.png"
+width="544"
+height="880"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_ceaf5642d3211827.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_2d647c9746235d5b.png 1024w"
+loading="lazy"
+alt="An instance in the Inspector with its overridden fields marked"
+class="gallery-image"
+data-flex-grow="61"
+data-flex-basis="148px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Look at what Comet stores for that instance. Not a copy of the coin. Two values, &lt;code&gt;scale = 0.70&lt;/code&gt; and &lt;code&gt;colour = orange&lt;/code&gt;. That is the whole record.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_43bdbd5fbf0bf771.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_1d149993d8d86bfe.png 1024w"
+loading="lazy"
+alt="The stored diff next to the full asset data it inherits"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything else, the sprite, the sorting order, the collider radius, the script and all its fields, is still being read from the asset, live. So if I go and change the coin&amp;rsquo;s sprite tomorrow, this instance follows, because it never had an opinion about the sprite. It only ever disagreed about two things, and it still disagrees about exactly those two things.&lt;/p&gt;
+&lt;p&gt;This is the property that makes the system worth having. The naive implementation, copy the whole entity and let the user edit the copy, is much easier to write and useless in practice, because the moment you copy, the instance stops receiving improvements to the original.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene.png"
+width="1113"
+height="538"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_c75942385bd930bf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_5707c508d981c09b.png 1024w"
+loading="lazy"
+alt="Eight coins in the scene, one of them overridden"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Seven of those coins agree with the asset entirely. One does not. The scene file is seven links, and one link with two extra lines attached.&lt;/p&gt;
+&lt;h2 id="the-bar-at-the-top"&gt;The bar at the top
+&lt;/h2&gt;&lt;p&gt;When an instance has overrides, the Inspector grows a block above everything else with four buttons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Open&lt;/strong&gt;, edit the asset itself&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Select Asset&lt;/strong&gt;, highlight it in the Project panel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Apply All&lt;/strong&gt;, push this instance&amp;rsquo;s changes back into the asset, so every other instance gets them&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Revert All&lt;/strong&gt;, throw this instance&amp;rsquo;s changes away and go back to agreeing with the asset&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;Apply All&lt;/code&gt; is the one to be careful with. It is the right button when you have been tweaking an instance in the scene because that is where you can see it, and you have arrived at the version you want everywhere. It is the wrong button when you had made that one deliberately special.&lt;/p&gt;
+&lt;h2 id="variants"&gt;Variants
+&lt;/h2&gt;&lt;p&gt;Sometimes what you want is not one exception but a whole new kind of thing.&lt;/p&gt;
+&lt;p&gt;You have a basic enemy. You want an armoured version: same everything, but more health, a different tint, and one extra behaviour. You could make a second asset by copying the first, and then you have two assets that will drift apart forever.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;variant&lt;/strong&gt; is the third option. It is a new asset that inherits from another asset. Change the base enemy&amp;rsquo;s sprite and the armoured variant&amp;rsquo;s sprite changes too, unless the variant had an opinion about the sprite, in which case it keeps its own.&lt;/p&gt;
+&lt;p&gt;It is the same override mechanism, one level up. An instance overrides an asset, and a variant overrides an asset and can itself be instanced and overridden.&lt;/p&gt;
+&lt;h2 id="the-rule-shallowest-wins"&gt;The rule: shallowest wins
+&lt;/h2&gt;&lt;p&gt;So now three things can have an opinion about &lt;code&gt;health&lt;/code&gt;: the base asset, the variant, and the specific instance sitting in this scene.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_19ce9e154ec18db0.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_74340204814e3787.png 1024w"
+loading="lazy"
+alt="The three levels of the override chain and their depths"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The rule is depth based, and the shallowest depth wins. Depth 0 is the scene. If the scene has an override, that is the answer. If the scene is silent, the variant&amp;rsquo;s value is used. If the variant is also silent, you get the base asset&amp;rsquo;s value.&lt;/p&gt;
+&lt;p&gt;In other words the scene always gets the last word. Whatever you did by hand, in the level, in front of your eyes, is never quietly overruled by something further up the chain. That was not the first rule I tried, and the earlier version, where a variant could win over a scene edit in some nesting configurations, produced the most baffling bug reports I have ever written for myself.&lt;/p&gt;
+&lt;p&gt;Reconstructing that merged view is not free, so Comet caches it. When you ask for an entity&amp;rsquo;s effective data, the scene manager walks the override chain once and remembers the result until something invalidates it. Getting that invalidation right is most of what 2.4.1&amp;rsquo;s &amp;ldquo;multiple errors&amp;rdquo; were.&lt;/p&gt;
+&lt;h2 id="deletion-is-a-tombstone"&gt;Deletion is a tombstone
+&lt;/h2&gt;&lt;p&gt;I mentioned this last week and it belongs here properly.&lt;/p&gt;
+&lt;p&gt;You cannot delete a child of an instance, because the asset still says the child exists. So the instance records that the child is &lt;code&gt;&amp;quot;Valid&amp;quot;: false&lt;/code&gt;, a tombstone in the overrides list.&lt;/p&gt;
+&lt;p&gt;The consequence people hit: if you delete a child from an instance and later use &lt;code&gt;Apply All&lt;/code&gt;, you are pushing a tombstone into the asset, and now every instance loses that child. That is either exactly what you wanted or a small disaster, and the engine cannot tell which.&lt;/p&gt;
+&lt;h2 id="two-bugs-worth-remembering"&gt;Two bugs worth remembering
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;The self-referencing joint.&lt;/strong&gt; Not strictly an InstanciableEntity bug, but it lived here. Instancing an asset containing a physics joint could, in a specific override configuration, produce a joint connecting a body to itself. Box2D does not enjoy that. The world corrupted, and the crash surfaced several frames later somewhere unrelated. Fixed in 2.8.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The save that ate the asset.&lt;/strong&gt; Saving an InstanciableEntity used to write directly over the original file. If anything interrupted that write, the asset was gone. Now it writes to a temporary file and atomically replaces the original, so a failed save leaves the old version intact. It is a two line change that I should have made years earlier, and it is in 2.8 because it finally happened to me.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: scenes. What is actually inside one, the three different ways to load one, why load order matters when a rigid body points at a joint that points at a collider, and why a scene is readable JSON in the editor but a binary blob in a build.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Entities You Can Stamp (Part 1): The InstanciableEntity System</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/</link><pubDate>Wed, 02 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/cover.png" alt="Featured image of post Entities You Can Stamp (Part 1): The InstanciableEntity System" /&gt;&lt;p&gt;Comet calls them &lt;strong&gt;InstanciableEntities&lt;/strong&gt;. If you are coming from Unity, this is the idea you already know as a prefab.&lt;/p&gt;
+&lt;p&gt;The concept fits in one sentence: an InstanciableEntity is an entity you saved as an asset, so you can place it as many times as you like and edit all of the copies from one place.&lt;/p&gt;
+&lt;p&gt;Getting the consequences of that sentence right took me about three rewrites.&lt;/p&gt;
+&lt;h2 id="making-one"&gt;Making one
+&lt;/h2&gt;&lt;p&gt;Build an entity in a scene, a coin for example. Transform, Sprite Renderer, a collider set to trigger, a little script. Then drag it from the Hierarchy into the Project panel.&lt;/p&gt;
+&lt;p&gt;That is all. You now have a &lt;code&gt;.cometInstanciableEntity&lt;/code&gt; asset, and the entity still sitting in your scene is no longer just an entity, it is an &lt;strong&gt;instance&lt;/strong&gt; of that asset. It remembers where it came from.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances.png"
+width="1113"
+height="538"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances_hu_7eae403d68e30e26.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/instances_hu_694cdd93cc79a168.png 1024w"
+loading="lazy"
+alt="Eight instances of the coin asset placed around the scene"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Drop that asset into the scene eight more times and you have eight instances. Open the asset, change the sprite, save, and all eight change. The value here is not clever architecture. It is that you do not have to select ninety-three coins to make them all slightly bigger.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy.png"
+width="544"
+height="564"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy_hu_9b9765e328b23b57.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/hierarchy_hu_47c85192c7033696.png 1024w"
+loading="lazy"
+alt="The same instances listed in the Hierarchy panel"
+class="gallery-image"
+data-flex-grow="96"
+data-flex-basis="231px"
+&gt;&lt;/p&gt;
+&lt;p&gt;In the Hierarchy they look almost like normal entities, because they are. An instance is a real entity in the scene with a real transform that you move, rotate and parent like anything else. The only difference is that it holds a link back to the asset it came from.&lt;/p&gt;
+&lt;h2 id="what-is-actually-stored"&gt;What is actually stored
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is_hu_289aa486efa8dcc3.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/what-it-is_hu_723b72f8ca1ada94.png 1024w"
+loading="lazy"
+alt="What an instance stores on disk next to what a full copy would store"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;An instance is not a copy. When you place ten instances of an asset containing forty entities, your scene file does not gain four hundred entities. It gains ten short records that say &amp;ldquo;an instance of asset X lives here, with these specific differences&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;That has three consequences you can feel:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Scene files stay small and readable even in levels made mostly of repeated content.&lt;/li&gt;
+&lt;li&gt;Loading a scene means loading the asset once and stamping it, rather than parsing the same forty entities ten times.&lt;/li&gt;
+&lt;li&gt;Changing the asset really does change every instance everywhere, including in scenes that are not currently open, because they never had their own copy of the data to go stale.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="nesting-and-why-it-took-three-tries"&gt;Nesting, and why it took three tries
+&lt;/h2&gt;&lt;p&gt;An InstanciableEntity can contain another InstanciableEntity. A turret asset contains a muzzle flash asset. A room asset contains four turret assets. A level scene contains six room assets.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting_hu_238c062837dbc923.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/nesting_hu_c3b90b8440274615.png 1024w"
+loading="lazy"
+alt="A muzzle flash asset inside a turret asset inside a room asset"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Now edit the muzzle flash.&lt;/p&gt;
+&lt;p&gt;Every turret has to update. Every room containing those turrets has to update. Every scene containing those rooms has to update. And none of them may lose the changes they made themselves. If one particular turret in one particular room was rotated 40 degrees and had its fire rate doubled, that has to survive an edit three levels below it.&lt;/p&gt;
+&lt;p&gt;Comet&amp;rsquo;s answer is that every entity inside an instance carries a small set of identifiers: which asset it belongs to, which asset it is inside, which asset is outermost, and what its parent asset is. Those four values are what let the engine walk a three level deep structure and work out, for any given entity, which asset it should be inheriting from and which changes belong to it.&lt;/p&gt;
+&lt;p&gt;The original version of this system, back in 1.x, only supported one level. Nesting was added in 2.0 and it was the largest change in that release that nobody outside could see. It also produced the largest crop of bugs. The 2.4.1 changelog contains the line &amp;ldquo;Multiples errors on InstanciableEntities&amp;rdquo;, which is doing a lot of work to describe a fortnight.&lt;/p&gt;
+&lt;h2 id="the-bar-at-the-top-of-the-scene-view"&gt;The bar at the top of the scene view
+&lt;/h2&gt;&lt;p&gt;Open an InstanciableEntity asset for editing and Comet puts you in a slightly different mode. You are editing the asset itself, not an instance of it. A header bar appears at the top of the scene view telling you so, with buttons to save or discard.&lt;/p&gt;
+&lt;p&gt;That bar exists because I kept editing an asset, wandering off, and losing the changes, or worse, saving something I had only meant to try. Making the state visible and the exit explicit fixed both.&lt;/p&gt;
+&lt;h2 id="what-breaks-the-illusion"&gt;What breaks the illusion
+&lt;/h2&gt;&lt;p&gt;Two limitations I am not happy about.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;You cannot delete a child of an instance.&lt;/strong&gt; Not really. If a turret asset has a barrel, and you delete the barrel on one instance, the engine cannot simply remove it, because the asset still says there is a barrel and re-stamping would bring it back. What actually happens is a tombstone: the instance records that this particular child is no longer valid. It works, and I think it is the correct answer, but it means the deletion is a stored opinion rather than an absence.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reordering behaviours on an instance is not free.&lt;/strong&gt; The list of behaviours is part of what is inherited, so changing the order on one instance is a diff like any other, and if the asset later gains a behaviour the merge has to make a decision. Comet errs on the side of the asset. Until 2.2 it errored on the side of showing you a confusing popup, which was worse.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday is the other half, and I think the more interesting one: what happens when instances start disagreeing with the asset. Overrides stored as diffs, variants that fork an asset while still inheriting from it, and the rule that decides who wins when three levels of the hierarchy have opinions about the same field.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
