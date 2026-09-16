@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Serialization on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/serialization/</link><description>Recent content in Serialization on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 16 Sep 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/serialization/index.xml" rel="self" type="application/rss+xml"/><item><title>Loading a World</title><link>https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/</link><pubDate>Wed, 16 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/cover.png" alt="Featured image of post Loading a World" /&gt;&lt;p&gt;A scene is the file that holds a piece of your game. Opening one, saving one, and loading one while another is already running are three problems of very different sizes, and this post is about all three.&lt;/p&gt;
+&lt;h2 id="what-is-actually-in-there"&gt;What is actually in there
+&lt;/h2&gt;&lt;p&gt;Comet scenes in the editor are JSON. Not a custom binary format that you need a tool to read, but actual JSON, on disk, in your &lt;code&gt;Assets/&lt;/code&gt; folder, which you can open in a text editor and diff in git.&lt;/p&gt;
+&lt;p&gt;This is the top of the scene I have been using for these posts.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/scene-json.png"
+width="1000"
+height="690"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/scene-json_hu_a6dd2c74c8afa614.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/scene-json_hu_44756907bd322774.png 1024w"
+loading="lazy"
+alt="The first entities of a Comet scene file opened as JSON"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Every entity is a record: its name, its ID, its parent&amp;rsquo;s ID, its enabled state, its layer and tag, and then a dictionary of behaviours keyed by their own IDs. Each behaviour writes whatever it needs. A Transform writes position, rotation and scale, a Camera writes its culling mask and clear colour, a Sprite Renderer writes the sprite it points at and its sorting layer.&lt;/p&gt;
+&lt;p&gt;Two things are worth noticing.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Everything is an ID, not a name and not a path.&lt;/strong&gt; &lt;code&gt;ParentID&lt;/code&gt; is a number. When a script field references another entity, that is a number too. Names are for humans, and the engine never uses them to find anything, which is why renaming an entity can never break a reference.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Behaviours are a dictionary, not an array.&lt;/strong&gt; Each behaviour has its own persistent ID, so adding, removing or reordering behaviours does not shift what anything else points at.&lt;/p&gt;
+&lt;p&gt;That readability is a deliberate editor only choice. In a &lt;strong&gt;build&lt;/strong&gt;, this same scene becomes a binary blob, an index of &lt;code&gt;ID + Hash + Type + Offset&lt;/code&gt; entries followed by packed data. The editor wants a format you can inspect and merge, and the runtime wants a format that loads without parsing thirty thousand characters of text. There is no reason those have to be the same format, so they are not.&lt;/p&gt;
+&lt;h2 id="putting-it-back-together-in-order"&gt;Putting it back together, in order
+&lt;/h2&gt;&lt;p&gt;This part is delicate.&lt;/p&gt;
+&lt;p&gt;You cannot just walk the entity list and construct things as you meet them. Think of a scene where a rigid body has a collider, and a joint connects that body to a second one that appears &lt;strong&gt;later&lt;/strong&gt; in the file. Construct the joint when you reach it and you are connecting to a body that does not exist yet.&lt;/p&gt;
+&lt;p&gt;So loading happens in stages.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-order.png"
+width="1100"
+height="716"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-order_hu_f7c1ded563fb224d.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-order_hu_2082562dc2781f74.png 1024w"
+loading="lazy"
+alt="The load stages, from empty entities through physics to cross references"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="368px"
+&gt;&lt;/p&gt;
+&lt;p&gt;First every entity and every behaviour is created, present but empty. Then rigid bodies enter the physics world. Then colliders attach to bodies that are now guaranteed to exist. Then joints connect bodies that now have shapes. Then everything else resolves its cross references, and by that point every object in the scene is available to be pointed at.&lt;/p&gt;
+&lt;p&gt;Each stage depends on the one above it having completely finished. This is invisible when it works and produces very confusing bugs when it does not, like a joint that behaves oddly only when you saved the scene with the entities in a particular order.&lt;/p&gt;
+&lt;p&gt;Two of the bugs fixed in 2.8 live exactly here: joints that ended up connecting a body to itself and corrupted the physics world, and a rigid body attached to a joint crashing when you dragged it with the scene gizmos.&lt;/p&gt;
+&lt;h2 id="three-ways-to-load"&gt;Three ways to load
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-modes.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-modes_hu_d0b9b696135f6892.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/loading-a-world/load-modes_hu_56f2f204dd103a0c.png 1024w"
+loading="lazy"
+alt="The three scene load modes and when each one runs"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;LoadSceneInstantly&lt;/code&gt;&lt;/strong&gt; does what it says. The current frame stops, the scene is torn down, the new one is built, and then the frame continues. It is the simplest one and it is right for small scenes and editor tooling.&lt;/p&gt;
+&lt;p&gt;It is also the one that will hurt you, for a reason that is not obvious. Calling it from inside a collision callback means you are destroying the world in the middle of the physics step that is iterating over it. Comet defends against a lot of this, but &amp;ldquo;destroy everything, right now, from inside a callback&amp;rdquo; is a hard thing to make safe.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;LoadSceneNextFrame&lt;/code&gt;&lt;/strong&gt; is the same operation, deferred until the current frame has finished cleanly. This is the correct default and it is what I use for essentially every scene transition. Nothing is mid iteration, the frame ends, and then the swap happens.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;LoadSceneAsync&lt;/code&gt;&lt;/strong&gt; streams the new scene in the background while the current one keeps running and rendering. This is what a loading screen is built on: start the load, keep updating your spinner, poll for completion, then swap. 2.8 improved both async asset and async scene loading noticeably, and also the plain large scene load path.&lt;/p&gt;
+&lt;p&gt;You can also load a scene &lt;strong&gt;by ID&lt;/strong&gt; rather than by reference. That sounds like a small thing, but it is what makes a data driven level flow possible, because a script can hold a list of scene IDs and load whichever one the save file says you were in.&lt;/p&gt;
+&lt;h2 id="leaving-play-mode-is-also-a-scene-load"&gt;Leaving play mode is also a scene load
+&lt;/h2&gt;&lt;p&gt;This one took me an embarrassingly long time to make fast.&lt;/p&gt;
+&lt;p&gt;When you press play in the editor, Comet has to remember the scene exactly as it was, because when you press stop it must put it back. That is the whole contract of play mode. Every change your scripts made during play has to be undone.&lt;/p&gt;
+&lt;p&gt;For a long time the recovery on a big scene took several seconds. You would press stop and just sit there waiting. 2.8 got that down to a fraction of a second, and it is one of the changes that has most improved how the editor feels to use, even though it is completely invisible in a feature list.&lt;/p&gt;
+&lt;p&gt;A related detail, also fixed recently: delta time was not being normalised after a scene load, so the first frame of a new scene received an enormous delta, the accumulated time of the whole load. Anything integrating over delta time on that first frame took one gigantic step. Objects teleported. It looked like a physics bug for a long time before I thought to look at the clock.&lt;/p&gt;
+&lt;h2 id="scenes-as-assets"&gt;Scenes as assets
+&lt;/h2&gt;&lt;p&gt;A scene is a resource like any other, with an ID, which means other things can reference it. A script can expose a &lt;code&gt;Scene&lt;/code&gt; field and you drag one in from the Project panel.&lt;/p&gt;
+&lt;p&gt;That matters at build time. Scenes referenced from a script or a CometObject are &lt;strong&gt;automatically included in the build&lt;/strong&gt;. You do not maintain a list of levels somewhere and remember to update it. If something in your project points at a scene, that scene ships.&lt;/p&gt;
+&lt;p&gt;The build also does the reverse and strips out assets that nothing references and that have no content group assigned. That is a subject for its own post, in May.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday we follow one frame all the way to the screen: sorting layers, the spatial index that throws away everything off camera, what merges into a single draw call and what quietly refuses to.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Entities You Can Stamp (Part 2): Variants and Overrides</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</link><pubDate>Wed, 09 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/cover.png" alt="Featured image of post Entities You Can Stamp (Part 2): Variants and Overrides" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-1-the-instanciableentity-system/" &gt;Last Wednesday&lt;/a&gt; covered the easy half: an InstanciableEntity is an entity saved as an asset, instances point back at it, and nesting is where it gets hard.&lt;/p&gt;
+&lt;p&gt;This week is the half that makes the system usable. A hundred identical coins is not much of a game. What you want is a hundred coins where three are bigger, one is on fire and two are worth double.&lt;/p&gt;
+&lt;h2 id="an-override-is-a-diff"&gt;An override is a diff
+&lt;/h2&gt;&lt;p&gt;Take one instance and change something. Make it larger and tint it orange.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector.png"
+width="544"
+height="880"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_f2aa5bf14713e18c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-inspector_hu_dd92d8ecb7ebe527.png 1024w"
+loading="lazy"
+alt="An instance in the Inspector with its overridden fields marked"
+class="gallery-image"
+data-flex-grow="61"
+data-flex-basis="148px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Look at what Comet stores for that instance. Not a copy of the coin. Two values, &lt;code&gt;scale = 0.70&lt;/code&gt; and &lt;code&gt;colour = orange&lt;/code&gt;. That is the whole record.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_768cd9008446aa82.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/diff-not-copy_hu_e379b520e9ad430f.png 1024w"
+loading="lazy"
+alt="The stored diff next to the full asset data it inherits"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything else, the sprite, the sorting order, the collider radius, the script and all its fields, is still being read from the asset, live. So if I go and change the coin&amp;rsquo;s sprite tomorrow, this instance follows, because it never had an opinion about the sprite. It only ever disagreed about two things, and it still disagrees about exactly those two things.&lt;/p&gt;
+&lt;p&gt;This is the property that makes the system worth having. The naive implementation, copy the whole entity and let the user edit the copy, is much easier to write and useless in practice, because the moment you copy, the instance stops receiving improvements to the original.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene.png"
+width="1113"
+height="538"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_64a9a17e8c1cd980.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/override-scene_hu_cf007054f1c90012.png 1024w"
+loading="lazy"
+alt="Eight coins in the scene, one of them overridden"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Seven of those coins agree with the asset entirely. One does not. The scene file is seven links, and one link with two extra lines attached.&lt;/p&gt;
+&lt;h2 id="the-bar-at-the-top"&gt;The bar at the top
+&lt;/h2&gt;&lt;p&gt;When an instance has overrides, the Inspector grows a block above everything else with four buttons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Open&lt;/strong&gt;, edit the asset itself&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Select Asset&lt;/strong&gt;, highlight it in the Project panel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Apply All&lt;/strong&gt;, push this instance&amp;rsquo;s changes back into the asset, so every other instance gets them&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Revert All&lt;/strong&gt;, throw this instance&amp;rsquo;s changes away and go back to agreeing with the asset&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;Apply All&lt;/code&gt; is the one to be careful with. It is the right button when you have been tweaking an instance in the scene because that is where you can see it, and you have arrived at the version you want everywhere. It is the wrong button when you had made that one deliberately special.&lt;/p&gt;
+&lt;h2 id="variants"&gt;Variants
+&lt;/h2&gt;&lt;p&gt;Sometimes what you want is not one exception but a whole new kind of thing.&lt;/p&gt;
+&lt;p&gt;You have a basic enemy. You want an armoured version: same everything, but more health, a different tint, and one extra behaviour. You could make a second asset by copying the first, and then you have two assets that will drift apart forever.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;variant&lt;/strong&gt; is the third option. It is a new asset that inherits from another asset. Change the base enemy&amp;rsquo;s sprite and the armoured variant&amp;rsquo;s sprite changes too, unless the variant had an opinion about the sprite, in which case it keeps its own.&lt;/p&gt;
+&lt;p&gt;It is the same override mechanism, one level up. An instance overrides an asset, and a variant overrides an asset and can itself be instanced and overridden.&lt;/p&gt;
+&lt;h2 id="the-rule-shallowest-wins"&gt;The rule: shallowest wins
+&lt;/h2&gt;&lt;p&gt;So now three things can have an opinion about &lt;code&gt;health&lt;/code&gt;: the base asset, the variant, and the specific instance sitting in this scene.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_685fa8f89e659c5c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-you-can-stamp-part-2-variants-and-overrides/depth_hu_57dbb3ef98647b85.png 1024w"
+loading="lazy"
+alt="The three levels of the override chain and their depths"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The rule is depth based, and the shallowest depth wins. Depth 0 is the scene. If the scene has an override, that is the answer. If the scene is silent, the variant&amp;rsquo;s value is used. If the variant is also silent, you get the base asset&amp;rsquo;s value.&lt;/p&gt;
+&lt;p&gt;In other words the scene always gets the last word. Whatever you did by hand, in the level, in front of your eyes, is never quietly overruled by something further up the chain. That was not the first rule I tried, and the earlier version, where a variant could win over a scene edit in some nesting configurations, produced the most baffling bug reports I have ever written for myself.&lt;/p&gt;
+&lt;p&gt;Reconstructing that merged view is not free, so Comet caches it. When you ask for an entity&amp;rsquo;s effective data, the scene manager walks the override chain once and remembers the result until something invalidates it. Getting that invalidation right is most of what 2.4.1&amp;rsquo;s &amp;ldquo;multiple errors&amp;rdquo; were.&lt;/p&gt;
+&lt;h2 id="deletion-is-a-tombstone"&gt;Deletion is a tombstone
+&lt;/h2&gt;&lt;p&gt;I mentioned this last week and it belongs here properly.&lt;/p&gt;
+&lt;p&gt;You cannot delete a child of an instance, because the asset still says the child exists. So the instance records that the child is &lt;code&gt;&amp;quot;Valid&amp;quot;: false&lt;/code&gt;, a tombstone in the overrides list.&lt;/p&gt;
+&lt;p&gt;The consequence people hit: if you delete a child from an instance and later use &lt;code&gt;Apply All&lt;/code&gt;, you are pushing a tombstone into the asset, and now every instance loses that child. That is either exactly what you wanted or a small disaster, and the engine cannot tell which.&lt;/p&gt;
+&lt;h2 id="two-bugs-worth-remembering"&gt;Two bugs worth remembering
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;The self-referencing joint.&lt;/strong&gt; Not strictly an InstanciableEntity bug, but it lived here. Instancing an asset containing a physics joint could, in a specific override configuration, produce a joint connecting a body to itself. Box2D does not enjoy that. The world corrupted, and the crash surfaced several frames later somewhere unrelated. Fixed in 2.8.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The save that ate the asset.&lt;/strong&gt; Saving an InstanciableEntity used to write directly over the original file. If anything interrupted that write, the asset was gone. Now it writes to a temporary file and atomically replaces the original, so a failed save leaves the old version intact. It is a two line change that I should have made years earlier, and it is in 2.8 because it finally happened to me.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: scenes. What is actually inside one, the three different ways to load one, why load order matters when a rigid body points at a joint that points at a collider, and why a scene is readable JSON in the editor but a binary blob in a build.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
