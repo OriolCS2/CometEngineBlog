@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OpenGL on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/opengl/</link><description>Recent content in OpenGL on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 23 Sep 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/opengl/index.xml" rel="self" type="application/rss+xml"/><item><title>How Comet Draws a Frame</title><link>https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/</link><pubDate>Wed, 23 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/cover.png" alt="Featured image of post How Comet Draws a Frame" /&gt;&lt;p&gt;Everything in a 2D scene is a textured rectangle. Every sprite, every tile, every letter of text, every particle. That sounds like it should make rendering easy, and in a way it does. Drawing one rectangle is trivial. Drawing four thousand of them without asking the GPU four thousand separate times is the part that takes work.&lt;/p&gt;
+&lt;p&gt;This post follows one frame, from &amp;ldquo;here is a scene&amp;rdquo; to &amp;ldquo;here are the pixels&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene.png"
+width="952"
+height="590"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene_hu_c61ca02a0a77abee.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene_hu_ca7735f62b5dce49.png 1024w"
+loading="lazy"
+alt="The demo scene I use through this post"
+class="gallery-image"
+data-flex-grow="161"
+data-flex-basis="387px"
+&gt;&lt;/p&gt;
+&lt;h2 id="culling"&gt;Culling
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport.png"
+width="1124"
+height="657"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport_hu_20408680589c36d7.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport_hu_6c49cb1f30839686.png 1024w"
+loading="lazy"
+alt="The camera viewport drawn in the Scene view"
+class="gallery-image"
+data-flex-grow="171"
+data-flex-basis="410px"
+&gt;&lt;/p&gt;
+&lt;p&gt;That red rectangle in the Scene view is what the active camera can see. Everything outside it is thrown away before it reaches the GPU at all.&lt;/p&gt;
+&lt;p&gt;Comet keeps a &lt;strong&gt;spatial index&lt;/strong&gt; of renderers, a structure that can answer &amp;ldquo;what overlaps this rectangle?&amp;rdquo; without testing every object in the scene. On a small scene this does not matter at all. On a level with fifteen thousand tiles where the camera is showing two hundred of them, it decides whether the level runs.&lt;/p&gt;
+&lt;p&gt;The property I care about is that the cost of culling grows with what is visible, not with what exists. That is why a big Comet level does not get slower as you keep adding more level further away.&lt;/p&gt;
+&lt;p&gt;There is a bug worth mentioning here, because it shows what happens when the index goes stale. Until 2.8, tiles you painted in the editor could vanish once their tilemap stopped being the active paint target. The tiles were there. The culling tree had not been rebuilt after the stroke, so the renderer believed there was nothing to draw.&lt;/p&gt;
+&lt;h2 id="sorting"&gt;Sorting
+&lt;/h2&gt;&lt;p&gt;2D rendering is mostly about order. There is no depth buffer sorting this out for you, so whatever is drawn last ends up on top.&lt;/p&gt;
+&lt;p&gt;Comet uses three levels:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Sorting layer&lt;/strong&gt;. A named, project-wide list that you define in order. &lt;code&gt;Background&lt;/code&gt;, &lt;code&gt;Terrain&lt;/code&gt;, &lt;code&gt;Characters&lt;/code&gt;, &lt;code&gt;Effects&lt;/code&gt;, &lt;code&gt;UI&lt;/code&gt;. This is the coarse control and it is the one you should be using.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Order in layer&lt;/strong&gt;. An integer inside a layer, for &amp;ldquo;this specific thing goes in front of that specific thing&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Depth&lt;/strong&gt;. Position along Z, which resolves anything still tied.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I prefer sorting layers over nudging Z values because a layer has a name. Six months later, &lt;code&gt;Characters&lt;/code&gt; still means something to me. &lt;code&gt;z = -0.03&lt;/code&gt; does not.&lt;/p&gt;
+&lt;h2 id="batching"&gt;Batching
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline_hu_8693214841c8c14f.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline_hu_bbfc6af2ecbc91a4.png 1024w"
+loading="lazy"
+alt="The rendering pipeline, from culling to submission"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Comet walks the sorted list and merges consecutive renderers that can share a draw call into one. One vertex buffer, one texture bind, one submission.&lt;/p&gt;
+&lt;p&gt;Fifty coins with the same sprite become one draw call. A tilemap of two thousand tiles from one tileset becomes a handful. This is the step that decides whether a 2D renderer is fast or slow.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers_hu_d86ff848bfe978b4.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers_hu_e4aa748a61dd7c89.png 1024w"
+loading="lazy"
+alt="The three things that break a batch"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Three things break the merge:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;A different material.&lt;/strong&gt; A different shader, or different parameters, means a different GPU state.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A different texture.&lt;/strong&gt; This is what sprite atlases are for. Pack twenty sprites onto one page and they can all batch together. Atlases get their own post in March.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Something drawn between them in the sort order.&lt;/strong&gt; This one catches everyone. Two sprites using the same material will not merge if a third sprite with a different material sorts between them, because merging them would move that third sprite to the wrong side of something.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That last rule is why the practical advice is to keep things that look alike in the same sorting layer. You are not only organising the scene, you are giving the batcher something it can work with.&lt;/p&gt;
+&lt;h2 id="handing-the-work-over"&gt;Handing the work over
+&lt;/h2&gt;&lt;p&gt;The batched result becomes a &lt;strong&gt;command buffer&lt;/strong&gt;, a backend-agnostic list of &amp;ldquo;bind this, set that, draw this many&amp;rdquo;. Nothing in it mentions OpenGL or Vulkan.&lt;/p&gt;
+&lt;p&gt;That buffer is packed into a &lt;strong&gt;frame packet&lt;/strong&gt; and handed to the render thread, which turns it into real API calls while the game thread has already moved on to the next frame. On every platform except the web, which has no threads at all, those two things really are running at the same time.&lt;/p&gt;
+&lt;p&gt;That is the whole of next week&amp;rsquo;s post, so I will stop there.&lt;/p&gt;
+&lt;h2 id="the-stats-panel"&gt;The Stats panel
+&lt;/h2&gt;&lt;p&gt;The Game panel has a &lt;strong&gt;Stats&lt;/strong&gt; toggle. Turn it on and you get live rendering statistics: draw calls, batches, vertices, triangles and the frame time.&lt;/p&gt;
+&lt;p&gt;Draw calls are the number I watch when I am optimising, and I find them much more useful than frame rate, because frame rate is capped and noisy while draw calls are exact. Add an atlas and watch the count fall. Add one sprite with a different material into the middle of a batched group and watch it jump.&lt;/p&gt;
+&lt;p&gt;Some rough numbers from this project. The fifteen-entity scene above sits in single-digit draw calls. A test level with about four thousand sprites drawn from three atlases lands around twelve. A deliberately hostile version of the same level, where every sprite has its own material, gets you four thousand, and a frame time you can feel.&lt;/p&gt;
+&lt;p&gt;In all three cases it is the same scene, on the same GPU, producing the same pixels. The only thing that changed is whether the renderer was allowed to group the work.&lt;/p&gt;
+&lt;h2 id="what-comet-does-not-do"&gt;What Comet does not do
+&lt;/h2&gt;&lt;p&gt;A few limits I should be honest about.&lt;/p&gt;
+&lt;p&gt;There is no automatic atlasing at build time. If you want sprites to batch, you put them in a Sprite Atlas yourself. I have gone back and forth on this and right now I think the explicit version is better, because automatic packing turns the batching behaviour of your game into something that falls out of an algorithm you cannot see.&lt;/p&gt;
+&lt;p&gt;There is no draw-call budget warning either. Nothing tells you that you have made things worse. The Stats panel will show you, if you look.&lt;/p&gt;
+&lt;p&gt;And sorting is per-camera, per-frame, on the CPU. For the object counts a 2D game realistically has, I think that is the right trade. It is also why the GPU particle path, which can have a hundred thousand particles in one system, does its sorting in a completely different way.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: the same frame, drawn twice. Comet renders through an abstraction with an OpenGL backend and a Vulkan backend, picks between them at runtime, and hands the result to a render thread. I will talk about why I put Vulkan in a 2D engine, and what happens on the one platform that has no threads.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
