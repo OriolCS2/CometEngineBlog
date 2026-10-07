@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Lighting on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/lighting/</link><description>Recent content in Lighting on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 07 Oct 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/lighting/index.xml" rel="self" type="application/rss+xml"/><item><title>Let There Be Light (Part 1): 2D Lighting</title><link>https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/</link><pubDate>Wed, 07 Oct 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/cover.png" alt="Featured image of post Let There Be Light (Part 1): 2D Lighting" /&gt;&lt;p&gt;Nothing else in this engine changes how a scene feels as much as lighting does, and nothing else is as cheap to try. Here is the demo scene I have been using for these posts, unchanged in every way except one value on one entity.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/day-night.png"
+width="2198"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/day-night_hu_b819bed2f66e45d8.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/day-night_hu_a4db8feacdd78dc.png 1024w"
+loading="lazy"
+alt="The same scene by day and by night"
+class="gallery-image"
+data-flex-grow="410"
+data-flex-basis="984px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The sprites, the materials and the camera are all identical. I dimmed the Global Light and tinted it blue, and that is the entire change.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/night.png"
+width="1111"
+height="536"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/night_hu_3aa849e135322dc1.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/night_hu_e6e2933fad424ace.png 1024w"
+loading="lazy"
+alt="The night version of the scene"
+class="gallery-image"
+data-flex-grow="207"
+data-flex-basis="497px"
+&gt;&lt;/p&gt;
+&lt;p&gt;That is the argument for 2D lighting in one image, and it is why I would put it near the top of the list of things worth learning in Comet.&lt;/p&gt;
+&lt;h2 id="five-kinds-of-light"&gt;Five kinds of light
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/types.png"
+width="1100"
+height="716"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/types_hu_f77c40bc7418ee7.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/types_hu_3e686f6b62ace988.png 1024w"
+loading="lazy"
+alt="The five light types side by side"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="368px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Global Light&lt;/strong&gt; has no position. It affects everything and it sets the base mood of the scene: daylight, dusk, or the flat neutral wash of an indoor room. Most scenes want exactly one, and most of the time it is the only light you need to touch.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Point Light&lt;/strong&gt; is the familiar one, with a position, a radius and a falloff. Torches, lamps, muzzle flashes. It also has inner and outer angles, which turn it into a spotlight, a cone rather than a circle.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Sprite Light&lt;/strong&gt; takes its shape from a sprite. I think this is the one people underuse. If you want light spilling through a window in the shape of the window, or a neon sign that lights the wall in its own silhouette, you draw the shape and use it as a light.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Parametric Light&lt;/strong&gt; is a regular polygon with a side count, a radius and an angle, which is good for stylised, hard-edged beams.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Freeform Light&lt;/strong&gt; is a polygon you draw by hand, for when the shape is not describable any other way.&lt;/p&gt;
+&lt;p&gt;All five share the same core properties, which keeps the mental model small: intensity, colour, height, blend mode, and their own shadow settings.&lt;/p&gt;
+&lt;h2 id="height-in-a-flat-world"&gt;Height, in a flat world
+&lt;/h2&gt;&lt;p&gt;A 2D scene has no depth, so what is a light&amp;rsquo;s &lt;code&gt;Height&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;It is how far out of the screen the light sits. A light at height 0 is in the same plane as your sprites and grazes across them. Raise it and it comes toward the viewer, which changes the direction the light appears to arrive from at every point on the surface.&lt;/p&gt;
+&lt;p&gt;On a plain sprite this mostly affects how the falloff reads. On a &lt;strong&gt;normal-mapped&lt;/strong&gt; sprite it changes everything, because now the engine has a surface direction to compare the light direction against, and that is next week&amp;rsquo;s post.&lt;/p&gt;
+&lt;h2 id="blend-modes"&gt;Blend modes
+&lt;/h2&gt;&lt;p&gt;Every light has a blend mode, and this is the setting I most underestimated while I was building the system. The two you will actually use behave very differently.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Additive&lt;/strong&gt; adds the light&amp;rsquo;s colour on top of whatever is already there.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/additive.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/additive_hu_2a03bd94defca009.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/additive_hu_63555b2420687696.png 1024w"
+loading="lazy"
+alt="A light in Additive blend mode"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Additive is the intuitive one, light adding light, and it is right for torches, glows and anything emissive. Its failure mode is the one everybody hits. Over an already-bright surface it saturates to white very quickly, and once you are at white, turning the intensity down further does surprisingly little. If your lights look like blown-out discs, this is why, and the fix is a dimmer background rather than a dimmer light.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Mix&lt;/strong&gt; blends toward the light&amp;rsquo;s colour instead of adding to it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/mix.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/mix_hu_facbe8b6f3b0bf1.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/mix_hu_2fd092a649c2f76e.png 1024w"
+loading="lazy"
+alt="The same light in Mix blend mode"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Here the light replaces what is underneath, so the intensity value maps much more directly onto what you see, and the edge of the falloff becomes a visible boundary. Mix is the right choice when you want a light to define an area rather than brighten one, and the wrong choice when you wanted a soft glow.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Subtract&lt;/strong&gt; removes light, and &lt;strong&gt;Mask&lt;/strong&gt; restricts where other lights apply.&lt;/p&gt;
+&lt;p&gt;Subtract deserves a moment, because a light that makes things darker sounds like a mistake. A pool of shadow under a bridge, a creeping darkness following an enemy, a vignette that moves with the player, all of those are easier to do as a negative light than as anything else. Comet also allows negative intensity on ordinary lights, which gets you to the same place from the other direction.&lt;/p&gt;
+&lt;h2 id="the-inspector"&gt;The inspector
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/inspector.png"
+width="544"
+height="878"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/inspector_hu_76c39c37a087fa03.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/inspector_hu_3507bad42ae6fc92.png 1024w"
+loading="lazy"
+alt="The light Behaviour in the inspector"
+class="gallery-image"
+data-flex-grow="61"
+data-flex-basis="148px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything above lives on one Behaviour. Intensity, height, colour, blend mode, the radii and angles, and then a block of shadow settings: cast shadows, shadow mode, colour, strength and softness. Those are the post after next.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AllSortingLayers&lt;/code&gt; and the sorting layer list underneath it decide which layers this light touches at all. That is the escape hatch for the thing everyone hits eventually. You light your scene beautifully and then notice your UI has gone dark, or that the background is being lit when you wanted it flat. Restrict the light to the layers it should affect and the problem goes away.&lt;/p&gt;
+&lt;h2 id="how-i-use-it"&gt;How I use it
+&lt;/h2&gt;&lt;p&gt;After building this and then using it for a while, this is the workflow that works for me:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Start with one Global Light&lt;/strong&gt; and get the mood right before adding anything else. Most of the emotional weight of a scene comes from this single entity, and it is very easy to skip past it and start adding torches.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Add point lights for sources you can see.&lt;/strong&gt; A torch on the wall should light the wall.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Keep intensities low.&lt;/strong&gt; Lights accumulate. Three lights at 0.4 read as far more natural than one at 1.2.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use sorting layers to keep things out of it.&lt;/strong&gt; Your UI almost never wants to be lit.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="a-bug-i-found-while-writing-this"&gt;A bug I found while writing this
+&lt;/h2&gt;&lt;p&gt;While preparing the images for this post I found a real bug, and it is a good example of how a small thing produces a baffling symptom.&lt;/p&gt;
+&lt;p&gt;If a point light&amp;rsquo;s inner radius is set to or past its outer radius, every pixel inside the light takes the no-falloff branch of the shader. The result is a flat, fully saturated disc that ignores distance entirely, and because it is already at full brightness, turning the intensity down appears to do nothing. It looks like intensity is broken, when really it is one bad pair of numbers.&lt;/p&gt;
+&lt;p&gt;The engine now clamps the inner radius to sit strictly inside the outer one, so a light authored that way degrades into a normal light instead of a white hole.&lt;/p&gt;
+&lt;p&gt;That was a real inconsistency rather than a documented design choice, and I would not have noticed it if I had not been generating before-and-after images for a blog post. Which is exactly the argument I made in the first post of this series about why writing these is worth the evenings.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: making a flat rectangle lie about being a surface. Normal maps on 2D sprites, per-pixel diffuse shading, specular highlights, and what happens when you walk a torch past a wall that suddenly has bumps in it.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

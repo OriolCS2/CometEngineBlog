@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C++ on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/c++/</link><description>Recent content in C++ on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 30 Sep 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/c++/index.xml" rel="self" type="application/rss+xml"/><item><title>Two Backends, One Renderer</title><link>https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/</link><pubDate>Wed, 30 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/cover.png" alt="Featured image of post Two Backends, One Renderer" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/" &gt;Last week&lt;/a&gt; followed a frame from a scene full of sprites down to a handful of draw calls. That post stopped at the moment the work gets handed over. This one is about who it gets handed to.&lt;/p&gt;
+&lt;p&gt;Comet has two rendering backends. It picks one at startup, and nothing above a certain line in the code ever finds out which one.&lt;/p&gt;
+&lt;h2 id="the-abstraction"&gt;The abstraction
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/abstraction.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/abstraction_hu_9b56d83430c53ed4.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/abstraction_hu_e93e53a95c1b46f7.png 1024w"
+loading="lazy"
+alt="The renderer split into a shared layer and two backends"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything above &lt;code&gt;IRenderHardware&lt;/code&gt; deals in intentions: bind this texture, set this uniform, draw these vertices. That is all a command buffer is, a list of operations with no opinion about graphics APIs.&lt;/p&gt;
+&lt;p&gt;Below the line, a backend translates that list into real calls. The OpenGL backend emits GL calls. The Vulkan backend records command buffers, manages descriptor sets, and does all the ceremony Vulkan requires.&lt;/p&gt;
+&lt;p&gt;The split is worth having for a very practical reason. A bug in sprite batching is a bug in one place instead of two, and adding Vulkan did not require me to touch the sprite renderer, the tilemap renderer, the UI or the particle system at all.&lt;/p&gt;
+&lt;h2 id="why-vulkan-in-a-2d-engine"&gt;Why Vulkan in a 2D engine
+&lt;/h2&gt;&lt;p&gt;This is the fair question. A 2D engine drawing textured quads is not exactly starved for GPU throughput, and OpenGL handles it fine.&lt;/p&gt;
+&lt;p&gt;I have three reasons.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Android.&lt;/strong&gt; OpenGL ES on Android is a lottery. Driver quality varies enormously between vendors, and &amp;ldquo;works on my phone&amp;rdquo; means very little. Vulkan on Android is not perfect either, but it is far more consistent, and having a second path to fall back to when one of them misbehaves on a specific device has already saved me.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Compute.&lt;/strong&gt; This is the big one, and it did not become obvious until 2.8. GPU particle simulation needs compute shaders and indirect drawing. Those are available on desktop OpenGL 4.3 and above, but not on OpenGL ES, and not on the web. Having a Vulkan backend meant the GPU particle path had somewhere good to live instead of being a desktop-OpenGL-only curiosity.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Explicit control.&lt;/strong&gt; Vulkan makes you say what you mean. Writing the backend forced me to be precise about resource lifetimes and synchronisation, and doing that found real bugs in the shared layer above.&lt;/p&gt;
+&lt;p&gt;What Vulkan does not give me here is a performance win for ordinary 2D work. For a typical scene the two backends produce the same frame in about the same time, because the bottleneck is the CPU deciding what to draw, not the GPU drawing it.&lt;/p&gt;
+&lt;h2 id="choosing-a-backend-without-crashing"&gt;Choosing a backend without crashing
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/ladder.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/ladder_hu_139e0473961f016a.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/ladder_hu_6187e8f03c63f523.png 1024w"
+loading="lazy"
+alt="The fallback ladder, from Vulkan down to OpenGL"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Vulkan is linked through &lt;strong&gt;volk&lt;/strong&gt;, which resolves the Vulkan entry points at runtime instead of at link time. That one decision is what makes the whole thing safe. On a machine with no Vulkan driver, volk simply fails to load, Comet notices, and OpenGL is used instead. If I linked Vulkan directly, the executable would refuse to start at all on those machines.&lt;/p&gt;
+&lt;p&gt;You can force either backend with &lt;code&gt;--render-backend vulkan&lt;/code&gt; or &lt;code&gt;--render-backend opengl&lt;/code&gt;. That is very useful for isolating a rendering bug, and it is mandatory for one specific thing, which is &lt;strong&gt;screenshots&lt;/strong&gt;. The editor&amp;rsquo;s built-in screen capture only works on the OpenGL backend, and that is why every image in this series of posts was taken with the engine launched that way.&lt;/p&gt;
+&lt;p&gt;Vulkan is compiled in for standalone desktop and Android. It is not present on the web, which has no Vulkan, and the compile-time define &lt;code&gt;COMET_VULKAN_SUPPORTED&lt;/code&gt; gates the whole thing so those builds do not carry code they cannot use.&lt;/p&gt;
+&lt;h2 id="the-render-thread"&gt;The render thread
+&lt;/h2&gt;&lt;p&gt;Once a frame&amp;rsquo;s command buffer exists, the game thread does not need to wait around while it is submitted.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/render-thread.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/render-thread_hu_2992919c40449370.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/render-thread_hu_c23a34ff267d2791.png 1024w"
+loading="lazy"
+alt="The game thread and the render thread working on different frames"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Comet packs the frame into a &lt;strong&gt;FramePacket&lt;/strong&gt; and hands it to a render thread, which translates and submits it while the game thread has already started on the next frame. A &lt;strong&gt;FrameRingController&lt;/strong&gt; owns a small ring of these packets so the two threads are never writing to the same one.&lt;/p&gt;
+&lt;p&gt;The part of this design that took me longest to get right is not the threading, it is the ownership rule. Once a packet is handed over, the game thread must not touch anything inside it. Everything the renderer needs, transforms, colours, texture handles and the rest, is copied into the packet at hand-off. That copy costs something, and what I get for it is the guarantee that a gameplay script changing a sprite&amp;rsquo;s colour cannot interact with a frame that is already in flight.&lt;/p&gt;
+&lt;p&gt;And then there is the web, where none of this exists. Emscripten builds have no threads, so &lt;code&gt;THREADS_ENABLED&lt;/code&gt; is not defined and the same code path runs everything in sequence on one thread. I think this is the single most important constraint in the whole engine, and it shows up everywhere: particles simulate single-threaded, assets load without a worker, and the render thread is simply not created.&lt;/p&gt;
+&lt;p&gt;It is also why &amp;ldquo;does this work on the web?&amp;rdquo; is a question I have to ask about every threading decision I make, and why the answer has to be &amp;ldquo;the same project runs, just slower&amp;rdquo; instead of &amp;ldquo;that feature is desktop only&amp;rdquo;.&lt;/p&gt;
+&lt;h2 id="what-this-costs-me"&gt;What this costs me
+&lt;/h2&gt;&lt;p&gt;Two backends means two implementations of every feature that touches the GPU. Render targets, texture formats, shader binding models, framebuffer blits. Each of those exists twice, and a bug can live in either.&lt;/p&gt;
+&lt;p&gt;What makes it manageable is that the shared layer above is deliberately large. Culling, sorting, batching, the whole notion of what a frame contains, all of that is backend-agnostic. The backends only handle turning that list into API calls, which is the part that actually has to differ.&lt;/p&gt;
+&lt;p&gt;I still think about whether the split is in the right place. Right now it sits a bit lower than I would like. There are a few concepts, particularly around render targets, that leak upward more than they should.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday we start on the thing that changes how a 2D game feels more than anything else on this list, which is lighting. Five light types, four blend modes, a height value in a flat world, and a light that removes light.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Entities, Behaviours and What Holds Them</title><link>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</link><pubDate>Wed, 26 Aug 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/cover.png" alt="Featured image of post Entities, Behaviours and What Holds Them" /&gt;&lt;p&gt;Every engine has to answer the same question: what is a thing in your game, and how does it get its behaviour?&lt;/p&gt;
+&lt;p&gt;Comet answers it with two words, and the rest of this post is what they mean.&lt;/p&gt;
+&lt;p&gt;An &lt;strong&gt;Entity&lt;/strong&gt; is a thing in the world. A &lt;strong&gt;Behaviour&lt;/strong&gt; is something it can do.&lt;/p&gt;
+&lt;h2 id="the-empty-entity"&gt;The empty entity
+&lt;/h2&gt;&lt;p&gt;Make a new entity and it arrives with one behaviour already attached, a &lt;strong&gt;Transform&lt;/strong&gt;. Position, rotation and scale. You cannot remove it, because a thing in the world without a place in the world is not very useful.&lt;/p&gt;
+&lt;p&gt;That is all an entity is. A name, an enabled flag, a tag, a layer, an identity, and a list of behaviours. It has no idea whether it is a player, a bullet or a cloud.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack.png"
+width="560"
+height="878"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_ff972c9c0f3653ad.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/inspector-stack_hu_ac4853c1d0a1c1af.png 1024w"
+loading="lazy"
+alt="An entity in the Inspector with its Transform and Sprite Renderer"
+class="gallery-image"
+data-flex-grow="63"
+data-flex-basis="153px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything the entity above can do comes from the second block. I added a &lt;strong&gt;Sprite Renderer&lt;/strong&gt;, and now it draws. Remove it and the entity still exists, still has a position and still has children. It just stops being visible.&lt;/p&gt;
+&lt;h2 id="why-composition-and-what-it-costs"&gt;Why composition, and what it costs
+&lt;/h2&gt;&lt;p&gt;The alternative is inheritance: a &lt;code&gt;GameEntity&lt;/code&gt; base class, then &lt;code&gt;MovingEntity&lt;/code&gt;, then &lt;code&gt;Enemy&lt;/code&gt;, then &lt;code&gt;FlyingEnemy&lt;/code&gt;. That works right up until you need a flying enemy that is also destructible and also a light source. At that point your inheritance tree needs to be a graph and everything gets unpleasant.&lt;/p&gt;
+&lt;p&gt;Composition avoids that. A flying destructible light is an entity with four behaviours on it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition.png"
+width="1100"
+height="496"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_5b08e1ac21dc5f16.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/composition_hu_13f80acad03468e9.png 1024w"
+loading="lazy"
+alt="The same entity built out of separate behaviours"
+class="gallery-image"
+data-flex-grow="221"
+data-flex-basis="532px"
+&gt;&lt;/p&gt;
+&lt;p&gt;There is no &lt;code&gt;Coin&lt;/code&gt; class in Comet. A coin is an entity with a Transform, a Sprite Renderer, a Circle Collider set to trigger, and a script that says what happens when something walks into it. If you decide coins should also glow, you add a light behaviour, and nothing about the coin&amp;rsquo;s type has to change, because it never had one.&lt;/p&gt;
+&lt;p&gt;The cost of this approach is discoverability. With inheritance you read a class name and you know roughly what something is. With composition you have to look at the list. In practice the Hierarchy and the Inspector are that documentation, which is part of why I spend so much time on the Inspector.&lt;/p&gt;
+&lt;p&gt;The other cost is that behaviours have to find each other. &amp;ldquo;Find the Rigid Body on my own entity&amp;rdquo; is a lookup and not a field access. That is a real cost, and it is why Comet caches those lookups aggressively.&lt;/p&gt;
+&lt;h2 id="identity"&gt;Identity
+&lt;/h2&gt;&lt;p&gt;Every object in Comet, every entity, every behaviour and every resource, has a &lt;strong&gt;unique 64-bit ID&lt;/strong&gt;. Not a pointer, not an index into an array, not a name. An ID that is allocated once and never reused.&lt;/p&gt;
+&lt;p&gt;That ID is what makes most of the rest of the engine work. It survives saving and loading, so a scene can say that the camera field of a script points at object 8173077113600595134 and still mean it after a restart. It survives duplication correctly, because a copy gets a new one. It is how references between entities in different scenes resolve, and it is how the undo system knows what to put back.&lt;/p&gt;
+&lt;p&gt;It also means that &amp;ldquo;is this thing still there?&amp;rdquo; is a real question with a non-obvious answer, so Comet gives you three functions for it: &lt;code&gt;IsValid()&lt;/code&gt;, &lt;code&gt;IsNull()&lt;/code&gt; and &lt;code&gt;Is()&lt;/code&gt;. You use those instead of &lt;code&gt;== null&lt;/code&gt; or &lt;code&gt;is&lt;/code&gt;, because during teardown a plain null check can lie to you. An object can be destroyed but not yet gone, and a raw comparison does not know the difference.&lt;/p&gt;
+&lt;p&gt;That surprises people, so I will give it its own post later in the year.&lt;/p&gt;
+&lt;h2 id="parents-and-children"&gt;Parents and children
+&lt;/h2&gt;&lt;p&gt;Entities form a tree. Parenting is a drag in the Hierarchy, and the effect is what you would expect: a child&amp;rsquo;s transform is relative to its parent, so moving the parent moves everything under it.&lt;/p&gt;
+&lt;p&gt;Two things are less obvious.&lt;/p&gt;
+&lt;p&gt;Disabling a parent disables everything under it, but it does not change the children&amp;rsquo;s own enabled flags. Re-enable the parent and whatever was individually disabled stays disabled. The state you set by hand is never silently overwritten.&lt;/p&gt;
+&lt;p&gt;Deleting is deferred. Destroying an entity does not tear it out of memory in the middle of the frame while other behaviours might still be iterating over it. It is marked, the frame finishes cleanly, and the teardown happens at a safe point. This is the most common source of &amp;ldquo;wait, it still exists?&amp;rdquo; confusion, and it is also the reason the engine is not full of crashes.&lt;/p&gt;
+&lt;h2 id="the-order-things-happen-in"&gt;The order things happen in
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_a942c61bfcbc47f9.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/entities-behaviours-and-what-holds-them/lifecycle_hu_8bc04ea5ebed2800.png 1024w"
+loading="lazy"
+alt="The order of the lifecycle callbacks when a scene loads"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;When a scene loads, entities are created, behaviours are attached, and serialized field values are restored. Nothing of yours has run yet.&lt;/p&gt;
+&lt;p&gt;Then, on the first frame, every &lt;code&gt;Awake&lt;/code&gt; runs across every behaviour in the scene, and only then does any &lt;code&gt;Start&lt;/code&gt; run. That ordering is the guarantee that makes &lt;code&gt;Start&lt;/code&gt; useful. By the time your &lt;code&gt;Start&lt;/code&gt; executes, every other object has finished its own initialisation, so it is safe to go looking for them.&lt;/p&gt;
+&lt;p&gt;This was a real bug. Until 2.3 there were situations where some &lt;code&gt;Start&lt;/code&gt; methods ran before other behaviours&amp;rsquo; &lt;code&gt;Awake&lt;/code&gt;, which produced the kind of intermittent, ordering dependent failure that eats a whole evening. It is in the changelog under &amp;ldquo;Inconsistent execution order&amp;rdquo;, which is a very calm way of describing how it felt to find.&lt;/p&gt;
+&lt;p&gt;After that it is the normal loop, &lt;code&gt;Update&lt;/code&gt; for your logic, then physics, then rendering, until something asks to be destroyed, and that gets deferred to a safe point.&lt;/p&gt;
+&lt;h2 id="behaviours-you-did-not-write"&gt;Behaviours you did not write
+&lt;/h2&gt;&lt;p&gt;Most of what makes a game is behaviours that ship with the engine: Sprite Renderer, Camera, Rigid Body, colliders, joints, Animator, Tilemap, the whole UI set, particles, audio sources, lights and navigation agents.&lt;/p&gt;
+&lt;p&gt;Your scripts are behaviours too. A class inheriting &lt;code&gt;CometBehaviour&lt;/code&gt; shows up in the Add Behaviour menu next to the built-in ones, its fields appear in the Inspector as real editable widgets, and it gets the same lifecycle callbacks. There is no second class citizenship for user code, and I did that on purpose. If scripting feels bolted on, people write less of it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: what happens when you want a hundred of the same entity and the ability to change all hundred at once. That is the &lt;strong&gt;InstanciableEntity&lt;/strong&gt; system, and it is the part of Comet I have rewritten the most times.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
