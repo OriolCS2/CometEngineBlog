@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HLSL on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/hlsl/</link><description>Recent content in HLSL on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 28 Oct 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/hlsl/index.xml" rel="self" type="application/rss+xml"/><item><title>The Year I Deleted Every Shader</title><link>https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/</link><pubDate>Wed, 28 Oct 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/cover.png" alt="Featured image of post The Year I Deleted Every Shader" /&gt;&lt;p&gt;There is a line in the 2.8 changelog that I suspect cost some people an evening:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;GLSL Deprecation:&lt;/strong&gt; Replaced the GLSL shader authoring workflow entirely with the HLSL pipeline. Existing GLSL shaders must be rewritten in HLSL.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;No deprecation period, no compatibility layer. Every custom shader in every project had to be rewritten.&lt;/p&gt;
+&lt;p&gt;I want to explain why I think that was the right call, because &amp;ldquo;we changed shader languages&amp;rdquo; sounds like a matter of taste and it was not.&lt;/p&gt;
+&lt;h2 id="the-problem"&gt;The problem
+&lt;/h2&gt;&lt;p&gt;Comet targets Windows, Linux, Android and the web, and it renders through &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/" &gt;either OpenGL or Vulkan&lt;/a&gt;. Put those together and you get this:&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem.png"
+width="1100"
+height="494"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem_hu_891d5a916bfc2f17.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem_hu_b9fcd17ed1f8c9e8.png 1024w"
+loading="lazy"
+alt="The four shader targets Comet has to feed"
+class="gallery-image"
+data-flex-grow="222"
+data-flex-basis="534px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Desktop OpenGL wants GLSL 430. OpenGL ES on Android wants GLSL ES 300, with different precision rules and a smaller feature set. Vulkan does not want GLSL at all, it wants SPIR-V, which is a binary intermediate format. WebGL wants GLSL ES too, but an older dialect with fewer capabilities again.&lt;/p&gt;
+&lt;p&gt;So if you author in GLSL, which GLSL?&lt;/p&gt;
+&lt;p&gt;Under the old system the answer was desktop GLSL, plus a growing pile of &lt;code&gt;#ifdef&lt;/code&gt; for the platforms where that was not true, plus a set of hand-maintained variants for the ones where the differences were too large to patch over. Every new shader feature meant checking it against four targets. Every platform bug meant working out which of the four variants had drifted.&lt;/p&gt;
+&lt;p&gt;That is not really a language problem. It is a problem of not having one authoring source of truth, and it gets worse with every platform you add.&lt;/p&gt;
+&lt;h2 id="the-fix"&gt;The fix
+&lt;/h2&gt;&lt;p&gt;Pick one language that nobody&amp;rsquo;s runtime speaks natively, and compile it to all of them.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline.png"
+width="1100"
+height="520"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline_hu_ec11ff0978f5790b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline_hu_90d382a70af68ef8.png 1024w"
+loading="lazy"
+alt="The HLSL to SPIR-V to GLSL pipeline"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+&gt;&lt;/p&gt;
+&lt;p&gt;You write HLSL. &lt;strong&gt;glslang&lt;/strong&gt; compiles it to SPIR-V. Vulkan takes the SPIR-V directly. For the OpenGL family, &lt;strong&gt;SPIR-V Cross&lt;/strong&gt; translates it into whatever flavour of GLSL that target needs.&lt;/p&gt;
+&lt;p&gt;One source file, four outputs. All of it is generated at build time and not at runtime, so the player&amp;rsquo;s machine never compiles anything.&lt;/p&gt;
+&lt;h2 id="why-hlsl"&gt;Why HLSL
+&lt;/h2&gt;&lt;p&gt;I had three reasons, and none of them is &amp;ldquo;HLSL is a nicer language&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The toolchain exists and it is excellent.&lt;/strong&gt; glslang and SPIR-V Cross are mature, widely used, and maintained by people who care a great deal about correctness. Going from HLSL to SPIR-V to GLSL is a well trodden path. Going from GLSL to SPIR-V to another GLSL is possible but far less common, and you hit rough edges nobody else has hit before.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It is the industry default for this job.&lt;/strong&gt; Anyone who has written shaders for a modern engine has written something HLSL shaped. For a small engine that is a real advantage, because I do not have to teach the language, only the specifics of Comet.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It is more explicit.&lt;/strong&gt; HLSL&amp;rsquo;s explicit semantics and register bindings map onto Vulkan&amp;rsquo;s descriptor model much more directly than GLSL&amp;rsquo;s implicit conventions do, so there is less guessing in the middle of the pipeline.&lt;/p&gt;
+&lt;h2 id="what-a-shader-looks-like-now"&gt;What a shader looks like now
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader.png"
+width="1000"
+height="690"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader_hu_4f97c181cf237033.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader_hu_9a58ce7b800ea628.png 1024w"
+loading="lazy"
+alt="A Comet HLSL shader open in the editor"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#pragma vertex&lt;/code&gt; and &lt;code&gt;#pragma fragment&lt;/code&gt; name your entry points. Both stages are fully yours, and that was a real gain over the old system, where vertex stage customisation was limited and vertex animation meant working around the engine instead of with it.&lt;/p&gt;
+&lt;p&gt;You include a Comet header that provides the standard structures and helpers, you declare your parameters as plain globals, and you write two functions. Parameters declared at the top surface automatically as material properties, so they appear in the material inspector and you can set them from AngelScript with &lt;code&gt;Material.SetFloat&lt;/code&gt; and friends.&lt;/p&gt;
+&lt;p&gt;There are template shaders under &lt;code&gt;Create → Shader&lt;/code&gt; for the common starting points, including a post-process one, which I&amp;rsquo;ll cover in three weeks.&lt;/p&gt;
+&lt;h2 id="was-the-hard-break-necessary"&gt;Was the hard break necessary?
+&lt;/h2&gt;&lt;p&gt;I have thought about this a lot and I think yes, although not comfortably.&lt;/p&gt;
+&lt;p&gt;The alternative was supporting both: keep GLSL authoring working, add HLSL next to it, and deprecate GLSL over a few releases. That is friendlier to everybody. It is also two shader front-ends, two sets of bugs, two sets of platform quirks, and every new feature has to be built twice or marked as HLSL only. For a one-person engine I would have been paying that cost forever, and not only during a transition.&lt;/p&gt;
+&lt;p&gt;The facts that made it easier, stated honestly: Comet 2.x was only a few months old, the number of projects with custom GLSL shaders was small, and 2.0 had already broken everything anyway by &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/" &gt;removing C#&lt;/a&gt;. If there was ever a moment to do it, that was the moment.&lt;/p&gt;
+&lt;p&gt;If Comet had a large user base with years of shaders behind it, I do not think I would have had the right to make that call.&lt;/p&gt;
+&lt;h2 id="why-this-matters-less-than-it-sounds"&gt;Why this matters less than it sounds
+&lt;/h2&gt;&lt;p&gt;The thing that made the decision much easier for me is that most people will never write a shader by hand.&lt;/p&gt;
+&lt;p&gt;2.8 shipped HLSL authoring and the &lt;strong&gt;Shader Graph&lt;/strong&gt; in the same release, and that was not a coincidence. If you can build a dissolve, a hologram or a water surface by wiring nodes together with a live preview, the number of times you need to open a text file and write shader code drops enormously.&lt;/p&gt;
+&lt;p&gt;The graph compiles down the same pipeline and produces the same kind of output the HLSL front-end does. It is not a slower path or a limited subset of it.&lt;/p&gt;
+&lt;p&gt;So what 2.8 really did to shaders is this: writing them got harder for the small number of people who write them by hand, and it got a lot easier for everyone else.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday, that Shader Graph. The canvas, the node palette, the live preview, and a dissolve effect built from nothing, one node at a time.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
