@@ -62,7 +62,7 @@ I had three reasons, and none of them is "HLSL is a nicer language".
 
 You include a Comet header that provides the standard structures and helpers, you declare your parameters as plain globals, and you write two functions. Parameters declared at the top surface automatically as material properties, so they appear in the material inspector and you can set them from AngelScript with `Material.SetFloat` and friends.
 
-There are template shaders under `Create → Shader` for the common starting points, including a post-process one, which is [three weeks from now]({{< ref "/post/PostProcessing" >}}).
+There are template shaders under `Create → Shader` for the common starting points, including a post-process one, which is three weeks from now.
 
 ## Was the hard break necessary?
 
