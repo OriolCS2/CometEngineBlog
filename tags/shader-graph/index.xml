@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Shader Graph on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/shader-graph/</link><description>Recent content in Shader Graph on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Nov 2026 10:30:00 +0100</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/shader-graph/index.xml" rel="self" type="application/rss+xml"/><item><title>Shader Graph (Part 2): Blackboard, Sub Graphs and Vertex Offset</title><link>https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/</link><pubDate>Wed, 11 Nov 2026 10:30:00 +0100</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/cover.png" alt="Featured image of post Shader Graph (Part 2): Blackboard, Sub Graphs and Vertex Offset" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/" &gt;Last Wednesday&lt;/a&gt; I built a dissolve. It worked, and it had one flaw that made it nearly useless: every value in it was hard-coded inside the graph. If you wanted a slower dissolve, or a blue burning edge instead of an orange one, you had to open the graph and edit it.&lt;/p&gt;
+&lt;p&gt;So what I had built was one specific effect, and not something anybody else could reuse.&lt;/p&gt;
+&lt;h2 id="the-blackboard"&gt;The Blackboard
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/blackboard.png"
+width="324"
+height="664"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/blackboard_hu_1120f181f5abb5a4.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/blackboard_hu_1eaebfd9f3131e4d.png 1024w"
+loading="lazy"
+alt="The Properties section of the blackboard"
+class="gallery-image"
+data-flex-grow="48"
+data-flex-basis="117px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;Properties&lt;/strong&gt; section is how a graph stops being a single effect and becomes a template.&lt;/p&gt;
+&lt;p&gt;You add a property, wire it in place of a constant, and it appears in the &lt;strong&gt;material inspector&lt;/strong&gt;. Now one graph backs fifty materials that all behave differently. The dissolve gets a &lt;code&gt;_Progress&lt;/code&gt; float, an &lt;code&gt;_EdgeColor&lt;/code&gt;, an &lt;code&gt;_EdgeWidth&lt;/code&gt; and a &lt;code&gt;_NoiseScale&lt;/code&gt;, and now it is a whole dissolve system: a fast blue one for teleports, a slow orange one for burning, a chunky one for stone.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/property-types.png"
+width="1100"
+height="462"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/property-types_hu_d3cf382d8fcd3f52.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/property-types_hu_5f25857303431a90.png 1024w"
+loading="lazy"
+alt="The property types you can expose"
+class="gallery-image"
+data-flex-grow="238"
+data-flex-basis="571px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Floats, vectors, colours, booleans, textures and matrices. Whatever you expose is also reachable from AngelScript through &lt;code&gt;Material.SetFloat&lt;/code&gt;, &lt;code&gt;SetColor&lt;/code&gt;, &lt;code&gt;SetTexture&lt;/code&gt; and friends, and that is the part that makes this a gameplay feature and not only an authoring convenience. Animating &lt;code&gt;_Progress&lt;/code&gt; from 0 to 1 over half a second in a script is how the dissolve actually gets used.&lt;/p&gt;
+&lt;p&gt;They can be animated by the Animator too, because a material property is just a value with a name.&lt;/p&gt;
+&lt;h2 id="graph-settings-revisited"&gt;Graph Settings, revisited
+&lt;/h2&gt;&lt;p&gt;The settings block is small and every switch in it matters.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Target&lt;/strong&gt; decides what kind of shader this is: Sprite, UI, and, from 2.8, Post-Process, which is &lt;a class="link" href="" &gt;next week&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Lit (2D light map)&lt;/strong&gt; decides whether the result takes part in &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/" &gt;2D lighting&lt;/a&gt;. With it off, your shader ignores every light in the scene. This is the switch people forget about when their beautiful custom material comes out flat in a lit scene.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Alpha Clip&lt;/strong&gt; enables discarding pixels, which the dissolve needs.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vertex Color Tint&lt;/strong&gt; multiplies by the per-vertex colour, so the sprite renderer&amp;rsquo;s Color field still works. Turn it off and your material stops responding to tinting, which is occasionally what you want and usually a bug.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Is Sub Graph&lt;/strong&gt; turns the whole thing into a reusable node. More on that below.&lt;/p&gt;
+&lt;h2 id="keywords"&gt;Keywords
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/keywords.png"
+width="1100"
+height="436"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/keywords_hu_9c542c0c75111278.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/keywords_hu_e55a05c88ca57eec.png 1024w"
+loading="lazy"
+alt="Setting up a keyword on a graph"
+class="gallery-image"
+data-flex-grow="252"
+data-flex-basis="605px"
+&gt;&lt;/p&gt;
+&lt;p&gt;A keyword compiles two versions of the shader, one with a branch included and one with it removed entirely. A material picks which variant it uses.&lt;/p&gt;
+&lt;p&gt;What you get out of that is that the disabled variant does not contain the code at all. There is no runtime branch and no cost, so a glow you can toggle per material really costs nothing on the materials that have it off.&lt;/p&gt;
+&lt;p&gt;The trap is combinatorial. Each keyword doubles the variant count. Three keywords is eight shaders to compile at build time, and six keywords is sixty-four. Use them for properly separate looks, and not for things a float could express.&lt;/p&gt;
+&lt;h2 id="sub-graphs"&gt;Sub Graphs
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/subgraphs.png"
+width="1100"
+height="400"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/subgraphs_hu_e3b8ae2d5798941c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/subgraphs_hu_71618c96e0afb66.png 1024w"
+loading="lazy"
+alt="A sub graph dropped into another graph as a node"
+class="gallery-image"
+data-flex-grow="275"
+data-flex-basis="660px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Once you have written a few graphs you notice that you keep rebuilding the same cluster of nodes. A particular noise setup, a UV distortion, a colour remap.&lt;/p&gt;
+&lt;p&gt;Set &lt;strong&gt;Is Sub Graph&lt;/strong&gt; and the graph becomes a node. Its exposed inputs become input pins, its outputs become output pins, and you drop it into other graphs like any built-in node. Fix a bug in the sub graph and every graph using it is fixed.&lt;/p&gt;
+&lt;p&gt;I think this is the feature that decides whether a node-based system stays usable past about twenty nodes, and it is worth reaching for it earlier than it feels necessary.&lt;/p&gt;
+&lt;h2 id="vertex-offset"&gt;Vertex Offset
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/vertex-offset.png"
+width="1100"
+height="520"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/vertex-offset_hu_bdb85c1955d28c93.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/vertex-offset_hu_ab0835a3ebc6a4e4.png 1024w"
+loading="lazy"
+alt="Vertex offset moving the geometry of a sprite"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Everything so far has been about colour. Vertex Offset is the input that moves the geometry.&lt;/p&gt;
+&lt;p&gt;The master node has an input that takes a &lt;code&gt;float3&lt;/code&gt; added to each vertex position before it is transformed. It is a small hook with a very big payoff, because it turns a shader into an animation system that runs entirely on the GPU:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;A waving flag.&lt;/strong&gt; Take the vertex&amp;rsquo;s X, feed it into a sine with time, offset Y. The quad ripples.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A floating pickup.&lt;/strong&gt; Sine of time into the Y offset, no position input. It bobs. No script, no Animator, no CPU cost.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Grass in wind.&lt;/strong&gt; The same as the flag, but mask the offset by the vertex&amp;rsquo;s Y so the base stays planted and only the top moves.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Heat haze or jelly.&lt;/strong&gt; Noise into the XY offset.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What I like about this is that it is free. The vertices were being transformed anyway, so adding an offset to that transform costs almost nothing, and it happens on the GPU for every instance without the CPU knowing about it.&lt;/p&gt;
+&lt;p&gt;The limit is that it moves vertices, and a sprite has four of them. You cannot bend a sprite smoothly along its length, because there is nothing in the middle to bend. For that you need geometry with more vertices, like a tilemap, a line renderer, or a mesh built for it.&lt;/p&gt;
+&lt;h2 id="the-node-library"&gt;The node library
+&lt;/h2&gt;&lt;p&gt;There are about 115 nodes, grouped into families: &lt;strong&gt;Artistic&lt;/strong&gt; (22 blend modes, filters, adjustments), &lt;strong&gt;Channel&lt;/strong&gt;, &lt;strong&gt;Input&lt;/strong&gt; (geometry, camera, time, object data), &lt;strong&gt;Math&lt;/strong&gt;, &lt;strong&gt;Procedural&lt;/strong&gt; (noise, shapes, patterns), &lt;strong&gt;UV&lt;/strong&gt; and &lt;strong&gt;Utility&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Two of the ones in Utility are worth knowing about specifically. &lt;strong&gt;Custom HLSL&lt;/strong&gt; lets you drop a snippet directly into the graph, and &lt;strong&gt;Expression&lt;/strong&gt; evaluates a small formula inline. Both of them exist so that hitting the limits of the node vocabulary does not mean abandoning the graph and rewriting the whole shader by hand.&lt;/p&gt;
+&lt;h2 id="what-i-would-change"&gt;What I would change
+&lt;/h2&gt;&lt;p&gt;Two things bother me.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Large graphs are hard to read.&lt;/strong&gt; Past forty nodes or so, following a wire across the canvas is really difficult. Sub Graphs are the answer and I do not think they are enough on their own. I would like to add some form of grouping, or reroute nodes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;There is no diffing.&lt;/strong&gt; A shader graph is a file, but it is not one you can review in a pull request in any useful way. Text shaders diff well. Graphs do not, and I do not have a good answer for that yet.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: taking the whole rendered frame and doing something to it. Post-process profiles as a stack, the &lt;code&gt;Post-Process&lt;/code&gt; graph target with its Scene Color and Screen UV nodes, writing one in HLSL instead, and why a post-process pass costs exactly the same on an empty scene as on a full one.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Shader Graph (Part 1): Nodes Instead of Code</title><link>https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/</link><pubDate>Wed, 04 Nov 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/cover.png" alt="Featured image of post Shader Graph (Part 1): Nodes Instead of Code" /&gt;&lt;p&gt;&lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/" &gt;Last Wednesday&lt;/a&gt; I explained why Comet deleted GLSL authoring and moved to HLSL, and I ended by saying that most people will never need to write a shader by hand.&lt;/p&gt;
+&lt;p&gt;This post is why.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/editor.png"
+width="1124"
+height="576"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/editor_hu_5f42d510d20104e9.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/editor_hu_130ff3e94c047751.png 1024w"
+loading="lazy"
+alt="The Shader Graph editor"
+class="gallery-image"
+data-flex-grow="195"
+data-flex-basis="468px"
+&gt;&lt;/p&gt;
+&lt;p&gt;That is Comet&amp;rsquo;s Shader Graph. Nodes on a canvas, a live preview floating over them, settings and exposed properties down the left, and a compile status at the bottom that updates while you work.&lt;/p&gt;
+&lt;h2 id="what-is-on-screen"&gt;What is on screen
+&lt;/h2&gt;&lt;p&gt;There are three regions.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;canvas&lt;/strong&gt; is where the graph lives. Right-click for a searchable palette of about 115 node types, drag from an output pin to an input pin to connect them, and edit constant values inline on the node itself.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;left column&lt;/strong&gt; is the graph&amp;rsquo;s contract with the outside world: Graph Settings (what kind of shader this is), Properties (what shows up in the material inspector), Keywords (compile-time variants) and Compile status.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/settings.png"
+width="324"
+height="921"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/settings_hu_c8015dbbecc480d.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/settings_hu_1003aa18b9a3da26.png 1024w"
+loading="lazy"
+alt="The Graph Settings panel"
+class="gallery-image"
+data-flex-grow="35"
+data-flex-basis="84px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;preview&lt;/strong&gt; renders the graph live on a quad. It is not a mockup, it is the actual compiled shader. Every node has its own small preview too, so you can look at the noise on its own, then the noise after a step, then the result of the multiply. Being able to see the intermediate values is most of the reason a graph is easier than a text file, and it is the thing I find hardest to replicate in a code editor.&lt;/p&gt;
+&lt;h2 id="building-a-dissolve"&gt;Building a dissolve
+&lt;/h2&gt;&lt;p&gt;A dissolve is the effect where something burns away, usually with a glowing edge. It is the &amp;ldquo;hello world&amp;rdquo; of shader graphs because it is four ideas stacked on top of each other.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;One, get some noise.&lt;/strong&gt; A &lt;code&gt;Simple Noise&lt;/code&gt; node gives you a greyscale value per pixel. Wire a scale into it and you control how chunky the pattern is.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Two, threshold it.&lt;/strong&gt; A &lt;code&gt;Step&lt;/code&gt; node takes the noise and a cutoff and returns 0 or 1, below the cutoff or above it. The cutoff is what drives the effect: at 0 nothing is hidden, at 1 everything is.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Three, cut holes.&lt;/strong&gt; Turn on &lt;strong&gt;Alpha Clip&lt;/strong&gt; in Graph Settings and feed the step result into the master node&amp;rsquo;s alpha. Now the pixels below the threshold are not drawn at all, and that is the dissolve.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Four, burn the edge.&lt;/strong&gt; Take the noise again through a &lt;code&gt;Smoothstep&lt;/code&gt; with a range just above the cutoff, and you get a thin band that is 1 only near the boundary. Multiply that by a hot orange and add it to the base colour. Now the edge glows.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/compiled.png"
+width="1124"
+height="576"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/compiled_hu_765c9f4658985c3a.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-1-nodes-instead-of-code/compiled_hu_44c65750d2752429.png 1024w"
+loading="lazy"
+alt="The finished dissolve graph compiling"
+class="gallery-image"
+data-flex-grow="195"
+data-flex-basis="468px"
+&gt;&lt;/p&gt;
+&lt;p&gt;That is nine nodes, give or take. No text file, no compile step and no reload, because the preview updates while you drag.&lt;/p&gt;
+&lt;h2 id="type-coercion"&gt;Type coercion
+&lt;/h2&gt;&lt;p&gt;I expected the hard part of a node editor to be the graph itself: links, cycles, evaluation order. It was not. The hard part was &lt;strong&gt;type coercion&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In HLSL you write &lt;code&gt;float3 c = n * tint;&lt;/code&gt; and the compiler works out that &lt;code&gt;n&lt;/code&gt; is a float, &lt;code&gt;tint&lt;/code&gt; is a float3, and the multiply broadcasts. In a graph, &lt;code&gt;n&lt;/code&gt; is a pin with a type and &lt;code&gt;tint&lt;/code&gt; is a pin with a type, and the user has just dragged a wire between them and expects it to work.&lt;/p&gt;
+&lt;p&gt;So the graph has to decide whether the connection is legal, and if it is, what conversion is implied. Too strict and people are inserting conversion nodes constantly and hating it. Too loose and graphs silently do the wrong thing, which is worse, because there is no error to read, just a shader that looks slightly off.&lt;/p&gt;
+&lt;p&gt;Comet is permissive for the obvious cases and refuses the ambiguous ones. I still think a particular refusal is wrong from time to time, and it is the part of the graph I have adjusted the most.&lt;/p&gt;
+&lt;h2 id="does-it-cost-anything"&gt;Does it cost anything?
+&lt;/h2&gt;&lt;p&gt;No, and this was a hard requirement for me, not something that happened to turn out well.&lt;/p&gt;
+&lt;p&gt;A Shader Graph compiles to the same HLSL pipeline as a hand-written shader. It becomes SPIR-V, then whatever GLSL the target needs, baked at build time, exactly like &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/" &gt;any other shader&lt;/a&gt;. A graph does not carry a node-graph runtime, it is not interpreted, and it does not evaluate nodes at draw time.&lt;/p&gt;
+&lt;p&gt;The output is not always identical to what an experienced person would write by hand. The generated code can contain intermediate values a human would have folded together. In practice the shader compiler on the other end optimises most of that away, and the difference has never been the thing that made a frame slow.&lt;/p&gt;
+&lt;p&gt;The rule I held myself to is that if using the graph made your game slower, then the graph would only ever be a toy. I wanted it to be the default way of writing shaders in Comet.&lt;/p&gt;
+&lt;h2 id="when-to-still-write-it-by-hand"&gt;When to still write it by hand
+&lt;/h2&gt;&lt;p&gt;To be fair about it:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Anything with real control flow.&lt;/strong&gt; Loops and complex branching are painful as nodes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Anything you want to read as maths.&lt;/strong&gt; A carefully derived lighting term is clearer as five lines of algebra than as fifteen boxes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Very long graphs.&lt;/strong&gt; Past a certain size a graph becomes harder to navigate than a file. Sub Graphs help, and they are next week.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For those cases there is the &lt;code&gt;Custom HLSL&lt;/code&gt; node, which lets you drop a snippet directly into the middle of a graph, so it does not have to be all one or all the other.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: turning a graph into something other people can use. The Blackboard and exposed properties, keywords and compile variants, Sub Graphs for reuse, and Vertex Offset, the input that lets a shader move the geometry instead of just colouring it.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
