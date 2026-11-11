@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (20): Menus and Level Select"
 description: One script for every screen, locks driven by the save file, and the bug that made losing impossible
-date: 2027-12-08 18:00:00+0000
+date: 2027-12-08 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

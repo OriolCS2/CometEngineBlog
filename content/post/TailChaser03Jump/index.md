@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (3): Making the Jump Feel Right"
 description: Coyote time, a press buffer, and gravity that is heavier on the way down
-date: 2027-08-11 18:00:00+0000
+date: 2027-08-11 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (8): Hitting Things"
 description: Stomping, knockback, invulnerability frames, and a pit that costs you a heart
-date: 2027-09-15 18:00:00+0000
+date: 2027-09-15 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

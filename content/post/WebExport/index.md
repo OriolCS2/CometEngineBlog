@@ -1,7 +1,7 @@
 ---
 title: Shipping to the Web
 description: Emscripten, ASYNCIFY, and an honest list of what a browser does not get
-date: 2027-06-02 03:00:00+0000
+date: 2027-06-02 10:30:00+0200
 image: cover.png
 categories:
     - Platforms

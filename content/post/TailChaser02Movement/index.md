@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (2): A Box That Moves"
 description: Acceleration, deceleration and turn boost, and why instant top speed feels wrong
-date: 2027-08-04 03:00:00+0000
+date: 2027-08-04 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

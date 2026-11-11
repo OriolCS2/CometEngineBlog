@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (13): A HUD and a Save File"
 description: Three lives hanging off the camera, a run timer, a save the game writes on its own, and the UI system that beat me
-date: 2027-10-20 18:00:00+0000
+date: 2027-10-20 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

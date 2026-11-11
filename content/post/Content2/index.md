@@ -1,7 +1,7 @@
 ---
 title: "The Content System (Part 2): One File, and Everything After It"
 description: .ori packs, single-file builds, mod support you get almost by accident, and differential patches
-date: 2027-05-19 03:00:00+0000
+date: 2027-05-19 10:30:00+0200
 image: cover.png
 categories:
     - Content

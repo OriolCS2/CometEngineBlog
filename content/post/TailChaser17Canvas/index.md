@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (17): The Canvas, Properly"
 description: The engine bug that beat me in week thirteen, the two editor tools I had to write, and a HUD that is real UI at last
-date: 2027-11-17 18:00:00+0000
+date: 2027-11-17 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (6): The Animator Takes Over"
 description: Three states, two parameters, and a script that stops choosing animations
-date: 2027-09-01 18:00:00+0000
+date: 2027-09-01 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

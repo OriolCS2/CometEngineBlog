@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (14): What Playing It Found"
 description: An evening spent playing the whole thing instead of building the next thing, and the five faults it turned up
-date: 2027-10-27 18:00:00+0000
+date: 2027-10-27 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

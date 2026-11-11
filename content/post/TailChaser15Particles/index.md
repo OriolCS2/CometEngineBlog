@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (15): Sparks, and Enemies That Dissolve"
 description: The particle bug I cut from week nine, why an untextured particle is a big white square, and giving a stomped enemy time to die
-date: 2027-11-03 18:00:00+0000
+date: 2027-11-03 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

@@ -6,7 +6,10 @@ on:
     pull_request:
         branches: [master]
     schedule:
-        - cron: "0 4 * * 3"
+        # Posts go out on Wednesdays at 10:30 Spanish time (Europe/Madrid).
+        # Cron runs in UTC, so this covers both CEST (08:30 UTC) and CET (09:30 UTC).
+        - cron: "30 8 * * 3"
+        - cron: "30 9 * * 3"
     workflow_dispatch:
 
 jobs:

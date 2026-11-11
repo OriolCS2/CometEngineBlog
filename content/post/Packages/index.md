@@ -1,7 +1,7 @@
 ---
 title: Packages and the Marketplace
 description: A Packages folder, a manifest, a creation wizard, and validation that catches your mistakes
-date: 2027-05-26 03:00:00+0000
+date: 2027-05-26 10:30:00+0200
 image: cover.png
 categories:
     - Content

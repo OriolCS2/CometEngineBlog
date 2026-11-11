@@ -1,7 +1,7 @@
 ---
 title: Where Did the Frame Go?
 description: Flame graphs, deep script profiling, and attaching the editor to a game that is already running
-date: 2026-12-09 03:00:00+0000
+date: 2026-12-09 10:30:00+0100
 image: cover.png
 categories:
     - Performance

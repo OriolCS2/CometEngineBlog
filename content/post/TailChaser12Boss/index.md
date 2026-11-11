@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (12): The Boss"
 description: A four state loop, three stomps, an arena it cannot leave, and a script that borrows sprites from renderers that never draw
-date: 2027-10-13 18:00:00+0000
+date: 2027-10-13 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

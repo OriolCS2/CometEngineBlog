@@ -1,7 +1,7 @@
 ---
 title: The Build That Talks Back
 description: Debug drawing, an in-game console, and attaching the editor to a binary that is already running
-date: 2027-06-16 03:00:00+0000
+date: 2027-06-16 10:30:00+0200
 image: cover.png
 categories:
     - Platforms
