@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (11): Turning On the Lights"
 description: Two suns on different sorting layers, a light that follows the fragment, and terrain that casts shadows without receiving them
-date: 2027-10-06 18:00:00+0000
+date: 2027-10-06 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (10): A Camera With Opinions"
 description: A dead zone, a look ahead, level bounds, and the moment I realised the camera was chasing every death across the whole level
-date: 2027-09-29 18:00:00+0000
+date: 2027-09-29 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

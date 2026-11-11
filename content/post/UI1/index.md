@@ -1,7 +1,7 @@
 ---
 title: "The UI System (Part 1): Anchors, and the Guides That Save You"
 description: Canvases, rect transforms, anchors explained until they click, and the tooling that made them bearable
-date: 2027-04-14 03:00:00+0000
+date: 2027-04-14 10:30:00+0200
 image: cover.png
 categories:
     - Systems

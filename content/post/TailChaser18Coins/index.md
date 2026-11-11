@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (18): Coins"
 description: Something to collect, a disc that turns on one line of maths, and a screen that tells you what you missed
-date: 2027-11-24 18:00:00+0000
+date: 2027-11-24 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

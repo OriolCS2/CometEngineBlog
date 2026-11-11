@@ -1,7 +1,7 @@
 ---
 title: 2026 in Review
 description: Nine releases, one dead language, and the year Comet stopped being small
-date: 2026-12-30 03:00:00+0000
+date: 2026-12-30 10:30:00+0100
 image: cover.png
 categories:
     - Devlog

@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (7): Enemies That Think"
 description: A patrol that looks before it walks, and a bat that does not care about gravity
-date: 2027-09-08 18:00:00+0000
+date: 2027-09-08 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

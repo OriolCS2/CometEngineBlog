@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (16): Sound"
 description: Six noises, nineteen Audio Sources, and a mixer that was quietly set to zero
-date: 2027-11-10 18:00:00+0000
+date: 2027-11-10 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

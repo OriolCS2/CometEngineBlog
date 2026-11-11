@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (5): Giving It a Body"
 description: Sorting layers, a backdrop, and the evening everything turned into a silhouette
-date: 2027-08-25 18:00:00+0000
+date: 2027-08-25 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

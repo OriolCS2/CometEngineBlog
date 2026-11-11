@@ -1,7 +1,7 @@
 ---
 title: Seven Years of Comet, and What Comes Next
 description: February 2020 to July 2027, fifty-two Wednesdays, and what I would tell the version of me who started
-date: 2027-07-21 03:00:00+0000
+date: 2027-07-21 10:30:00+0200
 image: cover.png
 categories:
     - Devlog

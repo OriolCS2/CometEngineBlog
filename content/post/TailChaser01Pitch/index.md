@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (1): The Pitch"
 description: Twenty two Wednesdays, one evening a week, no art budget, and it ships whatever state it is in
-date: 2027-07-28 03:00:00+0000
+date: 2027-07-28 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

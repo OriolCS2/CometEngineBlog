@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (21): Saving, Properly"
 description: Replacing a hand built JSON string with the engine's own document class, and the one ownership rule that matters
-date: 2027-12-15 18:00:00+0000
+date: 2027-12-15 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game

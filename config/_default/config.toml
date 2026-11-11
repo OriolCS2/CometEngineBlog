@@ -3,6 +3,11 @@ baseurl = "https://OriolCS2.github.io/CometEngineBlog/"
 languageCode = "en-us"
 title = "Comet Engine Blog"
 
+# Posts link to posts that are scheduled for later weeks. Those pages do not
+# exist yet at build time, so a missing ref must not fail the build. The link
+# points to "#" until the target is published and the next deploy runs.
+refLinksErrorLevel = "warning"
+
 # Theme i18n support
 # Available values: en, fr, id, ja, ko, pt-br, zh-cn, zh-tw, es, de, nl, it, th, el, uk, ar
 defaultContentLanguage = "en"

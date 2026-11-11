@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (4): Building the World"
 description: A tile palette, one tile asset per sprite, and a collider that stops being a hundred boxes
-date: 2027-08-18 18:00:00+0000
+date: 2027-08-18 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

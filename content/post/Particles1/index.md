@@ -1,7 +1,7 @@
 ---
 title: "A Hundred Thousand Particles (Part 1): The Rewrite"
 description: One object per particle was the wrong shape for the work. Here is what changed, and the number at the end
-date: 2026-11-25 03:00:00+0000
+date: 2026-11-25 10:30:00+0100
 image: cover.png
 categories:
     - Performance

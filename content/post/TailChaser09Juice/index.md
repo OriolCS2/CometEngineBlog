@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (9): Juice"
 description: Hit stop, screen shake, and the bug that was quietly turning half my stomps into damage
-date: 2027-09-22 18:00:00+0000
+date: 2027-09-22 10:30:00+0200
 image: cover.png
 categories:
     - Making a Game

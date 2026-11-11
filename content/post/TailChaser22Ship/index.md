@@ -1,7 +1,7 @@
 ---
 title: "Tail Chaser (22): Ship It"
 description: Twenty-two evenings, one finished game, and the one step of it I could not drive from my own tools
-date: 2027-12-22 18:00:00+0000
+date: 2027-12-22 10:30:00+0100
 image: cover.png
 categories:
     - Making a Game
