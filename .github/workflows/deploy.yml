@@ -42,8 +42,12 @@ jobs:
             - name: Setup Hugo
               uses: peaceiris/actions-hugo@v2
               with:
-                  hugo-version: "0.169.0"
+                  hugo-version: "0.170.1"
                   extended: true
+
+            # Hugo >= 0.170 no longer bundles a Sass compiler; the theme needs Dart Sass on PATH.
+            - name: Install Dart Sass
+              run: sudo snap install dart-sass
 
             - name: Build
               run: hugo --minify --gc
