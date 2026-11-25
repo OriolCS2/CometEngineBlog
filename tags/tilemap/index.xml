@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tilemap on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/tilemap/</link><description>Recent content in Tilemap on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 21 Oct 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/tilemap/index.xml" rel="self" type="application/rss+xml"/><item><title>Shadows in Two Dimensions</title><link>https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/</link><pubDate>Wed, 21 Oct 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/cover.png" alt="Featured image of post Shadows in Two Dimensions" /&gt;&lt;p&gt;It is the last Wednesday before Halloween, so let&amp;rsquo;s talk about shadows.&lt;/p&gt;
+&lt;p&gt;Comet&amp;rsquo;s 2D shadows are real-time and dynamic. If you move a light, the shadows move. If you move an object, its shadow moves. Nothing is baked, so nothing has to be rebaked when you change your level.&lt;/p&gt;
+&lt;h2 id="how-a-2d-shadow-gets-decided"&gt;How a 2D shadow gets decided
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/how.png"
+width="1100"
+height="520"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/how_hu_5f612c019f70a0a.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/how_hu_2e3a0a855ec5199b.png 1024w"
+loading="lazy"
+alt="Diagram of how shadow projection works"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+&gt;&lt;/p&gt;
+&lt;p&gt;For each light that has shadows enabled, the engine gathers every &lt;strong&gt;Shadow Caster&lt;/strong&gt; within its reach. The edges of each occluder are projected away from the light, and that forms the regions the light cannot get into. Those regions are filled, the light is not applied inside them, and then the edge is filtered, either left crisp or softened.&lt;/p&gt;
+&lt;p&gt;The word to keep in mind there is per light. Each light does this on its own. Two lights in a room produce two sets of shadows, overlapping where they should. It also means the cost of shadows scales with &lt;code&gt;lights × occluders&lt;/code&gt;, and that is worth remembering before you add the fortieth torch to your scene.&lt;/p&gt;
+&lt;p&gt;A light with &lt;code&gt;Cast Shadows&lt;/code&gt; off skips all of this. Most lights in most scenes should have it off. A small glow on a coin does not need to occlude anything, and turning it off is free performance.&lt;/p&gt;
+&lt;h2 id="telling-the-engine-what-blocks-light"&gt;Telling the engine what blocks light
+&lt;/h2&gt;&lt;p&gt;An entity does not cast a shadow because it has a sprite. It casts a shadow because you put a &lt;strong&gt;Shadow Caster&lt;/strong&gt; behaviour on it. I did it that way on purpose. In a 2D scene most things are backgrounds, decals and effects, and if all of them blocked light the result would be an unreadable mess.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/occluders.png"
+width="1100"
+height="436"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/occluders_hu_a22e5584b69d9d36.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/occluders_hu_cecd45de89cc02c2.png 1024w"
+loading="lazy"
+alt="Entities with their occluder shapes drawn in the editor"
+class="gallery-image"
+data-flex-grow="252"
+data-flex-basis="605px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The caster can get its shape in three ways.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;From the sprite.&lt;/strong&gt; It uses the sprite&amp;rsquo;s silhouette. No setup at all, and it is right most of the time.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;From a custom polygon.&lt;/strong&gt; You draw the occluder by hand. It is more work, and it is the right answer whenever the visual silhouette is not the shape you want to block light. A character with a big hat, or a tree whose canopy should not cast a solid slab.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;From the physics shape.&lt;/strong&gt; It reuses the collider. This is my default for level geometry, because the thing that stops you walking through it is exactly the thing that should stop light, and now the two can never disagree.&lt;/p&gt;
+&lt;p&gt;There is a fourth one, &lt;strong&gt;Tilemap Shadow Caster&lt;/strong&gt;, which builds a single occluder set for a whole tilemap layer instead of one per tile. On a level with three thousand tiles, that is the difference between working and not working at all.&lt;/p&gt;
+&lt;h2 id="the-controls"&gt;The controls
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/controls.png"
+width="1100"
+height="578"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/controls_hu_65411f586c28634c.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/shadows-in-two-dimensions/controls_hu_1b72898f02720e17.png 1024w"
+loading="lazy"
+alt="Shadow settings on a light in the inspector"
+class="gallery-image"
+data-flex-grow="190"
+data-flex-basis="456px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Shadow settings live on the &lt;strong&gt;light&lt;/strong&gt;, not on the caster. I think that is the right way round, because the same wall should be able to throw a hard shadow from a nearby lamp and a soft one from a distant window.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Shadow Mode&lt;/strong&gt; is crisp or soft. Crisp gives you a hard edge and it suits stylised and pixel art. Soft uses PCF, so the edge is sampled several times and averaged, which gives you a gradient. Soft looks better in realistic scenes and it costs more.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Shadow Colour&lt;/strong&gt; does not have to be black. This is the setting that improves how shadows look the most, and it is the one nobody ever touches. Real shadows are areas lit only by bounced light, and bounced light has colour. A dark blue shadow in a warm scene reads as daylight instead of as a hole cut in the image.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Strength&lt;/strong&gt; is how much light gets blocked. Below 1.0 some light leaks through, which is often what you want.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Softness&lt;/strong&gt; widens the PCF filter.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Sorting layers&lt;/strong&gt; restrict which layers this light shadows at all. On the other side, every renderer has its own &lt;code&gt;Receives Shadows&lt;/code&gt; toggle, so a background can stay evenly lit while everything in front of it darkens. Using both together is how you get shadows that support the art instead of fighting it.&lt;/p&gt;
+&lt;h2 id="the-afternoon-everything-was-inside-out"&gt;The afternoon everything was inside-out
+&lt;/h2&gt;&lt;p&gt;Shadow Casters support a polygon &lt;strong&gt;cull mode&lt;/strong&gt;, clockwise or counter-clockwise, which decides which side of an edge counts as facing the light.&lt;/p&gt;
+&lt;p&gt;That does sound like an implementation detail that should not be exposed to the user, and I agree with that. It is exposed anyway, because polygons authored in different tools wind in different directions and I have not found a reliable way to guess.&lt;/p&gt;
+&lt;p&gt;Getting it wrong does not give you no shadows. It gives you inverted shadows. Every area that should be lit is dark and every area that should be dark is lit. The scene is still fully rendered, it still looks plausible at a glance, and it is completely wrong.&lt;/p&gt;
+&lt;p&gt;I spent an afternoon on this convinced the projection maths was broken. I rewrote a working function twice. In the end the fix was a dropdown.&lt;/p&gt;
+&lt;h2 id="what-this-costs"&gt;What this costs
+&lt;/h2&gt;&lt;p&gt;Shadows are the most expensive thing in Comet&amp;rsquo;s 2D lighting, by a wide margin.&lt;/p&gt;
+&lt;p&gt;Roughly, the cost scales with the number of shadow-casting &lt;strong&gt;lights&lt;/strong&gt; multiplied by the number of &lt;strong&gt;occluders&lt;/strong&gt; each one can reach, and soft shadows multiply that again by the PCF sample count.&lt;/p&gt;
+&lt;p&gt;Some practical advice, from having made this slow and then made it fast again:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Turn Cast Shadows off by default&lt;/strong&gt; and enable it only on the lights where a shadow is doing some work.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use Tilemap Shadow Caster&lt;/strong&gt; instead of per-tile casters. Always.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Restrict lights to sorting layers.&lt;/strong&gt; A light that only touches the character layer only tests occluders on the character layer.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Prefer crisp over soft&lt;/strong&gt; unless the art really needs the gradient. It is a big saving for a small visual difference in stylised work.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="what-comet-does-not-do"&gt;What Comet does not do
+&lt;/h2&gt;&lt;p&gt;There is no shadow casting from emissive sprites. A glowing object does not automatically light its surroundings. If you want that, put a light on it.&lt;/p&gt;
+&lt;p&gt;There is no shadow bounce and no global illumination. A shadow is a region a light does not reach, and light does not accumulate off surfaces. That is a whole different class of renderer.&lt;/p&gt;
+&lt;p&gt;And shadows are per-light in screen space, so a very large number of small shadow-casting lights is not the workload this is built for. Using fewer lights and placing them better is faster, and I think it usually looks better too.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: the release where I deleted every shader in every project. 2.8 removed GLSL authoring entirely and replaced it with HLSL, cross-compiled to whatever the target platform actually speaks. I will explain why I did something that aggressive, and what a Comet shader looks like now.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

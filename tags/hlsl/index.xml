@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HLSL on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/hlsl/</link><description>Recent content in HLSL on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 18 Nov 2026 10:30:00 +0100</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/hlsl/index.xml" rel="self" type="application/rss+xml"/><item><title>Painting Over the Whole Screen</title><link>https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/</link><pubDate>Wed, 18 Nov 2026 10:30:00 +0100</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/cover.png" alt="Featured image of post Painting Over the Whole Screen" /&gt;&lt;p&gt;Everything in the rendering posts so far has been about drawing things. Sprites, tiles, particles, lights. This one is about what happens after all of that is finished and you have a complete frame sitting in a texture.&lt;/p&gt;
+&lt;h2 id="what-a-full-screen-pass-is"&gt;What a full-screen pass is
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/what-it-is.png"
+width="1100"
+height="436"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/what-it-is_hu_b8c7dd5d700654aa.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/what-it-is_hu_fbd07c2484d0238d.png 1024w"
+loading="lazy"
+alt="A scene rendered to a texture and then drawn as one screen quad"
+class="gallery-image"
+data-flex-grow="252"
+data-flex-basis="605px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Normally the scene renders straight to the screen. With post-processing enabled it renders to a &lt;strong&gt;texture&lt;/strong&gt; instead. Then a single quad covering the whole screen is drawn with that texture as its input, and your shader runs once per pixel.&lt;/p&gt;
+&lt;p&gt;That is the entire mechanism. It is a simple thing, and what I like about it is that at that moment you have every pixel of the finished frame available and you can do whatever you want with it. Blur it, tint it, distort it, sample neighbouring pixels, sample it twice at different offsets.&lt;/p&gt;
+&lt;p&gt;In Shader Graph this is exposed as two nodes: &lt;strong&gt;Scene Color&lt;/strong&gt;, which is that texture, and &lt;strong&gt;Screen UV&lt;/strong&gt;, which is where you are inside it. That is all the API you get.&lt;/p&gt;
+&lt;h2 id="profiles"&gt;Profiles
+&lt;/h2&gt;&lt;p&gt;Post-processing in Comet is configured through a &lt;strong&gt;Post-Process Profile&lt;/strong&gt; asset, an ordered list of passes.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/profile.png"
+width="900"
+height="370"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/profile_hu_99d1f328bb04c3eb.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/profile_hu_b89f8f9216b07726.png 1024w"
+loading="lazy"
+alt="A post-process profile in the inspector"
+class="gallery-image"
+data-flex-grow="243"
+data-flex-basis="583px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Every effect is a checkbox and a fold. Nothing is on until you turn it on, and &lt;strong&gt;Custom Passes&lt;/strong&gt; at the bottom is where a shader you wrote yourself joins the same stack as the built-in ones.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/stack.png"
+width="1100"
+height="494"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/stack_hu_86b38b34c9c6bae5.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/stack_hu_583781003bdcba95.png 1024w"
+loading="lazy"
+alt="The stack of passes in a profile"
+class="gallery-image"
+data-flex-grow="222"
+data-flex-basis="534px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Order matters more than people expect. A vignette applied before colour grading gets graded along with everything else, so your carefully warmed shadows now include an artificial dark ring you did not intend to warm. Applied after, it sits cleanly on top. Neither one is wrong, but they produce visibly different images and you have to decide which you want.&lt;/p&gt;
+&lt;p&gt;The way I build a profile is to get the scene looking right unprocessed first, then add one pass at a time and look at the frame after each one. It is very easy to add five effects, decide it looks muddy, and have no idea which of the five is responsible.&lt;/p&gt;
+&lt;h2 id="writing-your-own"&gt;Writing your own
+&lt;/h2&gt;&lt;p&gt;2.8 made custom passes a first-class thing, and there are two routes.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/two-routes.png"
+width="1100"
+height="342"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/two-routes_hu_d0f56f54246bdd61.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/two-routes_hu_4f128223b0adcd9.png 1024w"
+loading="lazy"
+alt="The two routes for writing a custom pass"
+class="gallery-image"
+data-flex-grow="321"
+data-flex-basis="771px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Shader Graph.&lt;/strong&gt; Set the graph&amp;rsquo;s Target to &lt;code&gt;Post-Process&lt;/code&gt;. The master node changes to suit, and you get Scene Color and Screen UV alongside the entire standard node library. Everything from &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/shader-graph-part-2-blackboard-sub-graphs-and-vertex-offset/" &gt;last week&lt;/a&gt; still applies, so exposed properties become knobs on the pass and a &lt;code&gt;_Strength&lt;/code&gt; float on your vignette is adjustable in the profile.&lt;/p&gt;
+&lt;p&gt;This is the route I use for almost everything, mainly because the live preview is so useful when you are tuning something visual.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;HLSL.&lt;/strong&gt; Write a &lt;code&gt;.hlsl&lt;/code&gt; file with &lt;code&gt;#pragma target postprocess&lt;/code&gt;, include &lt;code&gt;CometPostProcess.hlsl&lt;/code&gt;, and you have the same inputs available as functions. There is a template under &lt;code&gt;Create → Shader → Post-Process&lt;/code&gt; so you are not starting from a blank file.&lt;/p&gt;
+&lt;p&gt;I reach for HLSL when the effect needs loops. A proper multi-tap blur is a loop with a kernel, and expressing that as nodes is unpleasant.&lt;/p&gt;
+&lt;h2 id="a-crt-effect-roughly"&gt;A CRT effect, roughly
+&lt;/h2&gt;&lt;p&gt;To make it concrete, here is the classic stylised pass as a graph.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Curve the screen.&lt;/strong&gt; Take Screen UV, push it away from the centre proportionally to the squared distance from the centre, and sample Scene Color at the curved coordinate. Now the image bulges like a tube.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Scanlines.&lt;/strong&gt; Take the Y of Screen UV, multiply by the vertical resolution, feed it into a sine, and multiply the colour by a value that dips slightly on alternate lines.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Chromatic aberration.&lt;/strong&gt; Sample Scene Color three times at slightly different offsets and take red from one, green from another and blue from the third. The offsets should grow with distance from the centre.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vignette.&lt;/strong&gt; Darken by distance from the centre.&lt;/p&gt;
+&lt;p&gt;That is four passes, or one graph with four sections. Expose the strength of each and you have a knob for &amp;ldquo;how much CRT&amp;rdquo; that an artist can turn.&lt;/p&gt;
+&lt;h2 id="what-it-costs"&gt;What it costs
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/cost.png"
+width="1100"
+height="488"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/cost_hu_1d795c0b41b9d855.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/painting-over-the-whole-screen/cost_hu_377a4d71d2de4617.png 1024w"
+loading="lazy"
+alt="The cost of a full-screen pass at 1080p"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="540px"
+&gt;&lt;/p&gt;
+&lt;p&gt;This is the part that catches people, and it caught me too. A post-process pass costs the same on an empty scene as it does on a full one.&lt;/p&gt;
+&lt;p&gt;Everything else in a renderer scales with scene complexity. More sprites is more work, fewer sprites is less. Post-processing does not care. It reads and writes every pixel of the screen, every frame, whatever happens to be in it.&lt;/p&gt;
+&lt;p&gt;At 1080p that is about two million pixels per pass. Four passes is eight million pixel operations, every frame, forever. On a desktop GPU that is comfortable. On a mid-range phone, where you are bandwidth-limited rather than compute-limited, reading and writing a full-screen texture four times is frequently the single most expensive thing your game does.&lt;/p&gt;
+&lt;p&gt;So in practice:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Profile on the target device&lt;/strong&gt;, not on your desktop. This is the effect category where desktop numbers mislead most badly.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Merge passes where you can.&lt;/strong&gt; Two effects in one shader read the scene texture once instead of twice, and that is usually a bigger saving than optimising either effect.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Consider resolution.&lt;/strong&gt; Some effects, bloom especially, look fine computed at half resolution and upscaled. That is a 4× saving.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Make it a setting.&lt;/strong&gt; &amp;ldquo;Effects: low/medium/high&amp;rdquo; that removes passes is a legitimate and effective quality option.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="what-comet-does-not-have"&gt;What Comet does not have
+&lt;/h2&gt;&lt;p&gt;No temporal effects. Nothing that accumulates across frames, so no motion blur that samples previous frames and no temporal anti-aliasing. That needs history buffers and motion vectors, which is a substantial system for a 2D engine.&lt;/p&gt;
+&lt;p&gt;No depth buffer to sample. This is a 2D renderer and there is no meaningful per-pixel depth, so depth-of-field and depth-based fog are not available in the way a 3D engine would offer them. You can fake a lot of it with sorting layers and separate passes, but it is faking.&lt;/p&gt;
+&lt;p&gt;And post-processing applies to the camera&amp;rsquo;s output, so a UI canvas in overlay mode sits on top and is not affected. That is usually what you want, because a vignette over your health bar is rarely the goal, but if you do want the UI graded too it has to be a camera-space canvas rendering into the same target.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday we leave rendering for a while and go somewhere much more measurable, the particle system rewrite. One hundred thousand particles, eight property modules and a 2.7 millisecond frame, starting from a system that used to allocate one object per particle.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>The Year I Deleted Every Shader</title><link>https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/</link><pubDate>Wed, 28 Oct 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/cover.png" alt="Featured image of post The Year I Deleted Every Shader" /&gt;&lt;p&gt;There is a line in the 2.8 changelog that I suspect cost some people an evening:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;GLSL Deprecation:&lt;/strong&gt; Replaced the GLSL shader authoring workflow entirely with the HLSL pipeline. Existing GLSL shaders must be rewritten in HLSL.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;No deprecation period, no compatibility layer. Every custom shader in every project had to be rewritten.&lt;/p&gt;
+&lt;p&gt;I want to explain why I think that was the right call, because &amp;ldquo;we changed shader languages&amp;rdquo; sounds like a matter of taste and it was not.&lt;/p&gt;
+&lt;h2 id="the-problem"&gt;The problem
+&lt;/h2&gt;&lt;p&gt;Comet targets Windows, Linux, Android and the web, and it renders through &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/two-backends-one-renderer/" &gt;either OpenGL or Vulkan&lt;/a&gt;. Put those together and you get this:&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem.png"
+width="1100"
+height="494"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem_hu_891d5a916bfc2f17.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/problem_hu_b9fcd17ed1f8c9e8.png 1024w"
+loading="lazy"
+alt="The four shader targets Comet has to feed"
+class="gallery-image"
+data-flex-grow="222"
+data-flex-basis="534px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Desktop OpenGL wants GLSL 430. OpenGL ES on Android wants GLSL ES 300, with different precision rules and a smaller feature set. Vulkan does not want GLSL at all, it wants SPIR-V, which is a binary intermediate format. WebGL wants GLSL ES too, but an older dialect with fewer capabilities again.&lt;/p&gt;
+&lt;p&gt;So if you author in GLSL, which GLSL?&lt;/p&gt;
+&lt;p&gt;Under the old system the answer was desktop GLSL, plus a growing pile of &lt;code&gt;#ifdef&lt;/code&gt; for the platforms where that was not true, plus a set of hand-maintained variants for the ones where the differences were too large to patch over. Every new shader feature meant checking it against four targets. Every platform bug meant working out which of the four variants had drifted.&lt;/p&gt;
+&lt;p&gt;That is not really a language problem. It is a problem of not having one authoring source of truth, and it gets worse with every platform you add.&lt;/p&gt;
+&lt;h2 id="the-fix"&gt;The fix
+&lt;/h2&gt;&lt;p&gt;Pick one language that nobody&amp;rsquo;s runtime speaks natively, and compile it to all of them.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline.png"
+width="1100"
+height="520"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline_hu_ec11ff0978f5790b.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/pipeline_hu_90d382a70af68ef8.png 1024w"
+loading="lazy"
+alt="The HLSL to SPIR-V to GLSL pipeline"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+&gt;&lt;/p&gt;
+&lt;p&gt;You write HLSL. &lt;strong&gt;glslang&lt;/strong&gt; compiles it to SPIR-V. Vulkan takes the SPIR-V directly. For the OpenGL family, &lt;strong&gt;SPIR-V Cross&lt;/strong&gt; translates it into whatever flavour of GLSL that target needs.&lt;/p&gt;
+&lt;p&gt;One source file, four outputs. All of it is generated at build time and not at runtime, so the player&amp;rsquo;s machine never compiles anything.&lt;/p&gt;
+&lt;h2 id="why-hlsl"&gt;Why HLSL
+&lt;/h2&gt;&lt;p&gt;I had three reasons, and none of them is &amp;ldquo;HLSL is a nicer language&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The toolchain exists and it is excellent.&lt;/strong&gt; glslang and SPIR-V Cross are mature, widely used, and maintained by people who care a great deal about correctness. Going from HLSL to SPIR-V to GLSL is a well trodden path. Going from GLSL to SPIR-V to another GLSL is possible but far less common, and you hit rough edges nobody else has hit before.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It is the industry default for this job.&lt;/strong&gt; Anyone who has written shaders for a modern engine has written something HLSL shaped. For a small engine that is a real advantage, because I do not have to teach the language, only the specifics of Comet.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It is more explicit.&lt;/strong&gt; HLSL&amp;rsquo;s explicit semantics and register bindings map onto Vulkan&amp;rsquo;s descriptor model much more directly than GLSL&amp;rsquo;s implicit conventions do, so there is less guessing in the middle of the pipeline.&lt;/p&gt;
+&lt;h2 id="what-a-shader-looks-like-now"&gt;What a shader looks like now
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader.png"
+width="1000"
+height="690"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader_hu_4f97c181cf237033.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/the-year-i-deleted-every-shader/shader_hu_9a58ce7b800ea628.png 1024w"
+loading="lazy"
+alt="A Comet HLSL shader open in the editor"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#pragma vertex&lt;/code&gt; and &lt;code&gt;#pragma fragment&lt;/code&gt; name your entry points. Both stages are fully yours, and that was a real gain over the old system, where vertex stage customisation was limited and vertex animation meant working around the engine instead of with it.&lt;/p&gt;
+&lt;p&gt;You include a Comet header that provides the standard structures and helpers, you declare your parameters as plain globals, and you write two functions. Parameters declared at the top surface automatically as material properties, so they appear in the material inspector and you can set them from AngelScript with &lt;code&gt;Material.SetFloat&lt;/code&gt; and friends.&lt;/p&gt;
+&lt;p&gt;There are template shaders under &lt;code&gt;Create → Shader&lt;/code&gt; for the common starting points, including a post-process one, which I&amp;rsquo;ll cover in three weeks.&lt;/p&gt;
+&lt;h2 id="was-the-hard-break-necessary"&gt;Was the hard break necessary?
+&lt;/h2&gt;&lt;p&gt;I have thought about this a lot and I think yes, although not comfortably.&lt;/p&gt;
+&lt;p&gt;The alternative was supporting both: keep GLSL authoring working, add HLSL next to it, and deprecate GLSL over a few releases. That is friendlier to everybody. It is also two shader front-ends, two sets of bugs, two sets of platform quirks, and every new feature has to be built twice or marked as HLSL only. For a one-person engine I would have been paying that cost forever, and not only during a transition.&lt;/p&gt;
+&lt;p&gt;The facts that made it easier, stated honestly: Comet 2.x was only a few months old, the number of projects with custom GLSL shaders was small, and 2.0 had already broken everything anyway by &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/saying-goodbye-to-csharp-how-the-migration-actually-went-part-1/" &gt;removing C#&lt;/a&gt;. If there was ever a moment to do it, that was the moment.&lt;/p&gt;
+&lt;p&gt;If Comet had a large user base with years of shaders behind it, I do not think I would have had the right to make that call.&lt;/p&gt;
+&lt;h2 id="why-this-matters-less-than-it-sounds"&gt;Why this matters less than it sounds
+&lt;/h2&gt;&lt;p&gt;The thing that made the decision much easier for me is that most people will never write a shader by hand.&lt;/p&gt;
+&lt;p&gt;2.8 shipped HLSL authoring and the &lt;strong&gt;Shader Graph&lt;/strong&gt; in the same release, and that was not a coincidence. If you can build a dissolve, a hologram or a water surface by wiring nodes together with a live preview, the number of times you need to open a text file and write shader code drops enormously.&lt;/p&gt;
+&lt;p&gt;The graph compiles down the same pipeline and produces the same kind of output the HLSL front-end does. It is not a slower path or a limited subset of it.&lt;/p&gt;
+&lt;p&gt;So what 2.8 really did to shaders is this: writing them got harder for the small number of people who write them by hand, and it got a lot easier for everyone else.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday, that Shader Graph. The canvas, the node palette, the live preview, and a dissolve effect built from nothing, one node at a time.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

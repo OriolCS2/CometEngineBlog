@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Particles on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/particles/</link><description>Recent content in Particles on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 25 Nov 2026 10:30:00 +0100</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/particles/index.xml" rel="self" type="application/rss+xml"/><item><title>A Hundred Thousand Particles (Part 1): The Rewrite</title><link>https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/</link><pubDate>Wed, 25 Nov 2026 10:30:00 +0100</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/cover.png" alt="Featured image of post A Hundred Thousand Particles (Part 1): The Rewrite" /&gt;&lt;p&gt;The old particle system worked. It had emission, shapes, lifetime, velocity, forces, size and colour over lifetime, rotation and texture animation, everything you would expect. It also fell over somewhere around eight thousand particles, and I could never quite explain to myself why.&lt;/p&gt;
+&lt;p&gt;When I finally sat down with it, the answer was not any single slow function. It was that the data was stored the wrong way round.&lt;/p&gt;
+&lt;h2 id="one-object-per-particle"&gt;One object per particle
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/before-after.png"
+width="1100"
+height="488"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/before-after_hu_158b9ced8b962aaf.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/before-after_hu_4bd39530ec8e0fe8.png 1024w"
+loading="lazy"
+alt="The old layout compared with the new one"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="540px"
+&gt;&lt;/p&gt;
+&lt;p&gt;The original design was the obvious one. A particle is a thing, so a particle is an object. Position, velocity, colour, size, rotation, age and lifetime, all in one struct, one per particle, in a list.&lt;/p&gt;
+&lt;p&gt;Then each frame, for each particle, you walk the property modules and let each one update that particle.&lt;/p&gt;
+&lt;p&gt;Two things about this are bad.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The virtual call.&lt;/strong&gt; Each property module is polymorphic, so &amp;ldquo;let each module update this particle&amp;rdquo; is a virtual call per module, per particle, per frame. With eight modules and ten thousand particles that is eighty thousand indirect calls a frame, none of which the CPU can predict.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The memory layout.&lt;/strong&gt; The velocity module only cares about position and velocity. But position and velocity are embedded in a struct next to colour, size, rotation and everything else. So every cache line the CPU pulls in contains mostly data this module will not touch. You are paying full memory bandwidth to use a fraction of it.&lt;/p&gt;
+&lt;h2 id="one-array-per-property"&gt;One array per property
+&lt;/h2&gt;&lt;p&gt;The rewrite inverts it. Instead of one array of particle objects there is one array per property: an array of positions, an array of velocities, an array of colours. A structure of arrays.&lt;/p&gt;
+&lt;p&gt;Now the velocity module is a single pass over two dense, contiguous arrays. There are no virtual calls inside the loop, and every byte the CPU loads is a byte the loop actually uses. The hardware prefetcher, which was useless before, now predicts the whole access pattern correctly.&lt;/p&gt;
+&lt;p&gt;It is the same features and the same look. Nothing about what the system does changed.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/inspector.png"
+width="544"
+height="878"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/inspector_hu_321236e3cfe1ea1d.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/inspector_hu_7788854e96dc868.png 1024w"
+loading="lazy"
+alt="The particle system inspector"
+class="gallery-image"
+data-flex-grow="61"
+data-flex-basis="148px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Every collapsible block in that inspector is a property module, and each one is now one pass over the pool instead of a participant in a per-particle loop.&lt;/p&gt;
+&lt;h2 id="baking-the-curves"&gt;Baking the curves
+&lt;/h2&gt;&lt;p&gt;The second big win was curves.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/curves.png"
+width="1100"
+height="436"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/curves_hu_a3ff46c20d5c0920.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/curves_hu_99d6d60d80312e71.png 1024w"
+loading="lazy"
+alt="Curves and gradients over a particle’s lifetime"
+class="gallery-image"
+data-flex-grow="252"
+data-flex-basis="605px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Comet lets you author values as curves and gradients over a particle&amp;rsquo;s lifetime, so size ramps up, colour fades out, or you get a random pick between two gradients. Evaluating a spline is not expensive on its own, but doing it per particle, per property, per frame adds up fast.&lt;/p&gt;
+&lt;p&gt;So they are baked. When a curve changes it is sampled once into a &lt;strong&gt;256-entry lookup table&lt;/strong&gt;. Per particle, evaluating &amp;ldquo;what size am I at 43% of my life&amp;rdquo; becomes an array index.&lt;/p&gt;
+&lt;p&gt;The rebuild only happens when the curve actually changes, which in practice means once at author time and never during play.&lt;/p&gt;
+&lt;p&gt;This also turns out to be the thing that made GPU simulation possible later, because those same tables upload as rows of a texture, so the CPU and GPU paths sample identical values rather than approximately similar ones. I did not plan that, I just got lucky.&lt;/p&gt;
+&lt;h2 id="threading-without-breaking-determinism"&gt;Threading, without breaking determinism
+&lt;/h2&gt;&lt;p&gt;Above a few thousand particles a pass splits across the &lt;code&gt;ThreadPool&lt;/code&gt; workers.&lt;/p&gt;
+&lt;p&gt;That introduces an obvious hazard. Particle systems use randomness, like random start speed, random lifetime, or a random colour between two gradients. If randomness comes from a shared generator, then the order the threads happen to run in changes which particle gets which number, and the same scene produces different results on different runs.&lt;/p&gt;
+&lt;p&gt;The fix is that update-time randomness derives from a &lt;strong&gt;stable per-particle seed&lt;/strong&gt;. Particle 4,812 gets the same random sequence regardless of which thread processes it or when. A threaded step is bit-identical to a single-threaded one.&lt;/p&gt;
+&lt;p&gt;I think that property is more useful than it looks at first. It means the web build, which is single-threaded because Emscripten has no threads, produces exactly the same particle behaviour as the desktop build.&lt;/p&gt;
+&lt;h2 id="the-numbers"&gt;The numbers
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/numbers.png"
+width="1100"
+height="488"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/numbers_hu_f355b5711cbaca3e.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/a-hundred-thousand-particles-part-1-the-rewrite/numbers_hu_1b7a82acdfb6bb3c.png 1024w"
+loading="lazy"
+alt="The measured cost of the new system"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="540px"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;100,000 particles with eight property modules enabled step in 2.7 ms&lt;/strong&gt; in a release build on an AMD Ryzen-class CPU. In an unoptimised debug build it is 7.3 ms, which is a useful reminder about where you measure.&lt;/p&gt;
+&lt;p&gt;2.7 ms is roughly a sixth of a 60 fps frame budget, for one system carrying six figures of particles.&lt;/p&gt;
+&lt;p&gt;Memory is &lt;strong&gt;169 bytes per particle&lt;/strong&gt; in a single 16-byte-aligned arena, so 16.5 MB for 100,000. It is allocated on demand up to &lt;code&gt;Max Particles&lt;/code&gt;, so a system configured for a million particles that only ever runs a hundred does not reserve the space.&lt;/p&gt;
+&lt;p&gt;One detail I am fond of is that the pool is kept age-ordered, so particles dying at the front of the window cost no data movement at all. The common case, the oldest particles expiring first, is free.&lt;/p&gt;
+&lt;h2 id="what-i-would-tell-myself"&gt;What I would tell myself
+&lt;/h2&gt;&lt;p&gt;Two things, if I could go back to the version of me who wrote the first system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The naive layout is a design decision you are making by default.&lt;/strong&gt; One object per particle is already a choice about memory layout, it is just an invisible one, so it is not something you can put off as premature optimisation.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Measure before rewriting, but measure the right thing.&lt;/strong&gt; I spent a while optimising individual property modules before understanding that the cost was structural. Every one of those local optimisations was real, and together they bought maybe 15%. The layout change bought an order of magnitude.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: 2.7 ms is good, and it is still the CPU doing work the GPU could do instead. Three compute kernels, an alive list compacted with a prefix sum, a draw call that never learns how many particles exist, and the rule that keeps the same project running on hardware with no compute at all.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

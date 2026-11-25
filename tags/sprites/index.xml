@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sprites on Comet Engine Blog</title><link>https://OriolCS2.github.io/CometEngineBlog/tags/sprites/</link><description>Recent content in Sprites on Comet Engine Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 14 Oct 2026 03:00:00 +0000</lastBuildDate><atom:link href="https://OriolCS2.github.io/CometEngineBlog/tags/sprites/index.xml" rel="self" type="application/rss+xml"/><item><title>Let There Be Light (Part 2): Normal Maps and Specular</title><link>https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/</link><pubDate>Wed, 14 Oct 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/cover.png" alt="Featured image of post Let There Be Light (Part 2): Normal Maps and Specular" /&gt;&lt;p&gt;A sprite is a flat rectangle with a picture on it. It has no bumps, no grooves and no direction. When a light moves past it, nothing about its surface can respond, because it does not have a surface.&lt;/p&gt;
+&lt;p&gt;Normal mapping is how you make it lie about that convincingly.&lt;/p&gt;
+&lt;h2 id="what-a-normal-map-is"&gt;What a normal map is
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/what-a-normal-is.png"
+width="1100"
+height="488"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/what-a-normal-is_hu_f6771d8160e86a52.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/what-a-normal-is_hu_d7d5259b511a909b.png 1024w"
+loading="lazy"
+alt="What a normal map stores in each colour channel"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="540px"
+&gt;&lt;/p&gt;
+&lt;p&gt;You already know what a colour texture is: for every pixel, what colour it should be.&lt;/p&gt;
+&lt;p&gt;A normal map is the same idea for a different question. For every pixel, which direction is this bit of surface facing? That direction is a 3D vector with an X, a Y and a Z, and an image has three colour channels, so R holds X, G holds Y and B holds Z.&lt;/p&gt;
+&lt;p&gt;This is why every normal map you have ever seen is that particular flat lavender colour. That is &lt;code&gt;(0.5, 0.5, 1.0)&lt;/code&gt;, which decodes to X and Y at zero and Z at maximum, a normal pointing straight out at the camera. Flat. The bits that are not lavender are the bits with a slope.&lt;/p&gt;
+&lt;p&gt;The rectangle stays a rectangle. The geometry does not change, the silhouette does not change, and if you look at it head-on with a light directly in front, nothing changes. What changes is that the shading now has an opinion, per pixel, about which way the surface is turned.&lt;/p&gt;
+&lt;h2 id="what-the-engine-does-with-it"&gt;What the engine does with it
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/inputs.png"
+width="1100"
+height="572"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/inputs_hu_515af31449618506.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/inputs_hu_153556979bca6bd.png 1024w"
+loading="lazy"
+alt="The two directions the lit shader works with"
+class="gallery-image"
+data-flex-grow="192"
+data-flex-basis="461px"
+&gt;&lt;/p&gt;
+&lt;p&gt;For every pixel of a lit sprite, Comet now has two directions: the surface normal from the normal map, and the direction to the light.&lt;/p&gt;
+&lt;p&gt;Take the dot product of those and you get &lt;strong&gt;diffuse&lt;/strong&gt; shading, a number for how directly this bit of surface faces the light. Facing it straight on, bright. Turned away, dark. That single operation is what makes a flat sprite look like it has depth.&lt;/p&gt;
+&lt;p&gt;Add the view direction and you get &lt;strong&gt;specular&lt;/strong&gt;, a highlight where the light would bounce off the surface toward your eye. Specular is what separates wet stone from dry stone, or metal from cloth, and it is also the easiest thing in this whole post to overdo.&lt;/p&gt;
+&lt;p&gt;This is where a property I mentioned in passing &lt;a class="link" href="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-1-2d-lighting/" &gt;last week&lt;/a&gt; becomes important. Height. The direction from a pixel to the light depends on where the light is, and a light in the same plane as your sprites is always grazing along the surface at a shallow angle. Raise the light out of the plane and the direction changes across the whole sprite in a way that reads as three-dimensional.&lt;/p&gt;
+&lt;p&gt;Height stopped being cosmetic the moment normal maps arrived. It is half of the light-direction calculation.&lt;/p&gt;
+&lt;h2 id="getting-a-normal-map"&gt;Getting a normal map
+&lt;/h2&gt;&lt;p&gt;Three routes, roughly in order of how much work they are.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Generate one from the colour texture.&lt;/strong&gt; Tools will do this by treating brightness as height. It is a guess and it looks like a guess, but for rough stone or bark it is often good enough, and it takes ten seconds.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Paint one.&lt;/strong&gt; For pixel art especially, hand-authoring the normals gives you control over exactly which edges catch the light. It is slow and the results are much better.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Render one.&lt;/strong&gt; If the art came from a 3D source, the normal map falls out of the render for free. This is why so much 2D-with-lighting work has a slightly 3D-rendered look, because it is.&lt;/p&gt;
+&lt;p&gt;You assign it on the &lt;strong&gt;material&lt;/strong&gt;, not on the sprite renderer, which trips people up. The lit material has a slot for the normal texture, and the sprite renderer just points at that material.&lt;/p&gt;
+&lt;h2 id="when-it-looks-wrong"&gt;When it looks wrong
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/failure-modes.png"
+width="1100"
+height="520"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/failure-modes_hu_7a55b5991e8a761f.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/let-there-be-light-part-2-normal-maps-and-specular/failure-modes_hu_2ddac3f631e289f6.png 1024w"
+loading="lazy"
+alt="The four common failure modes"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Four things go wrong, and I have done all four.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Nothing happens at all.&lt;/strong&gt; Usually the material is not a lit one. Comet ships &lt;code&gt;Sprites Default&lt;/code&gt; and &lt;code&gt;Sprites Default Light&lt;/code&gt;, and if you are on the first, no light of any kind touches the sprite. That is by design, and it is also the correct answer for UI and for backgrounds you want flat.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The bumps are inside-out.&lt;/strong&gt; Every dent looks like a bump and every bump like a dent. This is the green-channel convention: some tools write Y up and others write Y down. Flip the green channel and it is correct. There is no way to detect this automatically, because a plausible surface inverted is still a plausible surface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It looks like wet plastic.&lt;/strong&gt; Specular is too high. Most 2D art is matte, and the highlight that looks great on a metal helmet makes a cloth banner look shrink-wrapped.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It looks like a painted gradient.&lt;/strong&gt; I find this one the most interesting, because nothing is technically wrong. Normal maps read as depth because the shading changes as the light direction changes. If your light never moves, the brain reads the result as a static painting with a gradient on it, which is what it is.&lt;/p&gt;
+&lt;p&gt;Which leads to the point of all this.&lt;/p&gt;
+&lt;h2 id="why-moving-lights-matter"&gt;Why moving lights matter
+&lt;/h2&gt;&lt;p&gt;Normal mapping on a static scene with static lights is an expensive way to bake shading you could have painted.&lt;/p&gt;
+&lt;p&gt;It earns its cost the moment something moves. A torch the player carries. A light that swings. A player who walks past a wall. In that moment the wall&amp;rsquo;s surface responds continuously, every pixel of it, and the brain immediately reads a flat rectangle as a three-dimensional thing.&lt;/p&gt;
+&lt;p&gt;So the practical advice is this. If your lights are static, consider painting the shading into the art and saving yourself the textures. If your lights move, or your objects move past lights, normal maps are the single biggest visual upgrade available to a 2D scene.&lt;/p&gt;
+&lt;h2 id="the-cost"&gt;The cost
+&lt;/h2&gt;&lt;p&gt;Per-pixel shading against every light that reaches a sprite is not free. In practice, for the light counts a 2D game realistically has, it has never been the thing that made a frame slow in my testing. Culling, batching and particles all cost more.&lt;/p&gt;
+&lt;p&gt;What does cost is memory. Every normal-mapped sprite needs a second texture the same size as the first, so you have doubled your texture memory for that art. Atlas them exactly like colour textures, and think about whether every sprite really needs one. Usually the answer is that the terrain and the big set-piece objects do, and the small props do not.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday, with good timing for the last Wednesday before Halloween: shadows. Shadow Casters, occluders from sprite shapes or physics shapes, soft edges via PCF, per-light control over what gets darkened, and the afternoon I spent with every shadow in the scene pointing the wrong way.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item><item><title>How Comet Draws a Frame</title><link>https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/</link><pubDate>Wed, 23 Sep 2026 03:00:00 +0000</pubDate><guid>https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/</guid><description>&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/cover.png" alt="Featured image of post How Comet Draws a Frame" /&gt;&lt;p&gt;Everything in a 2D scene is a textured rectangle. Every sprite, every tile, every letter of text, every particle. That sounds like it should make rendering easy, and in a way it does. Drawing one rectangle is trivial. Drawing four thousand of them without asking the GPU four thousand separate times is the part that takes work.&lt;/p&gt;
+&lt;p&gt;This post follows one frame, from &amp;ldquo;here is a scene&amp;rdquo; to &amp;ldquo;here are the pixels&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene.png"
+width="952"
+height="590"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene_hu_c61ca02a0a77abee.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/scene_hu_ca7735f62b5dce49.png 1024w"
+loading="lazy"
+alt="The demo scene I use through this post"
+class="gallery-image"
+data-flex-grow="161"
+data-flex-basis="387px"
+&gt;&lt;/p&gt;
+&lt;h2 id="culling"&gt;Culling
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport.png"
+width="1124"
+height="657"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport_hu_20408680589c36d7.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/viewport_hu_6c49cb1f30839686.png 1024w"
+loading="lazy"
+alt="The camera viewport drawn in the Scene view"
+class="gallery-image"
+data-flex-grow="171"
+data-flex-basis="410px"
+&gt;&lt;/p&gt;
+&lt;p&gt;That red rectangle in the Scene view is what the active camera can see. Everything outside it is thrown away before it reaches the GPU at all.&lt;/p&gt;
+&lt;p&gt;Comet keeps a &lt;strong&gt;spatial index&lt;/strong&gt; of renderers, a structure that can answer &amp;ldquo;what overlaps this rectangle?&amp;rdquo; without testing every object in the scene. On a small scene this does not matter at all. On a level with fifteen thousand tiles where the camera is showing two hundred of them, it decides whether the level runs.&lt;/p&gt;
+&lt;p&gt;The property I care about is that the cost of culling grows with what is visible, not with what exists. That is why a big Comet level does not get slower as you keep adding more level further away.&lt;/p&gt;
+&lt;p&gt;There is a bug worth mentioning here, because it shows what happens when the index goes stale. Until 2.8, tiles you painted in the editor could vanish once their tilemap stopped being the active paint target. The tiles were there. The culling tree had not been rebuilt after the stroke, so the renderer believed there was nothing to draw.&lt;/p&gt;
+&lt;h2 id="sorting"&gt;Sorting
+&lt;/h2&gt;&lt;p&gt;2D rendering is mostly about order. There is no depth buffer sorting this out for you, so whatever is drawn last ends up on top.&lt;/p&gt;
+&lt;p&gt;Comet uses three levels:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Sorting layer&lt;/strong&gt;. A named, project-wide list that you define in order. &lt;code&gt;Background&lt;/code&gt;, &lt;code&gt;Terrain&lt;/code&gt;, &lt;code&gt;Characters&lt;/code&gt;, &lt;code&gt;Effects&lt;/code&gt;, &lt;code&gt;UI&lt;/code&gt;. This is the coarse control and it is the one you should be using.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Order in layer&lt;/strong&gt;. An integer inside a layer, for &amp;ldquo;this specific thing goes in front of that specific thing&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Depth&lt;/strong&gt;. Position along Z, which resolves anything still tied.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I prefer sorting layers over nudging Z values because a layer has a name. Six months later, &lt;code&gt;Characters&lt;/code&gt; still means something to me. &lt;code&gt;z = -0.03&lt;/code&gt; does not.&lt;/p&gt;
+&lt;h2 id="batching"&gt;Batching
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline.png"
+width="1100"
+height="606"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline_hu_8693214841c8c14f.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/pipeline_hu_bbfc6af2ecbc91a4.png 1024w"
+loading="lazy"
+alt="The rendering pipeline, from culling to submission"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Comet walks the sorted list and merges consecutive renderers that can share a draw call into one. One vertex buffer, one texture bind, one submission.&lt;/p&gt;
+&lt;p&gt;Fifty coins with the same sprite become one draw call. A tilemap of two thousand tiles from one tileset becomes a handful. This is the step that decides whether a 2D renderer is fast or slow.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers.png"
+width="1100"
+height="386"
+srcset="https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers_hu_d86ff848bfe978b4.png 480w, https://OriolCS2.github.io/CometEngineBlog/p/how-comet-draws-a-frame/batch-breakers_hu_e4aa748a61dd7c89.png 1024w"
+loading="lazy"
+alt="The three things that break a batch"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="683px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Three things break the merge:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;A different material.&lt;/strong&gt; A different shader, or different parameters, means a different GPU state.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A different texture.&lt;/strong&gt; This is what sprite atlases are for. Pack twenty sprites onto one page and they can all batch together. Atlases get their own post in March.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Something drawn between them in the sort order.&lt;/strong&gt; This one catches everyone. Two sprites using the same material will not merge if a third sprite with a different material sorts between them, because merging them would move that third sprite to the wrong side of something.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That last rule is why the practical advice is to keep things that look alike in the same sorting layer. You are not only organising the scene, you are giving the batcher something it can work with.&lt;/p&gt;
+&lt;h2 id="handing-the-work-over"&gt;Handing the work over
+&lt;/h2&gt;&lt;p&gt;The batched result becomes a &lt;strong&gt;command buffer&lt;/strong&gt;, a backend-agnostic list of &amp;ldquo;bind this, set that, draw this many&amp;rdquo;. Nothing in it mentions OpenGL or Vulkan.&lt;/p&gt;
+&lt;p&gt;That buffer is packed into a &lt;strong&gt;frame packet&lt;/strong&gt; and handed to the render thread, which turns it into real API calls while the game thread has already moved on to the next frame. On every platform except the web, which has no threads at all, those two things really are running at the same time.&lt;/p&gt;
+&lt;p&gt;That is the whole of next week&amp;rsquo;s post, so I will stop there.&lt;/p&gt;
+&lt;h2 id="the-stats-panel"&gt;The Stats panel
+&lt;/h2&gt;&lt;p&gt;The Game panel has a &lt;strong&gt;Stats&lt;/strong&gt; toggle. Turn it on and you get live rendering statistics: draw calls, batches, vertices, triangles and the frame time.&lt;/p&gt;
+&lt;p&gt;Draw calls are the number I watch when I am optimising, and I find them much more useful than frame rate, because frame rate is capped and noisy while draw calls are exact. Add an atlas and watch the count fall. Add one sprite with a different material into the middle of a batched group and watch it jump.&lt;/p&gt;
+&lt;p&gt;Some rough numbers from this project. The fifteen-entity scene above sits in single-digit draw calls. A test level with about four thousand sprites drawn from three atlases lands around twelve. A deliberately hostile version of the same level, where every sprite has its own material, gets you four thousand, and a frame time you can feel.&lt;/p&gt;
+&lt;p&gt;In all three cases it is the same scene, on the same GPU, producing the same pixels. The only thing that changed is whether the renderer was allowed to group the work.&lt;/p&gt;
+&lt;h2 id="what-comet-does-not-do"&gt;What Comet does not do
+&lt;/h2&gt;&lt;p&gt;A few limits I should be honest about.&lt;/p&gt;
+&lt;p&gt;There is no automatic atlasing at build time. If you want sprites to batch, you put them in a Sprite Atlas yourself. I have gone back and forth on this and right now I think the explicit version is better, because automatic packing turns the batching behaviour of your game into something that falls out of an algorithm you cannot see.&lt;/p&gt;
+&lt;p&gt;There is no draw-call budget warning either. Nothing tells you that you have made things worse. The Stats panel will show you, if you look.&lt;/p&gt;
+&lt;p&gt;And sorting is per-camera, per-frame, on the CPU. For the object counts a 2D game realistically has, I think that is the right trade. It is also why the GPU particle path, which can have a hundred thousand particles in one system, does its sorting in a completely different way.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Next Wednesday: the same frame, drawn twice. Comet renders through an abstraction with an OpenGL backend and a Vulkan backend, picks between them at runtime, and hands the result to a render thread. I will talk about why I put Vulkan in a 2D engine, and what happens on the one platform that has no threads.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Comments and questions welcome ;)&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>
